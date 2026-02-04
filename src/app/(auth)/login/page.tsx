@@ -17,11 +17,13 @@ import {
 } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import authServices from "@/services/authServices";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { login, googleLogin } = useAuth(); // Use context methods
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,7 +35,7 @@ export default function LoginPage() {
     const password = formData.get("password") as string;
 
     try {
-      await authServices.login({ email, password });
+      await login({ email, password }); // Use context login
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Invalid credentials. Please try again.");
@@ -43,6 +45,7 @@ export default function LoginPage() {
   };
 
   const googleLoginInfo = useGoogleLogin({
+    flow: "implicit",
     onSuccess: async (tokenResponse) => {
       try {
         setLoading(true);
@@ -50,7 +53,7 @@ export default function LoginPage() {
         const tokenToSend =
           (tokenResponse as any).credential ||
           (tokenResponse as any).access_token;
-        await authServices.googleLogin(tokenToSend);
+        await googleLogin(tokenToSend); // Use context googleLogin
         router.push("/dashboard");
       } catch (err: any) {
         setError(err.message || "Google login failed.");

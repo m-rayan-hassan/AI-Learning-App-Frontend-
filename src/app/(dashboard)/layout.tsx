@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { Loader2 } from "lucide-react";
 
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 
 export default function DashboardLayout({
@@ -50,6 +50,9 @@ export default function DashboardLayout({
                     <Menu className="h-6 w-6" />
                 </SheetTrigger>
                 <SheetContent side="left" className="p-0 border-r w-[280px]">
+                    <div className="sr-only">
+                        <SheetTitle>Navigation Menu</SheetTitle>
+                    </div>
                     <Sidebar />
                 </SheetContent>
             </Sheet>

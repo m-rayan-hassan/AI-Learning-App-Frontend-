@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -20,6 +20,9 @@ export default function DocumentsPage() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchDocuments = async () => {
     try {
@@ -36,19 +39,48 @@ export default function DocumentsPage() {
     fetchDocuments();
   }, []);
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      setSelectedFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
   const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setUploading(true);
     setError("");
 
     const formData = new FormData(e.currentTarget);
-    // documentServices.uploadDocument expects formData
+    
+    // If a file was selected via drag and drop, manually append it if it's not in the formData
+    if (selectedFile) {
+        formData.set('file', selectedFile);
+    }
+
     try {
       await documentServices.uploadDocument(formData);
       // Refresh list
       await fetchDocuments();
       setIsUploadOpen(false); // Close dialog
-      // Reset form (optional)
+      setSelectedFile(null); // Reset file
        (e.target as HTMLFormElement).reset();
     } catch (err: any) {
        setError(err.message || "Failed to upload document");
@@ -78,7 +110,13 @@ export default function DocumentsPage() {
               Upload and manage your study materials.
             </p>
          </div>
-         <Dialog open={isUploadOpen} onOpenChange={setIsUploadOpen}>
+         <Dialog open={isUploadOpen} onOpenChange={(open) => {
+             setIsUploadOpen(open);
+             if (!open) {
+                 setSelectedFile(null);
+                 setError("");
+             }
+         }}>
             <DialogTrigger asChild>
                 <Button>
                     <Upload className="mr-2 h-4 w-4" />
@@ -94,17 +132,70 @@ export default function DocumentsPage() {
                 </DialogHeader>
                 <form onSubmit={handleUpload}>
                     <div className="grid gap-4 py-4">
-                        <div className="grid w-full max-w-sm items-center gap-1.5">
-                            <Label htmlFor="file">File</Label>
-                            <Input id="file" name="file" type="file" required accept=".pdf,.docx,.txt,.pptx,.odt" />
+                        <div className="grid w-full items-center gap-1.5">
+                            <Label htmlFor="title">Document Title</Label>
+                            <Input 
+                                id="title" 
+                                name="title" 
+                                placeholder="Enter document title" 
+                                required 
+                            />
                         </div>
-                         {error && <p className="text-sm text-red-500">{error}</p>}
+                        <div className="grid w-full items-center gap-1.5">
+                            <Label htmlFor="file">File</Label>
+                            <div
+                                className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md transition-colors cursor-pointer ${
+                                    isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-primary/50'
+                                }`}
+                                onDragOver={handleDragOver}
+                                onDragLeave={handleDragLeave}
+                                onDrop={handleDrop}
+                                onClick={() => fileInputRef.current?.click()}
+                            >
+                                <div className="space-y-1 text-center">
+                                    <Upload className={`mx-auto h-12 w-12 ${isDragging ? 'text-primary' : 'text-muted-foreground'}`} />
+                                    <div className="flex text-sm text-muted-foreground">
+                                        <label className="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary/80 focus-within:outline-none">
+                                            <span>{selectedFile ? 'Change file' : 'Upload a file'}</span>
+                                            <input 
+                                                id="file" 
+                                                name="file" 
+                                                type="file" 
+                                                ref={fileInputRef}
+                                                className="sr-only" 
+                                                onChange={handleFileChange}
+                                                accept=".pdf,.docx,.txt,.pptx,.odt"
+                                                required={!selectedFile}
+                                            />
+                                        </label>
+                                        <p className="pl-1">or drag and drop</p>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">
+                                        PDF, DOCX, TXT, PPTX or ODT up to 500 pages
+                                    </p>
+                                    {selectedFile && (
+                                        <div className="mt-2 p-2 bg-muted rounded-md flex items-center justify-center gap-2">
+                                            <FileText className="h-4 w-4 text-primary" />
+                                            <span className="text-sm font-medium truncate max-w-[200px]">
+                                                {selectedFile.name}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        {error && <p className="text-sm text-red-500">{error}</p>}
                     </div>
-                    <DialogFooter>
+                    <DialogFooter className="flex-col gap-2">
                         <Button type="submit" disabled={uploading} className="w-full">
                             {uploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {uploading ? 'Uploading...' : 'Upload'}
                         </Button>
+                        {uploading && (
+                            <p className="text-xs text-center text-muted-foreground animate-pulse">
+                                This may take some time if document is large or non-pdf
+                            </p>
+                        )}
                     </DialogFooter>
                 </form>
             </DialogContent>

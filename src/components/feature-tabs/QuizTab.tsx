@@ -11,6 +11,11 @@ import {
   ChevronLeft,
   ChevronRight,
   AlertCircle,
+  Trophy,
+  Play,
+  BarChart3,
+  BookOpen,
+  Calendar,
 } from "lucide-react";
 import { aiServices } from "@/services/aiServices";
 import quizService from "@/services/quizServices";
@@ -57,8 +62,17 @@ export function QuizTab({ documentId }: { documentId: string }) {
   const loadQuizzes = async () => {
     try {
       setError("");
+
+      // 1. Try LocalStorage first
+      const cached = localStorage.getItem(`quizzes_${documentId}`);
+      if (cached) {
+        setQuizzes(JSON.parse(cached));
+      }
+
       const res = await quizService.getQuizziesForDocument(documentId);
-      setQuizzes(res?.quizzes || res || []);
+      const data = res?.quizzes || res || [];
+      setQuizzes(data);
+      localStorage.setItem(`quizzes_${documentId}`, JSON.stringify(data));
     } catch (err: any) {
       console.error(err);
       const errorMsg = err?.error || err?.message || "Failed to load quizzes";
@@ -151,7 +165,12 @@ export function QuizTab({ documentId }: { documentId: string }) {
       const results = await quizService.getQuizResults(activeQuiz._id);
       setQuizResults(results);
       setSubmitted(true);
-      await loadQuizzes();
+      
+      // Fetch fresh list and update cache
+      const freshQuizzes = await quizService.getQuizziesForDocument(documentId);
+      const data = freshQuizzes?.quizzes || freshQuizzes || [];
+      setQuizzes(data);
+      localStorage.setItem(`quizzes_${documentId}`, JSON.stringify(data));
     } catch (err: any) {
       console.error(err);
       const errorMsg = err?.error || err?.message || "Failed to submit quiz";
@@ -168,7 +187,14 @@ export function QuizTab({ documentId }: { documentId: string }) {
     setError("");
     try {
       await quizService.deleteQuiz(quizId);
-      await loadQuizzes();
+      
+      // Update cache
+      setQuizzes((prev) => {
+        const newQuizzes = prev.filter(q => q._id !== quizId);
+        localStorage.setItem(`quizzes_${documentId}`, JSON.stringify(newQuizzes));
+        return newQuizzes;
+      });
+
       setActiveQuiz(null);
       setAnswers({});
       setSubmitted(false);
@@ -195,113 +221,152 @@ export function QuizTab({ documentId }: { documentId: string }) {
   // Show Results View
   if (submitted && quizResults) {
     return (
-      <div className="flex flex-col h-[600px]">
+      <div className="flex flex-col h-full">
         {/* Fixed Header */}
         <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-background z-10">
           <Button variant="ghost" onClick={handleBackToList} size="sm">
+            <ChevronLeft className="mr-2 h-4 w-4" />
             Back to List
           </Button>
           <h3 className="font-bold text-lg">Quiz Results</h3>
           <Button
-            variant="destructive"
+            variant="ghost"
             size="sm"
             onClick={() => handleDeleteQuiz(activeQuiz._id)}
             disabled={deleting}
+            className="hover:bg-destructive/10 hover:text-destructive"
           >
             {deleting ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <Trash2 className="mr-2 h-4 w-4" />
+              <Trash2 className="h-4 w-4" />
             )}
-            Delete
           </Button>
         </div>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto flex-1 p-4 space-y-6">
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 p-6 rounded-lg sticky top-0">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-2">
-                {quizResults.quiz.score}%
-              </h2>
-              <p className="text-lg font-semibold">
-                {quizResults.results.filter((r) => r.isCorrect).length} /{" "}
-                {quizResults.quiz.totalQuestions} Correct
-              </p>
-            </div>
-          </div>
+        <div className="overflow-y-auto flex-1 p-4 space-y-4">
+          {/* Score Summary Card */}
+          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/50 dark:to-blue-900/30 border-blue-200 dark:border-blue-800">
+            <CardContent className="p-6">
+              <div className="text-center space-y-2">
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <Trophy className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                  <h2 className="text-4xl font-bold text-blue-900 dark:text-blue-100">
+                    {quizResults.quiz.score}%
+                  </h2>
+                </div>
+                <p className="text-lg font-semibold text-blue-800 dark:text-blue-200">
+                  {quizResults.results.filter((r) => r.isCorrect).length} out of{" "}
+                  {quizResults.quiz.totalQuestions} Correct
+                </p>
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  Completed on {new Date(quizResults.quiz.completedAt).toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
 
+          {/* Questions Results */}
           {quizResults.results.map((result, idx) => (
             <Card
               key={idx}
-              className={cn(
-                result.isCorrect
-                  ? "border-green-200 bg-green-50 dark:bg-green-950"
-                  : "border-red-200 bg-red-50 dark:bg-red-950",
-              )}
+              className="overflow-hidden border-l-4"
+              style={{
+                borderLeftColor: result.isCorrect 
+                  ? 'rgb(34, 197, 94)' // green-500
+                  : 'rgb(239, 68, 68)', // red-500
+              }}
             >
-              <CardHeader>
-                <CardTitle className="text-base font-medium flex items-center gap-2">
-                  <span>
-                    {idx + 1}. {result.question}
-                  </span>
-                  {result.isCorrect ? (
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                  ) : (
-                    <XCircle className="h-5 w-5 text-red-600" />
-                  )}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <p className="text-sm font-medium mb-2">Your Answer:</p>
-                  <div
-                    className={cn(
-                      "p-2 rounded border",
-                      result.isCorrect
-                        ? "border-green-300 bg-white"
-                        : "border-red-300 bg-white",
-                    )}
-                  >
-                    {result.selectedAnswer || "Not answered"}
-                  </div>
-                </div>
-
-                {!result.isCorrect && (
-                  <div>
-                    <p className="text-sm font-medium mb-2">Correct Answer:</p>
-                    <div className="p-2 rounded border border-green-300 bg-white">
-                      {result.correctAnswer}
+              <CardContent className="p-0">
+                {/* Question Header */}
+                <div className="bg-muted/30 p-4 border-b">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <div className="text-xs font-semibold text-muted-foreground mb-1">
+                        Question {idx + 1}
+                      </div>
+                      <h4 className="font-semibold text-base leading-snug">
+                        {result.question}
+                      </h4>
                     </div>
-                  </div>
-                )}
-
-                {result.explaination && (
-                  <div>
-                    <p className="text-sm font-medium mb-2">Explanation:</p>
-                    <p className="text-sm text-muted-foreground bg-white p-2 rounded border">
-                      {result.explaination}
-                    </p>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  {result.options.map((option, optIdx) => (
-                    <div
-                      key={optIdx}
-                      className={cn(
-                        "p-2 rounded border",
-                        result.correctAnswer === option
-                          ? "border-green-500 bg-green-100"
-                          : result.selectedAnswer === option
-                            ? "border-red-500 bg-red-100"
-                            : "border-gray-200",
-                      )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-full hover:bg-muted"
+                      onClick={() => {/* Could collapse/expand if needed */}}
                     >
-                      {option}
-                    </div>
-                  ))}
+                      <XCircle className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                  </div>
                 </div>
+
+                {/* Options Grid */}
+                <div className="p-4 space-y-3">
+                  {result.options.map((option, optIdx) => {
+                    const isCorrect = result.correctAnswer === option;
+                    const isUserAnswer = result.selectedAnswer === option;
+                    
+                    return (
+                      <div
+                        key={optIdx}
+                        className={cn(
+                          "relative p-3 rounded-lg border-2 transition-all",
+                          isCorrect && "bg-green-50 border-green-300 dark:bg-green-950/30 dark:border-green-700",
+                          isUserAnswer && !isCorrect && "bg-red-50 border-red-300 dark:bg-red-950/30 dark:border-red-700",
+                          !isCorrect && !isUserAnswer && "bg-muted/30 border-border"
+                        )}
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <span className={cn(
+                            "flex-1 text-sm",
+                            isCorrect && "font-medium text-green-900 dark:text-green-100",
+                            isUserAnswer && !isCorrect && "font-medium text-red-900 dark:text-red-100"
+                          )}>
+                            {option}
+                          </span>
+                          
+                          {isCorrect && (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-green-600 text-white dark:bg-green-500">
+                              <CheckCircle className="h-3 w-3" />
+                              Correct
+                            </span>
+                          )}
+                          
+                          {isUserAnswer && !isCorrect && (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-red-600 text-white dark:bg-red-500">
+                              <XCircle className="h-3 w-3" />
+                              Your Answer
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Explanation Section */}
+                {result.explaination && (
+                  <div className="px-4 pb-4">
+                    <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                      <div className="flex gap-2">
+                        <BookOpen className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <p className="text-xs font-semibold text-blue-900 dark:text-blue-100 mb-1">
+                            EXPLANATION
+                          </p>
+                          <p className="text-sm text-blue-800 dark:text-blue-200 leading-relaxed">
+                            {result.explaination}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
@@ -316,25 +381,26 @@ export function QuizTab({ documentId }: { documentId: string }) {
     const isAnswered = answers[currentQuestionIndex.toString()] !== undefined;
 
     return (
-      <div className="flex flex-col h-[600px]">
+      <div className="flex flex-col h-full">
         {/* Fixed Header */}
         <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-background z-10">
           <Button variant="ghost" onClick={handleBackToList} size="sm">
+            <ChevronLeft className="mr-2 h-4 w-4" />
             Back to List
           </Button>
           <h3 className="font-bold text-lg">{activeQuiz.title || "Quiz"}</h3>
           <Button
-            variant="destructive"
+            variant="ghost"
             size="sm"
             onClick={() => handleDeleteQuiz(activeQuiz._id)}
             disabled={deleting}
+            className="hover:bg-destructive/10 hover:text-destructive"
           >
             {deleting ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <Trash2 className="mr-2 h-4 w-4" />
+              <Trash2 className="h-4 w-4" />
             )}
-            Delete
           </Button>
         </div>
 
@@ -457,7 +523,7 @@ export function QuizTab({ documentId }: { documentId: string }) {
 
   // Show Quiz List View
   return (
-    <div className="space-y-4 h-[600px] flex flex-col">
+    <div className="space-y-4 h-full flex flex-col">
       <div className="flex flex-col gap-4 border-b pb-4">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-bold">Quizzes</h3>
@@ -493,42 +559,106 @@ export function QuizTab({ documentId }: { documentId: string }) {
         </div>
       )}
 
-      <div className="space-y-2 overflow-y-auto flex-1">
+      <div className="overflow-y-auto flex-1">
         {quizzes.length === 0 ? (
           <div className="text-center text-muted-foreground py-10">
             No quizzes found. Generate one!
           </div>
         ) : (
-          quizzes.map((quiz, i) => (
-            <Card
-              key={i}
-              className="cursor-pointer hover:bg-muted/50 transition-colors"
-            >
-              <CardContent className="p-4 flex justify-between items-center">
-                <div className="flex-1" onClick={() => handleSelectQuiz(quiz)}>
-                  <div className="font-medium">
-                    {quiz.title || `Quiz ${i + 1}`}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
+            {quizzes.map((quiz, i) => (
+              <Card
+                key={i}
+                className="relative hover:shadow-lg transition-all duration-200 border-border/50"
+              >
+                <CardContent className="p-5 flex flex-col gap-4">
+                  {/* Score Badge */}
+                  <div className="flex items-start justify-between">
+                    <div className={cn(
+                      "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium",
+                      quiz.completedAt
+                        ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                        : "bg-muted text-muted-foreground"
+                    )}>
+                      <Trophy className="h-4 w-4" />
+                      <span>Score: {quiz.score || 0}%</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteQuiz(quiz._id);
+                      }}
+                      disabled={deleting}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    {quiz.questions?.length} Questions
-                    {quiz.completedAt && (
-                      <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                        ✓ Completed • Score: {quiz.score}%
-                      </span>
+
+                  {/* Quiz Title */}
+                  <div className="space-y-1">
+                    <h4 className="font-bold text-lg leading-tight">
+                      {quiz.title || `Quiz ${i + 1}`}
+                    </h4>
+                    {quiz.createdAt && (
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Calendar className="h-3 w-3" />
+                        <span>
+                          CREATED {new Date(quiz.createdAt).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric', 
+                            year: 'numeric' 
+                          }).toUpperCase()}
+                        </span>
+                      </div>
                     )}
                   </div>
-                </div>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDeleteQuiz(quiz._id)}
-                  disabled={deleting}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-          ))
+
+                  {/* Question Count */}
+                  <div className="inline-flex items-center gap-2 bg-muted px-3 py-2 rounded-md w-fit">
+                    <span className="font-semibold text-sm">
+                      {quiz.questions?.length || 0} Questions
+                    </span>
+                  </div>
+
+                  {/* Action Button */}
+                  {quiz.completedAt ? (
+                    <Button
+                      variant="secondary"
+                      className="w-full"
+                      onClick={async () => {
+                        try {
+                          const results = await quizService.getQuizResults(quiz._id);
+                          setQuizResults(results);
+                          setActiveQuiz(quiz);
+                          setSubmitted(true);
+                        } catch (err: any) {
+                          console.error(err);
+                          const errorMsg = err?.error || err?.message || "Failed to load results";
+                          setError(errorMsg);
+                        }
+                      }}
+                    >
+                      <BarChart3 className="mr-2 h-4 w-4" />
+                      View Results
+                    </Button>
+                  ) : (
+                    <Button
+                      className="w-full bg-primary hover:bg-primary/90"
+                      onClick={() => handleSelectQuiz(quiz)}
+                    >
+                      <Play className="mr-2 h-4 w-4" />
+                      Start Quiz
+                    </Button>
+                  )}
+
+
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
       </div>
     </div>

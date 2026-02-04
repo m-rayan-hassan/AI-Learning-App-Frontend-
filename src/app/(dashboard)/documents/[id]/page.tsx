@@ -11,9 +11,10 @@ import { QuizTab } from "@/components/feature-tabs/QuizTab";
 import { UIActionsTab } from "@/components/feature-tabs/UIActionsTab";
 import { Button } from "@/components/ui/button";
 import { PDFViewer } from "@/components/PDFViewer"; // <--- IMPORT THIS
+import VoiceChat from "@/components/feature-tabs/VoiceChat";
 
 // Simple Tabs usage
-const TABS = ["Preview", "Summary", "Chat", "Flashcards", "Quiz", "AI Actions"];
+const TABS = ["Preview", "Summary", "Chat", "Flashcards", "Quiz", "AI Actions", "Voice Chat"];
 
 export default function DocumentViewPage() {
   // ... (keep all your existing state and useEffects the same) ...
@@ -56,7 +57,7 @@ export default function DocumentViewPage() {
   if (!document) return <div>Document not found</div>;
 
   return (
-    <div className="h-[calc(100dvh-80px)] md:h-[calc(100vh-100px)] flex flex-col lg:flex-row gap-4 p-2 md:p-0">
+    <div className="h-[calc(100dvh-80px)] md:h-[calc(100vh-100px)] flex flex-col lg:flex-row gap-4 p-1">
       {/* Optional side preview pane (hidden by default) */}
       {showSidePreview && (
         <div className="h-[40vh] lg:h-full lg:flex-1 border rounded-xl overflow-hidden bg-muted shadow-sm transition-all duration-300">
@@ -117,7 +118,7 @@ export default function DocumentViewPage() {
           </div>
         </div>
 
-        <div className="flex-1 p-4 overflow-auto h-full">
+        <div className="flex-1 p-2 overflow-auto h-full">
           {activeTab === "Preview" && document.pdfUrl && (
             <div className="h-full">
               <PDFViewer url={document.pdfUrl} />
@@ -135,6 +136,7 @@ export default function DocumentViewPage() {
           {activeTab === "Flashcards" && <FlashcardsTab documentId={id} />}
           {activeTab === "Quiz" && <QuizTab documentId={id} />}
           {activeTab === "AI Actions" && <UIActionsTab documentId={id} />}
+          {activeTab === "Voice Chat" && <VoiceChat documentId={id} />}
         </div>
       </div>
     </div>

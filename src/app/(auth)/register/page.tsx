@@ -52,6 +52,7 @@ export default function RegisterPage() {
   };
 
   const googleSignup = useGoogleLogin({
+    flow: "implicit",
     onSuccess: async (tokenResponse) => {
       try {
         setLoading(true);

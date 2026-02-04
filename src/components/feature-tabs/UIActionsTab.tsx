@@ -36,7 +36,7 @@ export function UIActionsTab({ documentId }: { documentId: string }) {
   };
 
   return (
-    <div className="space-y-6 h-[600px] overflow-y-auto">
+    <div className="space-y-6 h-full overflow-y-auto">
       <div className="grid grid-cols-2 gap-4">
           <Button variant="outline" className="h-auto py-4 flex flex-col gap-2" onClick={() => handleAction("voice")} disabled={!!loading}>
               {loading === "voice" ? <Loader2 className="animate-spin" /> : <Mic className="h-6 w-6 text-primary" />}

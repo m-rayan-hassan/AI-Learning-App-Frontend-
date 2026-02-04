@@ -4,8 +4,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { motion } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
 
 export function Navbar() {
+  const { user, logout, isAuthenticated } = useAuth();
+
   return (
     <motion.header
       initial={{ y: -100 }}
@@ -39,16 +42,29 @@ export function Navbar() {
           <div className="w-full flex-1 md:w-auto md:flex-none">
           </div>
           <nav className="flex items-center space-x-2">
-            <Link href="/login">
-              <Button variant="ghost" size="sm">
-                Login
-              </Button>
-            </Link>
-             <Link href="/register">
-              <Button size="sm">
-                Get Started
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+               <div className="flex items-center gap-4">
+                 <span className="text-sm font-medium hidden sm:block">
+                   Hi, {user?.username}
+                 </span>
+                 <Button variant="ghost" size="sm" onClick={logout}>
+                   Logout
+                 </Button>
+               </div>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost" size="sm">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button size="sm">
+                    Get Started
+                  </Button>
+                </Link>
+              </>
+            )}
             <ThemeToggle />
           </nav>
         </div>

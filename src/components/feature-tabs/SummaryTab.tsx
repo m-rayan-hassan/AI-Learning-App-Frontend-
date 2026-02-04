@@ -1,30 +1,67 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCw } from "lucide-react";
 import { aiServices } from "@/services/aiServices";
+import documentServices from "@/services/documentServices";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 export function SummaryTab({ documentId }: { documentId: string }) {
   const [summary, setSummary] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // Fetch document on mount to check if summary exists
+  useEffect(() => {
+    const loadSummary = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        // 1. Try LocalStorage first
+        const cached = localStorage.getItem(`summary_${documentId}`);
+        if (cached) {
+          setSummary(cached);
+          setLoading(false);
+          return;
+        }
+
+        // 2. Fetch from DB
+        const doc = await documentServices.getDocumentById(documentId);
+        if (doc.summary) {
+          setSummary(doc.summary);
+          localStorage.setItem(`summary_${documentId}`, doc.summary);
+        }
+      } catch (err: any) {
+        console.error("Error loading summary:", err);
+        setError(err.message || "Failed to load summary");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSummary();
+  }, [documentId]);
 
   const handleGenerate = async () => {
     setLoading(true);
+    setError("");
     try {
       const res = await aiServices.generateSummary(documentId);
       setSummary(res.summary);
-    } catch (err) {
-      console.error(err);
+      localStorage.setItem(`summary_${documentId}`, res.summary);
+    } catch (err: any) {
+      console.error("Error generating summary:", err);
+      setError(err.message || "Failed to generate summary");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="space-y-4 h-[600px] flex flex-col">
+    <div className="space-y-4 h-full flex flex-col">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-bold">Document Summary</h3>
         <Button onClick={handleGenerate} disabled={loading} size="sm">
@@ -33,9 +70,14 @@ export function SummaryTab({ documentId }: { documentId: string }) {
           ) : (
             <RefreshCw className="mr-2 h-4 w-4" />
           )}
-          Generate Summary
+          {summary ? "Regenerate" : "Generate"} Summary
         </Button>
       </div>
+      {error && (
+        <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 p-3 rounded text-sm">
+          {error}
+        </div>
+      )}
       <div className="flex-1 p-4 border rounded-md bg-muted/20 overflow-y-auto">
         {summary ? (
           <ReactMarkdown
@@ -46,17 +88,22 @@ export function SummaryTab({ documentId }: { documentId: string }) {
                 <span className="font-bold" {...props} />
               ),
               // Unordered lists (bullets)
-              ul: ({ node, ...props }: any) => (
+              ul: ({ node, ordered, ...props }: any) => (
                 <ul className="list-disc pl-4 my-2" {...props} />
               ),
               // Ordered lists (1. 2. 3.)
-              ol: ({ node, ...props }: any) => (
+              ol: ({ node, ordered, ...props }: any) => (
                 <ol className="list-decimal pl-4 my-2" {...props} />
               ),
               // List items - Destructure to remove invalid props (ordered, etc.)
-              li: ({ node, ordered, checked, index, siblingCount, ...props }: any) => (
-                <li className="mb-1" {...props} />
-              ),
+              li: ({
+                node,
+                ordered,
+                checked,
+                index,
+                siblingCount,
+                ...props
+              }: any) => <li className="mb-1" {...props} />,
               // Paragraphs
               p: ({ node, ...props }: any) => (
                 <p className="mb-2 last:mb-0 leading-relaxed" {...props} />
@@ -100,9 +147,13 @@ export function SummaryTab({ documentId }: { documentId: string }) {
           >
             {summary}
           </ReactMarkdown>
+        ) : loading ? (
+          <div className="flex justify-center items-center h-full">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
         ) : (
           <div className="flex justify-center items-center h-full text-muted-foreground">
-            Click generate to create a summary of your document.
+            No summary yet. Click generate to create one.
           </div>
         )}
       </div>

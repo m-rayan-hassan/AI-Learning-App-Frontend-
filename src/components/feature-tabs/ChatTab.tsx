@@ -21,9 +21,16 @@ export function ChatTab({ documentId }: { documentId: string }) {
   useEffect(() => {
     const loadHistory = async () => {
       try {
+        // 1. Try LocalStorage first
+        const cached = localStorage.getItem(`chat_${documentId}`);
+        if (cached) {
+          setMessages(JSON.parse(cached));
+        }
+
         const history = await aiServices.getChatHistory(documentId);
         if (history?.messages) {
           setMessages(history.messages);
+          localStorage.setItem(`chat_${documentId}`, JSON.stringify(history.messages));
         }
       } catch (e) {
         console.error("Failed to load history:", e);
@@ -58,7 +65,11 @@ export function ChatTab({ documentId }: { documentId: string }) {
         response?.response ||
         "No response.";
 
-      setMessages((prev) => [...prev, { role: "ai", content: aiContent }]);
+      setMessages((prev) => {
+        const newMessages = [...prev, { role: "ai", content: aiContent }];
+        localStorage.setItem(`chat_${documentId}`, JSON.stringify(newMessages));
+        return newMessages;
+      });
     } catch (err) {
       setMessages((prev) => [
         ...prev,
@@ -70,7 +81,7 @@ export function ChatTab({ documentId }: { documentId: string }) {
   };
 
   return (
-    <div className="flex flex-col h-[600px] border rounded-md">
+    <div className="flex flex-col h-full">
       <div
         className="flex-1 p-4 bg-muted/20"
         ref={scrollRef}
