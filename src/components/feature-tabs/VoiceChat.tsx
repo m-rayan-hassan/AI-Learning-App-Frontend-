@@ -255,55 +255,52 @@ export function VoiceChat({ documentId }: { documentId: string }) {
 
 
   return (
-    <div className="w-full max-w-6xl mx-auto flex flex-col gap-8 p-4 lg:p-8 animate-in fade-in duration-700">
+    <div className="w-full max-w-6xl mx-auto flex flex-col gap-6 p-4 lg:p-6 animate-in fade-in duration-500">
       
-      {/* Glassy Header Card */}
-      <div className="relative group overflow-hidden bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-white/10 p-6 rounded-[2.5rem] shadow-2xl transition-all duration-500 hover:shadow-blue-500/10">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-50" />
-        
+      {/* Header Card */}
+      <div className="relative group overflow-hidden bg-card border border-border p-5 rounded-2xl shadow-sm transition-all duration-300">
         <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-4">
             <div className="relative">
-              <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full animate-pulse" />
-              <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg transform group-hover:rotate-6 transition-transform duration-300">
-                <Mic size={28} />
+              <div className="relative w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
+                <Mic size={24} />
               </div>
             </div>
             <div>
-              <h2 className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
+              <h2 className="text-xl font-bold text-foreground">
                 Voice Assistant
               </h2>
-              <div className="flex items-center gap-2 text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mt-1">
-                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                Interative Learning
+              <div className="flex items-center gap-2 text-[10px] font-bold text-primary uppercase tracking-widest mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                Interactive Learning
               </div>
             </div>
           </div>
 
-          {/* Premium Chat Type Toggles */}
-          <div className="flex p-1.5 bg-slate-200/40 dark:bg-slate-800/40 backdrop-blur-md rounded-2xl w-full md:w-auto border border-white/10">
+          {/* Chat Type Toggles */}
+          <div className="flex p-1 bg-muted rounded-xl w-full md:w-auto border border-border">
             <button
               onClick={() => !callActive && setVoiceChatType("simple-chat")}
               disabled={callActive}
-              className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 ${
+              className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
                 voiceChatType === "simple-chat"
-                  ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xl scale-[1.02]"
-                  : "text-slate-500 hover:bg-white/30 dark:hover:bg-slate-700/30"
-              } ${callActive ? "opacity-40 cursor-not-allowed" : ""}`}
+                  ? "bg-background text-foreground shadow-sm scale-[1.01]"
+                  : "text-muted-foreground hover:text-foreground"
+              } ${callActive ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              <MessageCircle size={16} />
+              <MessageCircle size={15} />
               Discuss
             </button>
             <button
               onClick={() => !callActive && setVoiceChatType("interview-chat")}
               disabled={callActive}
-              className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 ${
+              className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
                 voiceChatType === "interview-chat"
-                  ? "bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-300 shadow-xl scale-[1.02]"
-                  : "text-slate-500 hover:bg-white/30 dark:hover:bg-slate-700/30"
-              } ${callActive ? "opacity-40 cursor-not-allowed" : ""}`}
+                  ? "bg-background text-foreground shadow-sm scale-[1.01]"
+                  : "text-muted-foreground hover:text-foreground"
+              } ${callActive ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              <GraduationCap size={18} />
+              <GraduationCap size={16} />
               Viva Mode
             </button>
           </div>
@@ -312,61 +309,51 @@ export function VoiceChat({ documentId }: { documentId: string }) {
 
       {/* Error State */}
       {typeof errorMsg === "string" && errorMsg.length > 0 && (
-        <div className="bg-red-500/10 backdrop-blur-md border border-red-500/20 text-red-600 dark:text-red-400 px-6 py-4 rounded-3xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
-          <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center">
-            <AlertCircle size={18} />
-          </div>
-          <span className="font-medium">{errorMsg}</span>
+        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-5 py-3 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+          <AlertCircle size={18} />
+          <span className="text-sm font-medium">{errorMsg}</span>
         </div>
       )}
 
       {/* Main Experience Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Assistant Perspective */}
-        <div className="relative aspect-square md:aspect-auto md:h-[450px] group flex flex-col items-center justify-center p-12 bg-white/20 dark:bg-slate-900/20 backdrop-blur-xl border border-white/20 dark:border-slate-800 rounded-[3rem] shadow-xl transition-all duration-500">
-          <div className={`absolute inset-0 bg-gradient-to-t from-blue-500/10 via-transparent to-transparent transition-opacity duration-1000 ${isSpeaking ? "opacity-100" : "opacity-0"}`} />
+        <div className="relative aspect-square md:aspect-auto md:h-[400px] flex flex-col items-center justify-center p-8 bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+          <div className={`absolute inset-0 bg-primary/5 transition-opacity duration-1000 ${isSpeaking ? "opacity-100" : "opacity-0"}`} />
           
           <div className="relative z-10 flex flex-col items-center">
-            <div className="relative mb-8">
+            <div className="relative mb-6">
               {isSpeaking && (
-                <div className="absolute -inset-8 bg-blue-500/30 rounded-full blur-3xl animate-pulse scale-150" />
+                <div className="absolute -inset-6 bg-primary/20 rounded-full blur-2xl animate-pulse" />
               )}
               <div className={`
-                relative w-40 h-40 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 p-2 shadow-2xl transition-all duration-700 transform
-                ${isSpeaking ? "scale-110 rotate-3" : "scale-100"}
+                relative w-32 h-32 rounded-full bg-primary p-1 shadow-lg transition-all duration-500
+                ${isSpeaking ? "scale-105" : "scale-100"}
               `}>
-                <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center border-4 border-white/10 overflow-hidden">
-                   <Bot size={72} className={`text-white transition-all duration-500 ${isSpeaking ? "scale-110 drop-shadow-[0_0_15px_rgba(59,130,246,0.8)]" : "opacity-80"}`} />
+                <div className="w-full h-full rounded-full bg-background flex items-center justify-center border-2 border-primary/20 overflow-hidden">
+                   <Bot size={56} className={`text-primary transition-all duration-500 ${isSpeaking ? "scale-110 drop-shadow-[0_0_8px_rgba(var(--primary),0.5)]" : "opacity-90"}`} />
                 </div>
               </div>
-              
-              {/* Orbital Rings */}
-              {callActive && (
-                <div className="absolute -inset-4 border-2 border-blue-500/20 rounded-full animate-[spin_10s_linear_infinite]" />
-              )}
-               {callActive && (
-                <div className="absolute -inset-8 border border-white/10 rounded-full animate-[spin_15s_linear_infinite_reverse]" />
-              )}
             </div>
 
             <div className="text-center">
-              <h3 className="text-3xl font-black text-slate-800 dark:text-white">Genius AI</h3>
+              <h3 className="text-2xl font-bold text-foreground">Genius AI</h3>
               <div className={`
-                mt-4 inline-flex items-center gap-3 px-6 py-2 rounded-2xl text-sm font-bold transition-all duration-300
+                mt-3 inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-300
                 ${isSpeaking 
-                  ? "bg-blue-500 text-white shadow-lg shadow-blue-500/30" 
-                  : "bg-slate-200/50 dark:bg-slate-800 text-slate-500"}
+                  ? "bg-primary text-primary-foreground shadow-sm" 
+                  : "bg-muted text-muted-foreground"}
               `}>
                 {isSpeaking ? (
                   <span className="flex items-center gap-1">
-                    <span className="w-1.5 h-4 bg-white/50 animate-[voice_1s_ease-in-out_infinite]" />
-                    <span className="w-1.5 h-6 bg-white/50 animate-[voice_1s_ease-in-out_0.2s_infinite]" />
-                    <span className="w-1.5 h-3 bg-white/50 animate-[voice_1s_ease-in-out_0.1s_infinite]" />
-                    <span className="ml-2 uppercase tracking-tighter">Speaking</span>
+                    <span className="w-1 h-3 bg-current/50 animate-[voice_1s_ease-in-out_infinite]" />
+                    <span className="w-1 h-5 bg-current/50 animate-[voice_1s_ease-in-out_0.2s_infinite]" />
+                    <span className="w-1 h-2.5 bg-current/50 animate-[voice_1s_ease-in-out_0.1s_infinite]" />
+                    <span className="ml-1.5">Speaking</span>
                   </span>
                 ) : (
-                  <span className="uppercase tracking-widest">{callActive ? "Active" : "Ready"}</span>
+                  <span>{callActive ? "Active" : "Ready"}</span>
                 )}
               </div>
             </div>
@@ -374,25 +361,25 @@ export function VoiceChat({ documentId }: { documentId: string }) {
         </div>
 
         {/* User Perspective */}
-        <div className="relative aspect-square md:aspect-auto md:h-[450px] flex flex-col items-center justify-center p-12 bg-white/50 dark:bg-slate-800/10 backdrop-blur-md border border-white/20 dark:border-slate-800/30 rounded-[3rem] shadow-xl">
+        <div className="relative aspect-square md:aspect-auto md:h-[400px] flex flex-col items-center justify-center p-8 bg-muted/30 border border-border rounded-2xl">
           <div className="relative z-10 flex flex-col items-center">
-            <div className="relative group mb-8">
-              <div className="absolute -inset-2 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-full opacity-30 blur group-hover:opacity-50 transition duration-500" />
-              <div className="relative w-40 h-40 rounded-full bg-slate-100 dark:bg-slate-800 border-4 border-white dark:border-slate-700 shadow-2xl overflow-hidden flex items-center justify-center">
+            <div className="relative group mb-6">
+              <div className="absolute -inset-1 bg-gradient-to-tr from-primary to-purple-500 rounded-full opacity-20 blur-sm" />
+              <div className="relative w-32 h-32 rounded-full bg-background border-2 border-border shadow-md overflow-hidden flex items-center justify-center">
                 {userProfileImage ? (
-                  <img src={userProfileImage} alt="User" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                  <img src={userProfileImage} alt="User" className="w-full h-full object-cover" />
                 ) : (
-                  <User size={80} className="text-slate-400" />
+                  <User size={64} className="text-muted-foreground/40" />
                 )}
               </div>
             </div>
 
             <div className="text-center">
-              <h3 className="text-3xl font-black text-slate-800 dark:text-white">
+              <h3 className="text-2xl font-bold text-foreground">
                 {username || "Scholar"}
               </h3>
-              <div className="mt-4 px-6 py-2 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-white/20 dark:border-white/5 text-sm font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest shadow-sm">
-                Reading Mode
+              <div className="mt-3 px-4 py-1.5 rounded-full bg-background border border-border text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                Learning Mode
               </div>
             </div>
           </div>
@@ -400,63 +387,63 @@ export function VoiceChat({ documentId }: { documentId: string }) {
       </div>
 
       {/* Control Strip & Transcript Box */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
-        {/* Call Toggle Button - 4 columns */}
-        <div className="lg:col-span-4 h-full flex items-stretch">
+        {/* Call Toggle Button */}
+        <div className="lg:col-span-4">
           <button
             onClick={toggleCall}
             disabled={loadingData || connecting || !documentContent}
             className={`
-              relative w-full overflow-hidden min-h-[140px] rounded-[2.5rem] flex flex-col items-center justify-center gap-3 font-black text-xl shadow-2xl transition-all duration-500 group
+              relative w-full h-full min-h-[100px] rounded-2xl flex flex-col items-center justify-center gap-2 font-bold transition-all duration-300 shadow-sm
               ${callActive 
-                ? "bg-red-500 hover:bg-red-600 ring-4 ring-red-500/20" 
-                : "bg-gradient-to-br from-indigo-600 to-blue-600 hover:scale-[1.02] ring-4 ring-blue-500/20"}
-              ${loadingData || connecting || !documentContent ? "opacity-50 grayscale cursor-not-allowed" : ""}
+                ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" 
+                : "bg-primary text-primary-foreground hover:bg-primary/90"}
+              ${loadingData || connecting || !documentContent ? "opacity-50 cursor-not-allowed" : "hover:scale-[1.01]"}
             `}
           >
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            
             {connecting ? (
-              <Loader2 className="animate-spin text-white/50" size={32} />
+              <Loader2 className="animate-spin" size={28} />
             ) : callActive ? (
-              <Square fill="currentColor" size={28} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
+              <Square fill="currentColor" size={24} />
             ) : (
-              <Mic size={32} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] animate-bounce" />
+              <Mic size={28} />
             )}
             
-            <span className="text-white tracking-widest uppercase text-sm">
+            <span className="uppercase tracking-widest text-xs">
               {connecting ? "Connecting..." : callActive ? "End Session" : "Start Learning"}
             </span>
           </button>
         </div>
 
-        {/* Live Transcript - 8 columns */}
-        <div className="lg:col-span-8 bg-white/10 dark:bg-slate-900/40 backdrop-blur-3xl border border-white/20 dark:border-slate-800 p-6 rounded-[2.5rem] shadow-xl">
-          <div className="flex items-center justify-between mb-4 px-2">
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Live Transcript</span>
-            <div className="flex gap-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-              <div className="w-1.5 h-1.5 rounded-full bg-blue-500/50 animate-pulse delay-75" />
-            </div>
+        {/* Live Transcript */}
+        <div className="lg:col-span-8 bg-card border border-border p-5 rounded-2xl shadow-sm flex flex-col">
+          <div className="flex items-center justify-between mb-3 px-1">
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Live Transcript</span>
+            {callActive && (
+              <div className="flex gap-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                <div className="w-1.5 h-1.5 rounded-full bg-primary/40 animate-pulse delay-75" />
+              </div>
+            )}
           </div>
           
           <div 
             ref={scrollRef}
-            className="h-[100px] overflow-y-auto px-2 space-y-4 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 hover:scrollbar-thumb-blue-500 transition-colors"
+            className="h-[100px] overflow-y-auto px-1 space-y-3 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border hover:scrollbar-thumb-muted-foreground/20 transition-colors"
           >
             {messages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center opacity-30 text-slate-500 italic text-sm">
-                <p>Waiting for speech...</p>
+              <div className="h-full flex flex-col items-center justify-center text-muted-foreground/50 text-xs italic">
+                <p>{callActive ? "Listening for speech..." : "Voice transcript will appear here"}</p>
               </div>
             ) : (
               messages.map((msg, idx) => (
                 <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                   <div className={`
-                    max-w-[80%] px-5 py-2.5 rounded-2xl text-sm font-medium leading-relaxed
+                    max-w-[85%] px-4 py-2 rounded-xl text-sm leading-relaxed
                     ${msg.role === "user" 
-                      ? "bg-blue-600 text-white rounded-tr-none shadow-lg shadow-blue-500/10" 
-                      : "bg-white/60 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-white/20 dark:border-slate-700 rounded-tl-none shadow-sm"}
+                      ? "bg-primary text-primary-foreground rounded-tr-none shadow-sm" 
+                      : "bg-muted text-foreground rounded-tl-none"}
                   `}>
                     {msg.content}
                   </div>
@@ -470,7 +457,7 @@ export function VoiceChat({ documentId }: { documentId: string }) {
       <style jsx>{`
         @keyframes voice {
           0%, 100% { transform: scaleY(1); opacity: 0.5; }
-          50% { transform: scaleY(2); opacity: 1; }
+          50% { transform: scaleY(1.8); opacity: 1; }
         }
       `}</style>
     </div>

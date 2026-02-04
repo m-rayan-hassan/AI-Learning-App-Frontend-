@@ -90,7 +90,7 @@ export function QuizTab({ documentId }: { documentId: string }) {
     try {
       const res = await aiServices.generateQuiz(documentId, {
         difficulty: "Medium",
-        count,
+        numQuestions: count,
       });
       if (res) {
         setQuizzes([...quizzes, res]);
