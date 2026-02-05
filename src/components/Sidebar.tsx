@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { cn } from "@/utils/cn";
+import { useAuth } from "@/context/AuthContext";
 import { LayoutDashboard, FileText, Brain, GraduationCap, User, Settings, LogOut, Moon, Sun } from "lucide-react";
 
 const sidebarItems = [
@@ -16,6 +17,7 @@ const sidebarItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const { logout } = useAuth();
 
   return (
     <div className="flex bg-background h-screen flex-col border-r w-64 p-4 space-y-6">
@@ -23,7 +25,7 @@ export function Sidebar() {
          <div className="bg-primary/10 p-2 rounded-lg">
             <Brain className="h-6 w-6 text-primary" />
          </div>
-         <span className="font-bold text-xl tracking-tight">AI Learning</span>
+         <span className="font-bold text-xl tracking-tight">Aura Learn AI</span>
       </div>
 
       <nav className="flex-1 space-y-1">
@@ -55,14 +57,13 @@ export function Sidebar() {
             {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             {theme === "dark" ? "Light Mode" : "Dark Mode"}
          </button>
-         <Link
-            href="/login"
-             onClick={() => localStorage.removeItem("Token")}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-muted-foreground hover:bg-red-50 hover:text-red-500 transition-all font-medium text-sm"
+         <button
+            onClick={logout}
+            className="flex w-full items-center gap-3 px-4 py-3 rounded-xl text-muted-foreground hover:bg-red-50 hover:text-red-500 transition-all font-medium text-sm text-left"
             >
             <LogOut className="h-5 w-5" />
             Logout
-         </Link>
+         </button>
       </div>
     </div>
   );

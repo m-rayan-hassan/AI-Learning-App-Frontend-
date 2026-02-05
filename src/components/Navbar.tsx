@@ -39,18 +39,22 @@ export function Navbar() {
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <div className="w-full flex-1 md:w-auto md:flex-none">
-          </div>
+          <div className="w-full flex-1 md:w-auto md:flex-none"></div>
           <nav className="flex items-center space-x-2">
             {isAuthenticated ? (
-               <div className="flex items-center gap-4">
-                 <span className="text-sm font-medium hidden sm:block">
-                   Hi, {user?.username}
-                 </span>
-                 <Button variant="ghost" size="sm" onClick={logout}>
-                   Logout
-                 </Button>
-               </div>
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium hidden sm:block">
+                  Hi, {user?.username}
+                </span>
+                <Button variant="ghost" size="sm" onClick={logout}>
+                  Logout
+                </Button>
+                <Link href="/dashboard">
+                  <Button variant="ghost" size="sm">
+                    Dashboard
+                  </Button>
+                </Link>
+              </div>
             ) : (
               <>
                 <Link href="/login">
@@ -59,9 +63,7 @@ export function Navbar() {
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button size="sm">
-                    Get Started
-                  </Button>
+                  <Button size="sm">Get Started</Button>
                 </Link>
               </>
             )}

@@ -28,7 +28,7 @@ export const API_PATHS = {
     EXPLAIN_CONCEPT: "/api/ai/explain-concept",
     GET_CHAT_HISTORY: (documentId: string) =>
       `/api/ai/chat-history/${documentId}`,
-    GENERATE_VOICE_OVERVIEW: "/api/ai/generate-voice",
+    GENERATE_VOICE_OVERVIEW: "/api/ai/generate-voice-overview",
     GENERATE_PODCAST: "/api/ai/generate-podcast",
   },
 
