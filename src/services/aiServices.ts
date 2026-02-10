@@ -99,6 +99,17 @@ const generatePodcast = async (documentId: string) => {
     throw error.response?.data || { message: "Failed to generate podcast" };
   }
 };
+
+const generateVideo = async (documentId: string) => {
+  try {
+    const response = await axiosInstance.post(API_PATHS.AI.GENERATE_VIDEO, {
+      documentId
+    });
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || { message: "Failed to generate video" };
+  }
+}
 const aiServices = {
   generateFlashCards,
   generateQuiz,
@@ -108,5 +119,6 @@ const aiServices = {
   getChatHistory,
   generateVoiceOverview,
   generatePodcast,
+  generateVideo
 };
 export { aiServices };

@@ -12,9 +12,10 @@ import { UIActionsTab } from "@/components/feature-tabs/UIActionsTab";
 import { Button } from "@/components/ui/button";
 import { PDFViewer } from "@/components/PDFViewer"; // <--- IMPORT THIS
 import VoiceChat from "@/components/feature-tabs/VoiceChat";
+import VideoOverviewTab from "@/components/feature-tabs/VideoOverviewTab";
 
 // Simple Tabs usage
-const TABS = ["Preview", "Summary", "Chat", "Flashcards", "Quiz", "AI Actions", "Voice Chat"];
+const TABS = ["Preview", "Summary", "Chat", "Flashcards", "Quiz", "AI Actions", "Voice Chat", "Video Overview"];
 
 export default function DocumentViewPage() {
   // ... (keep all your existing state and useEffects the same) ...
@@ -137,6 +138,7 @@ export default function DocumentViewPage() {
           {activeTab === "Quiz" && <QuizTab documentId={id} />}
           {activeTab === "AI Actions" && <UIActionsTab documentId={id} />}
           {activeTab === "Voice Chat" && <VoiceChat documentId={id} />}
+          {activeTab === "Video Overview" && <VideoOverviewTab documentId={id}/>}
         </div>
       </div>
     </div>
