@@ -9,7 +9,6 @@ import {
   ChevronRight,
   Star,
   Trash2,
-  AlertCircle,
   Play,
   Layers,
   Calendar,
@@ -22,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-hot-toast";
 
 // --- Types ---
 
@@ -51,7 +51,6 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [error, setError] = useState("");
   const [count, setCount] = useState(5);
   const [reviewingCardId, setReviewingCardId] = useState<string | null>(null);
 
@@ -59,8 +58,6 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
 
   const loadFlashcards = async () => {
     try {
-      setError("");
-
       // 1. Load from LocalStorage for instant render
       const cached = localStorage.getItem(`flashcards_${documentId}`);
       if (cached) {
@@ -94,7 +91,7 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
       // Don't show error if we have cached data to show
       const cached = localStorage.getItem(`flashcards_${documentId}`);
       if (!cached) {
-        setError(err?.error || err?.message || "Failed to load flashcards");
+        toast.error(err?.error || err?.message || "Failed to load flashcards");
       }
     }
   };
@@ -108,13 +105,14 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
 
   const handleGenerate = async () => {
     setLoading(true);
-    setError("");
+    const toastId = toast.loading("Generating flashcards...");
     try {
       await aiServices.generateFlashCards(documentId, { count });
       await loadFlashcards(); // Reload to get the new set
+      toast.success("Flashcards generated!", { id: toastId });
     } catch (err: any) {
       console.error(err);
-      setError(err?.error || err?.message || "Failed to generate flashcards");
+      toast.error(err?.error || err?.message || "Failed to generate flashcards", { id: toastId });
     } finally {
       setLoading(false);
     }
@@ -124,14 +122,12 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
     setSelectedSet(set);
     setCurrentIndex(0);
     setIsFlipped(false);
-    setError("");
   };
 
   const handleBackToList = () => {
     setSelectedSet(null);
     setCurrentIndex(0);
     setIsFlipped(false);
-    setError("");
     setReviewingCardId(null);
   };
 
@@ -178,7 +174,7 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
       await flashcardsServices.toggleStar(cardId);
     } catch (err: any) {
       console.error("Toggle star failed", err);
-      setError("Failed to save star status. Reverting.");
+      toast.error("Failed to save star status");
 
       // 6. Revert on Error Only
       const revertedCard = { ...card, isStared: oldState };
@@ -266,7 +262,7 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
     if (!confirm("Are you sure you want to delete this flashcard set?")) return;
 
     setDeleting(true);
-    setError("");
+    const toastId = toast.loading("Deleting set...");
     try {
       await flashcardsServices.deleteFlashCardSet(setId);
 
@@ -280,9 +276,10 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
       });
 
       setSelectedSet(null);
+      toast.success("Set deleted", { id: toastId });
     } catch (err: any) {
       console.error(err);
-      setError(err?.error || err?.message || "Failed to delete set");
+      toast.error(err?.error || err?.message || "Failed to delete set", { id: toastId });
     } finally {
       setDeleting(false);
     }
@@ -326,23 +323,16 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
           </Button>
         </div>
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 p-3 mb-4 rounded-md text-sm flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 flex-shrink-0" />
-            <span>{error}</span>
-          </div>
-        )}
-
         {/* Card Area */}
-        <div className="flex-1 flex flex-col items-center justify-center relative perspective-1000">
-          <div className="w-full max-w-3xl aspect-[16/9] md:aspect-[2/1] relative">
+        <div className="flex-1 flex flex-col items-center justify-center relative perspective-1000 min-h-[300px] p-4 overflow-y-auto overflow-x-hidden">
+          <div className="w-full max-w-3xl aspect-[4/3] md:aspect-[16/9] lg:aspect-[2/1] relative">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentIndex}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                transition={{ duration: 0.2 }}
+                initial={{ opacity: 0, x: 50, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: -50, scale: 0.95 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
                 className="w-full h-full relative cursor-pointer group"
                 onClick={handleFlipCard}
               >
@@ -351,25 +341,24 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
                   animate={{ rotateY: isFlipped ? 180 : 0 }}
                   transition={{
                     type: "spring",
-                    stiffness: 400,
-                    damping: 30,
-                    mass: 0.8,
+                    stiffness: 260,
+                    damping: 20,
                   }}
                   style={{ transformStyle: "preserve-3d" }}
                 >
                   {/* FRONT */}
                   <div className="absolute inset-0 backface-hidden">
-                    <Card className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-gradient-to-br from-background to-secondary/20 border-2 hover:border-primary/20 transition-colors shadow-lg hover:shadow-xl rounded-3xl">
-                      <div className="absolute top-6 left-6 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                    <Card className="w-full h-full flex flex-col items-center justify-center p-6 md:p-10 text-center bg-gradient-to-br from-background to-secondary/30 border hover:border-primary/30 transition-all duration-300 shadow-lg hover:shadow-xl rounded-2xl md:rounded-3xl">
+                      <div className="absolute top-4 left-4 md:top-6 md:left-6 bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
                         Question
                       </div>
-                      <div className="overflow-y-auto max-h-full w-full scrollbar-thin">
-                        <h2 className="text-xl md:text-3xl font-bold leading-relaxed text-foreground">
+                      <div className="w-full h-full flex items-center justify-center overflow-y-auto scrollbar-thin p-2">
+                        <h2 className="text-lg md:text-2xl lg:text-3xl font-bold leading-relaxed text-foreground/90">
                           {currentCard.question}
                         </h2>
                       </div>
-                      <div className="absolute bottom-6 text-xs text-muted-foreground font-medium flex items-center gap-2 opacity-70 group-hover:opacity-100 transition-opacity">
-                        <RefreshCw className="h-3 w-3" /> Click to flip
+                      <div className="absolute bottom-4 text-[10px] md:text-xs text-muted-foreground font-medium flex items-center gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
+                        <RefreshCw className="h-3 w-3" /> Tap to flip
                       </div>
                     </Card>
                   </div>
@@ -379,12 +368,12 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
                     className="absolute inset-0 backface-hidden"
                     style={{ transform: "rotateY(180deg)" }}
                   >
-                    <Card className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-gradient-to-br from-primary/5 to-primary/10 border-2 border-primary/20 shadow-lg rounded-3xl">
-                      <div className="absolute top-6 left-6 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                    <Card className="w-full h-full flex flex-col items-center justify-center p-6 md:p-10 text-center bg-gradient-to-br from-primary/5 to-primary/10 border-2 border-primary/20 shadow-lg rounded-2xl md:rounded-3xl relative">
+                       <div className="absolute top-4 left-4 md:top-6 md:left-6 bg-primary text-primary-foreground px-3 py-1 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider shadow-sm">
                         Answer
                       </div>
-                      <div className="overflow-y-auto max-h-full w-full scrollbar-thin">
-                        <p className="text-lg md:text-2xl font-medium leading-relaxed text-foreground/90">
+                      <div className="w-full h-full flex items-center justify-center overflow-y-auto scrollbar-thin p-2">
+                        <p className="text-base md:text-xl lg:text-2xl font-medium leading-relaxed text-foreground/90">
                           {currentCard.answer}
                         </p>
                       </div>
@@ -498,13 +487,6 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
           />
         </div>
       </div>
-
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-md text-sm flex items-start gap-2">
-          <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
 
       <div className="overflow-y-auto flex-1">
         {flashcardSets.length === 0 ? (

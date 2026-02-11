@@ -10,7 +10,6 @@ import {
   Trash2,
   ChevronLeft,
   ChevronRight,
-  AlertCircle,
   Trophy,
   Play,
   BarChart3,
@@ -23,6 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/cn";
+import { toast } from "react-hot-toast";
 
 interface QuizResult {
   questionIndex: number;
@@ -56,13 +56,10 @@ export function QuizTab({ documentId }: { documentId: string }) {
   const [submitted, setSubmitted] = useState(false);
   const [quizResults, setQuizResults] = useState<QuizData | null>(null);
   const [count, setCount] = useState(5);
-  const [error, setError] = useState("");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const loadQuizzes = async () => {
     try {
-      setError("");
-
       // 1. Try LocalStorage first
       const cached = localStorage.getItem(`quizzes_${documentId}`);
       if (cached) {
@@ -75,8 +72,7 @@ export function QuizTab({ documentId }: { documentId: string }) {
       localStorage.setItem(`quizzes_${documentId}`, JSON.stringify(data));
     } catch (err: any) {
       console.error(err);
-      const errorMsg = err?.error || err?.message || "Failed to load quizzes";
-      setError(errorMsg);
+      toast.error(err?.error || err?.message || "Failed to load quizzes");
     }
   };
 
@@ -86,7 +82,7 @@ export function QuizTab({ documentId }: { documentId: string }) {
 
   const handleGenerate = async () => {
     setLoading(true);
-    setError("");
+    const toastId = toast.loading("Generating quiz...");
     try {
       const res = await aiServices.generateQuiz(documentId, {
         difficulty: "Medium",
@@ -98,10 +94,11 @@ export function QuizTab({ documentId }: { documentId: string }) {
         setCurrentQuestionIndex(0);
       }
       await loadQuizzes();
+      toast.success("Quiz generated successfully!", { id: toastId });
     } catch (err: any) {
       console.error(err);
       const errorMsg = err?.error || err?.message || "Failed to generate quiz";
-      setError(errorMsg);
+      toast.error(errorMsg, { id: toastId });
     } finally {
       setLoading(false);
     }
@@ -110,7 +107,7 @@ export function QuizTab({ documentId }: { documentId: string }) {
   const handleSelectQuiz = async (quiz: any) => {
     // Check if quiz is already completed
     if (quiz.completedAt) {
-      setError("This quiz has already been completed. You cannot retake it.");
+      toast.error("This quiz has already been completed. You cannot retake it.");
       return;
     }
 
@@ -118,7 +115,6 @@ export function QuizTab({ documentId }: { documentId: string }) {
     setAnswers({});
     setSubmitted(false);
     setQuizResults(null);
-    setError("");
     setCurrentQuestionIndex(0);
   };
 
@@ -150,7 +146,7 @@ export function QuizTab({ documentId }: { documentId: string }) {
   const handleSubmit = async () => {
     if (!activeQuiz || !areAllAnswered()) return;
     setSubmitting(true);
-    setError("");
+    const toastId = toast.loading("Submitting quiz...");
 
     try {
       const formattedAnswers = Object.entries(answers).map(
@@ -171,10 +167,12 @@ export function QuizTab({ documentId }: { documentId: string }) {
       const data = freshQuizzes?.quizzes || freshQuizzes || [];
       setQuizzes(data);
       localStorage.setItem(`quizzes_${documentId}`, JSON.stringify(data));
+      
+      toast.success("Quiz submitted!", { id: toastId });
     } catch (err: any) {
       console.error(err);
       const errorMsg = err?.error || err?.message || "Failed to submit quiz";
-      setError(errorMsg);
+      toast.error(errorMsg, { id: toastId });
     } finally {
       setSubmitting(false);
     }
@@ -184,7 +182,7 @@ export function QuizTab({ documentId }: { documentId: string }) {
     if (!confirm("Are you sure you want to delete this quiz?")) return;
 
     setDeleting(true);
-    setError("");
+    const toastId = toast.loading("Deleting quiz...");
     try {
       await quizService.deleteQuiz(quizId);
       
@@ -200,10 +198,11 @@ export function QuizTab({ documentId }: { documentId: string }) {
       setSubmitted(false);
       setQuizResults(null);
       setCurrentQuestionIndex(0);
+      toast.success("Quiz deleted", { id: toastId });
     } catch (err: any) {
       console.error(err);
       const errorMsg = err?.error || err?.message || "Failed to delete quiz";
-      setError(errorMsg);
+      toast.error(errorMsg, { id: toastId });
     } finally {
       setDeleting(false);
     }
@@ -214,7 +213,6 @@ export function QuizTab({ documentId }: { documentId: string }) {
     setAnswers({});
     setSubmitted(false);
     setQuizResults(null);
-    setError("");
     setCurrentQuestionIndex(0);
   };
 
@@ -404,14 +402,6 @@ export function QuizTab({ documentId }: { documentId: string }) {
           </Button>
         </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 p-3 m-4 rounded-md text-sm flex items-start gap-2">
-            <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-            <span>{error}</span>
-          </div>
-        )}
-
         {/* Progress Bar */}
         <div className="px-4 pt-4">
           <div className="flex items-center justify-between mb-2">
@@ -434,16 +424,16 @@ export function QuizTab({ documentId }: { documentId: string }) {
           </div>
         </div>
 
-        {/* Single Question (No Scroll) */}
-        <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
+        {/* Single Question (Scrollable) */}
+        <div className="flex-1 flex flex-col items-center justify-start p-4 overflow-y-auto">
           {currentQuestion && (
-            <Card className="w-full">
-              <CardHeader>
-                <CardTitle className="text-lg">
+            <Card className="w-full max-w-3xl my-auto animate-in fade-in slide-in-from-bottom-4 duration-300 border-none shadow-md bg-card/50 backdrop-blur-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg md:text-xl leading-relaxed">
                   {currentQuestion.question}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-4 pt-2">
                 <div className="grid gap-3">
                   {currentQuestion.options.map(
                     (opt: string, optIdx: number) => (
@@ -451,25 +441,26 @@ export function QuizTab({ documentId }: { documentId: string }) {
                         key={optIdx}
                         onClick={() => handleAnswerSelect(opt)}
                         className={cn(
-                          "flex items-center space-x-2 rounded-md border p-4 cursor-pointer hover:bg-muted/50 transition-colors",
+                          "flex items-center space-x-3 rounded-xl border p-4 cursor-pointer transition-all duration-200",
+                          "hover:bg-muted/60 hover:border-primary/30",
                           answers[currentQuestionIndex.toString()] === opt
-                            ? "border-primary bg-primary/5 border-2"
-                            : "",
+                            ? "border-primary bg-primary/10 shadow-sm"
+                            : "bg-background/50",
                         )}
                       >
                         <div
                           className={cn(
-                            "h-5 w-5 rounded-full border-2 border-primary flex items-center justify-center flex-shrink-0",
-                            answers[currentQuestionIndex.toString()] === opt
-                              ? "bg-primary"
-                              : "",
+                            "h-5 w-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors",
+                             answers[currentQuestionIndex.toString()] === opt
+                              ? "border-primary bg-primary"
+                              : "border-muted-foreground/30"
                           )}
                         >
                           {answers[currentQuestionIndex.toString()] === opt && (
-                            <div className="h-2 w-2 rounded-full bg-white" />
+                            <div className="h-2 w-2 rounded-full bg-primary-foreground" />
                           )}
                         </div>
-                        <span className="text-base">{opt}</span>
+                        <span className="text-sm md:text-base leading-snug">{opt}</span>
                       </div>
                     ),
                   )}
@@ -552,13 +543,6 @@ export function QuizTab({ documentId }: { documentId: string }) {
         </div>
       </div>
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-md text-sm flex items-start gap-2">
-          <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
-
       <div className="overflow-y-auto flex-1">
         {quizzes.length === 0 ? (
           <div className="text-center text-muted-foreground py-10">
@@ -636,8 +620,7 @@ export function QuizTab({ documentId }: { documentId: string }) {
                           setSubmitted(true);
                         } catch (err: any) {
                           console.error(err);
-                          const errorMsg = err?.error || err?.message || "Failed to load results";
-                          setError(errorMsg);
+                          toast.error(err?.error || err?.message || "Failed to load results");
                         }
                       }}
                     >

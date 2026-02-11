@@ -24,6 +24,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.1",
+    "react-hot-toast": "^2.6.0",
     "react-markdown": "^7.1.2",
     "react-pdf": "^10.3.0",
     "remark-gfm": "^3.0.1",

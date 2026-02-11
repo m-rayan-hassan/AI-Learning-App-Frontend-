@@ -4,11 +4,12 @@ import './globals.css';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/context/AuthContext";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Aura Learn AI",
+  title: "Cognivio AI",
   description: "Your personal AI learning assistant",
 };
 
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <AuthProvider>
               {children}
             </AuthProvider>
+            <Toaster position="bottom-right" />
           </GoogleOAuthProvider>
         </ThemeProvider>
       </body>

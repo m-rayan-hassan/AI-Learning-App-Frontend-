@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, Mic, Headphones, Lightbulb, PlayCircle, FileAudio, Send } from "lucide-react";
 import { aiServices } from "@/services/aiServices";
+import { toast } from "react-hot-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
@@ -55,28 +56,36 @@ export function UIActionsTab({ documentId }: { documentId: string }) {
   const handleVoice = async (regenerate = false) => {
     if (voiceState.url && !regenerate) return;
     setVoiceState((prev) => ({ ...prev, loading: true }));
+    const toastId = toast.loading("Generating voice overview...");
+    
     try {
       const res = await aiServices.generateVoiceOverview(documentId);
       const url = res.voiceOveviewUrl || res.voiceOverviewUrl;
       setVoiceState({ loading: false, url: url });
       localStorage.setItem(`voice_${documentId}`, url);
-    } catch (err) {
+      toast.success("Voice overview ready!", { id: toastId });
+    } catch (err: any) {
       console.error(err);
       setVoiceState((prev) => ({ ...prev, loading: false }));
+      toast.error(err.message || "Failed to generate voice overview", { id: toastId });
     }
   };
 
   const handlePodcast = async (regenerate = false) => {
     if (podcastState.url && !regenerate) return;
     setPodcastState((prev) => ({ ...prev, loading: true }));
+    const toastId = toast.loading("Generating podcast...");
+
     try {
       const res = await aiServices.generatePodcast(documentId);
       const url = res.podcast_url || res.podcastUrl;
       setPodcastState({ loading: false, url: url });
       localStorage.setItem(`podcast_${documentId}`, url);
-    } catch (err) {
+      toast.success("Podcast generated!", { id: toastId });
+    } catch (err: any) {
       console.error(err);
       setPodcastState((prev) => ({ ...prev, loading: false }));
+      toast.error(err.message || "Failed to generate podcast", { id: toastId });
     }
   };
 
@@ -85,6 +94,8 @@ export function UIActionsTab({ documentId }: { documentId: string }) {
     if (!conceptState.input) return;
 
     setConceptState((prev) => ({ ...prev, loading: true }));
+    const toastId = toast.loading("Explaining concept...");
+
     try {
       const res = await aiServices.explainConcept(documentId, conceptState.input);
       setConceptState((prev) => ({ 
@@ -92,9 +103,11 @@ export function UIActionsTab({ documentId }: { documentId: string }) {
           loading: false, 
           text: res.explaination || res.explanation 
       }));
-    } catch (err) {
+      toast.success("Explanation generated!", { id: toastId });
+    } catch (err: any) {
       console.error(err);
       setConceptState((prev) => ({ ...prev, loading: false }));
+      toast.error(err.message || "Failed to explain concept", { id: toastId });
     }
   };
 

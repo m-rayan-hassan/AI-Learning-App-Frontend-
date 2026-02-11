@@ -25,7 +25,7 @@ export function Sidebar() {
          <div className="bg-primary/10 p-2 rounded-lg">
             <Brain className="h-6 w-6 text-primary" />
          </div>
-         <span className="font-bold text-xl tracking-tight">Aura Learn AI</span>
+         <span className="font-bold text-xl tracking-tight">Cognivio AI</span>
       </div>
 
       <nav className="flex-1 space-y-1">

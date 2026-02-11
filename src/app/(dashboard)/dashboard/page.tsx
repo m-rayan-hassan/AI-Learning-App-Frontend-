@@ -112,7 +112,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="grid gap-4">
              <Link href="/documents">
-                <Button className="w-full">Upload Document</Button>
+                <Button className="w-full">New Document</Button>
              </Link>
           </CardContent>
         </Card>

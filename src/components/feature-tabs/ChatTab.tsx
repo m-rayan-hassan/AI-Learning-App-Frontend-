@@ -7,6 +7,7 @@ import { Loader2, Send } from "lucide-react";
 import { aiServices } from "@/services/aiServices";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { toast } from "react-hot-toast";
 
 export function ChatTab({ documentId }: { documentId: string }) {
   // Allow flexible roles (e.g., 'assistant', 'model', 'ai')
@@ -71,10 +72,8 @@ export function ChatTab({ documentId }: { documentId: string }) {
         return newMessages;
       });
     } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { role: "ai", content: "Error: Failed to get response." },
-      ]);
+      toast.error("Failed to get response. Please try again.");
+      // Optional: keep the user message but remove the loading state is handled in finally
     } finally {
       setLoading(false);
     }

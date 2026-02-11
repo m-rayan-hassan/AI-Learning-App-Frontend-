@@ -7,18 +7,17 @@ import { aiServices } from "@/services/aiServices";
 import documentServices from "@/services/documentServices";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { toast } from "react-hot-toast";
 
 export function SummaryTab({ documentId }: { documentId: string }) {
   const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   // Fetch document on mount to check if summary exists
   useEffect(() => {
     const loadSummary = async () => {
       try {
         setLoading(true);
-        setError("");
 
         // 1. Try LocalStorage first
         const cached = localStorage.getItem(`summary_${documentId}`);
@@ -36,7 +35,7 @@ export function SummaryTab({ documentId }: { documentId: string }) {
         }
       } catch (err: any) {
         console.error("Error loading summary:", err);
-        setError(err.message || "Failed to load summary");
+        toast.error(err.message || "Failed to load summary");
       } finally {
         setLoading(false);
       }
@@ -47,14 +46,15 @@ export function SummaryTab({ documentId }: { documentId: string }) {
 
   const handleGenerate = async () => {
     setLoading(true);
-    setError("");
+    const toastId = toast.loading("Generating summary...");
     try {
       const res = await aiServices.generateSummary(documentId);
       setSummary(res.summary);
       localStorage.setItem(`summary_${documentId}`, res.summary);
+      toast.success("Summary generated!", { id: toastId });
     } catch (err: any) {
       console.error("Error generating summary:", err);
-      setError(err.message || "Failed to generate summary");
+      toast.error(err.message || "Failed to generate summary", { id: toastId });
     } finally {
       setLoading(false);
     }
@@ -73,11 +73,7 @@ export function SummaryTab({ documentId }: { documentId: string }) {
           {summary ? "Regenerate" : "Generate"} Summary
         </Button>
       </div>
-      {error && (
-        <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 p-3 rounded text-sm">
-          {error}
-        </div>
-      )}
+      
       <div className="flex-1 p-4 border rounded-md bg-muted/20 overflow-y-auto">
         {summary ? (
           <ReactMarkdown
