@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Plus, FileText, Trash2, GraduationCap, Brain, Upload } from "lucide-react";
+import { Loader2, FileText, Trash2, GraduationCap, Brain, Upload } from "lucide-react";
 import documentServices from "@/services/documentServices";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
@@ -200,19 +200,29 @@ export default function DocumentsPage() {
       {loading ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="flex flex-col space-y-3">
-              <Skeleton className="h-[200px] w-full rounded-xl" />
+            <div key={i} className="rounded-xl border border-border/50 bg-card p-5 space-y-4">
+              <div className="flex justify-between items-start">
+                <Skeleton className="h-10 w-10 rounded-xl" />
+                <Skeleton className="h-8 w-8 rounded-lg" />
+              </div>
               <div className="space-y-2">
-                <Skeleton className="h-4 w-[250px]" />
-                <Skeleton className="h-4 w-[200px]" />
+                <Skeleton className="h-5 w-3/4" />
+                <Skeleton className="h-3.5 w-1/2" />
+              </div>
+              <div className="flex gap-2">
+                <Skeleton className="h-6 w-16 rounded-full" />
+                <Skeleton className="h-6 w-16 rounded-full" />
+              </div>
+              <div className="border-t pt-4 mt-2">
+                <Skeleton className="h-9 w-full rounded-lg" />
               </div>
             </div>
           ))}
         </div>
       ) : documents.length === 0 ? (
         <div className="flex flex-col items-center justify-center min-h-[400px] border-2 border-dashed rounded-xl p-8 text-center animate-in fade-in-50">
-            <div className="bg-primary/10 p-4 rounded-full mb-4">
-                <FileText className="h-8 w-8 text-primary" />
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-4 rounded-2xl mb-4 shadow-lg shadow-blue-500/20">
+                <FileText className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-lg font-semibold">No documents yet</h3>
             <p className="text-muted-foreground max-w-sm mt-2 mb-6">
@@ -225,11 +235,12 @@ export default function DocumentsPage() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
              {documents.map((doc) => (
-                <Card key={doc._id} className="group flex flex-col justify-between hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/50 relative overflow-hidden bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="pb-2">
+                <Card key={doc._id} className="group flex flex-col justify-between hover:shadow-xl transition-all duration-300 border border-border/50 hover:border-primary/30 relative overflow-hidden bg-card">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.03] to-purple-500/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <CardHeader className="pb-2 relative">
                         <div className="flex justify-between items-start mb-2">
-                             <div className="h-10 w-10 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-lg flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300">
-                                  <FileText className="h-5 w-5" />
+                             <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300">
+                                  <FileText className="h-5 w-5 text-white" />
                              </div>
                              <Button 
                                 variant="ghost" 
@@ -245,25 +256,25 @@ export default function DocumentsPage() {
                             {(doc.fileSize / 1024).toFixed(1)} KB • {new Date(doc.createdAt).toLocaleDateString()}
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="pb-2">
+                    <CardContent className="pb-2 relative">
                         <div className="flex gap-2 flex-wrap">
-                            <div className="px-2.5 py-1 bg-purple-500/10 text-purple-600 dark:text-purple-300 text-xs rounded-full font-medium flex items-center gap-1.5 border border-purple-500/20">
+                            <div className="px-2.5 py-1 bg-gradient-to-r from-purple-500/15 to-purple-500/10 text-purple-700 dark:text-purple-300 text-xs rounded-full font-medium flex items-center gap-1.5 border border-purple-500/20">
                                 <GraduationCap className="h-3 w-3" />
-                                {doc.flashcardCount || 0}
+                                {doc.flashcardCount || 0} Cards
                             </div>
-                            <div className="px-2.5 py-1 bg-green-500/10 text-green-600 dark:text-green-300 text-xs rounded-full font-medium flex items-center gap-1.5 border border-green-500/20">
+                            <div className="px-2.5 py-1 bg-gradient-to-r from-emerald-500/15 to-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-xs rounded-full font-medium flex items-center gap-1.5 border border-emerald-500/20">
                                 <Brain className="h-3 w-3" />
-                                {doc.quizCount || 0}
+                                {doc.quizCount || 0} Quizzes
                             </div>
                         </div>
                     </CardContent>
-                    <CardFooter className="pt-4 border-t bg-muted/20 mt-2">
+                    <CardFooter className="pt-4 border-t border-border/50 mt-2 relative">
                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground w-full">
-                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                             Ready to learn
                          </div>
                          <Link href={`/documents/${doc._id}`} className="w-full ml-auto">
-                            <Button size="sm" className="w-full bg-background hover:bg-primary hover:text-primary-foreground text-foreground border shadow-sm transition-all duration-300">
+                            <Button size="sm" className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-sm hover:shadow-md transition-all duration-300">
                                 View Studio
                             </Button>
                          </Link>

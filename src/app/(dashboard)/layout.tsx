@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Sidebar } from "@/components/Sidebar";
-import { Loader2 } from "lucide-react";
+import { Brain } from "lucide-react";
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
@@ -25,8 +25,25 @@ export default function DashboardLayout({
 
   if (loading) {
     return (
-        <div className="flex h-screen items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="flex h-screen items-center justify-center bg-background">
+            <div className="flex flex-col items-center gap-4">
+                <div className="animate-brand-pulse">
+                    <div className="h-14 w-14 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg shadow-primary/25">
+                        <Brain className="h-7 w-7 text-primary-foreground" />
+                    </div>
+                </div>
+                <div className="flex gap-1.5">
+                    {[0, 1, 2].map((i) => (
+                        <div
+                            key={i}
+                            className="h-2 w-2 rounded-full bg-primary/60"
+                            style={{
+                                animation: `bounce-dot 1.4s ease-in-out ${i * 0.16}s infinite both`,
+                            }}
+                        />
+                    ))}
+                </div>
+            </div>
         </div>
     )
   }
@@ -41,7 +58,7 @@ export default function DashboardLayout({
       <div className="flex flex-col flex-1 w-0 overflow-hidden">
         {/* Mobile Header */}
         <div className="md:hidden border-b p-4 flex items-center justify-between bg-background">
-            <div className="font-bold text-lg text-primary">Aura Learn</div>
+            <div className="font-bold text-lg text-primary">Cognivio AI</div>
             <Sheet>
                 <SheetTrigger>
                     <Menu className="h-6 w-6" />

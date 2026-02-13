@@ -27,7 +27,50 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <AuthProvider>
               {children}
             </AuthProvider>
-            <Toaster position="bottom-right" />
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: 'hsl(var(--card))',
+                  color: 'hsl(var(--card-foreground))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '12px',
+                  padding: '14px 18px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  boxShadow: '0 10px 40px -10px rgba(0,0,0,0.2), 0 0 0 1px hsl(var(--border))',
+                  backdropFilter: 'blur(12px)',
+                },
+                success: {
+                  iconTheme: {
+                    primary: '#10b981',
+                    secondary: 'white',
+                  },
+                  style: {
+                    borderLeft: '4px solid #10b981',
+                  },
+                },
+                error: {
+                  iconTheme: {
+                    primary: '#ef4444',
+                    secondary: 'white',
+                  },
+                  style: {
+                    borderLeft: '4px solid #ef4444',
+                  },
+                },
+                loading: {
+                  iconTheme: {
+                    primary: 'hsl(var(--primary))',
+                    secondary: 'hsl(var(--muted))',
+                  },
+                  style: {
+                    borderLeft: '4px solid hsl(var(--primary))',
+                  },
+                },
+              }}
+            />
           </GoogleOAuthProvider>
         </ThemeProvider>
       </body>

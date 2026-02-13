@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, BookOpen, GraduationCap } from "lucide-react";
+import { BookOpen, GraduationCap, Layers, Calendar } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import flashcardsServices from "@/services/flashcardsServices";
 import Link from "next/link";
 
@@ -26,7 +27,39 @@ export default function FlashcardsPage() {
   }, []);
 
   if (loading) {
-      return <div className="flex h-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+    return (
+      <div className="space-y-6">
+        {/* Header skeleton */}
+        <div className="space-y-2">
+          <Skeleton className="h-9 w-40" />
+          <Skeleton className="h-5 w-72" />
+        </div>
+
+        {/* Card grid skeleton */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="rounded-xl border border-border/50 bg-card p-5 space-y-4">
+              <div className="flex justify-between items-start">
+                <Skeleton className="h-10 w-10 rounded-xl" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-3/4" />
+                <Skeleton className="h-3.5 w-1/2" />
+              </div>
+              <div className="flex gap-2">
+                <Skeleton className="h-7 w-20 rounded-md" />
+                <Skeleton className="h-7 w-24 rounded-md" />
+              </div>
+              <Skeleton className="h-1.5 w-full rounded-full" />
+              <div className="border-t pt-4 mt-2">
+                <Skeleton className="h-9 w-full rounded-lg" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -40,52 +73,61 @@ export default function FlashcardsPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {flashcardSets.length === 0 ? (
-            <div className="col-span-full flex flex-col items-center justify-center py-10 text-center gap-4">
-                 <div className="h-16 w-16 bg-muted rounded-full flex items-center justify-center">
-                     <BookOpen className="h-8 w-8 text-muted-foreground" />
+            <div className="col-span-full flex flex-col items-center justify-center min-h-[400px] border-2 border-dashed rounded-xl p-8 text-center animate-in fade-in-50">
+                 <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-4 rounded-2xl mb-4 shadow-lg shadow-purple-500/20">
+                     <BookOpen className="h-8 w-8 text-white" />
                  </div>
                  <div className="space-y-1">
                     <h3 className="font-semibold text-lg">No flashcards yet</h3>
                     <p className="text-muted-foreground text-sm max-w-sm">Go to a document and generate some flashcards to start studying!</p>
                  </div>
-                 <Link href="/documents">
+                 <Link href="/documents" className="mt-6">
                     <Button>Go to Documents</Button>
                  </Link>
             </div>
         ) : (
             flashcardSets.map((set: any, i) => (
-                <Card key={set._id || i} className="flex flex-col justify-between hover:shadow-md transition-all group border-none shadow-sm relative overflow-hidden">
-                    <CardHeader className="pb-2">
-                        <div className="h-10 w-10 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center mb-2 text-purple-600">
-                             <GraduationCap className="h-5 w-5" />
+                <Card key={set._id || i} className="group flex flex-col justify-between hover:shadow-xl transition-all duration-300 border border-border/50 hover:border-primary/30 relative overflow-hidden bg-card">
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/[0.03] to-blue-500/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <CardHeader className="pb-2 relative">
+                        <div className="flex justify-between items-start mb-2">
+                            <div className="h-10 w-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md shadow-purple-500/20 group-hover:scale-110 transition-transform duration-300">
+                                 <GraduationCap className="h-5 w-5 text-white" />
+                            </div>
+                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                <Calendar className="h-3 w-3" />
+                                {new Date(set.createdAt || Date.now()).toLocaleDateString()}
+                            </div>
                         </div>
                         <CardTitle className="truncate text-base" title={set.title || "Untitled Set"}>
                             {set.documentId?.title || "Flashcard Set"}
                         </CardTitle>
-                        <CardDescription>Created {new Date(set.createdAt || Date.now()).toLocaleDateString()}</CardDescription>
+                        <CardDescription className="text-xs">
+                            Created {new Date(set.createdAt || Date.now()).toLocaleDateString()}
+                        </CardDescription>
                     </CardHeader>
-                     <CardContent className="pb-2">
-                        <div className="flex items-center gap-2">
-                            <span className="px-2 py-1 bg-muted rounded-md text-xs font-medium">
+                     <CardContent className="pb-2 relative">
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <div className="px-2.5 py-1 bg-gradient-to-r from-purple-500/15 to-purple-500/10 text-purple-700 dark:text-purple-300 text-xs rounded-full font-medium flex items-center gap-1.5 border border-purple-500/20">
+                                <Layers className="h-3 w-3" />
                                 {set.cards?.length || 0} Cards
-                            </span>
-                             {/* Mock Progress - ideally backend provides this */}
-                             <span className="px-2 py-1 bg-green-50 text-green-600 dark:bg-green-900/20 text-xs font-medium rounded-md">
+                            </div>
+                             <div className="px-2.5 py-1 bg-gradient-to-r from-emerald-500/15 to-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-xs rounded-full font-medium flex items-center gap-1.5 border border-emerald-500/20">
                                  0% Mastered
-                             </span>
+                             </div>
                         </div>
-                         {/* Progress Bar Mock */}
-                         <div className="w-full bg-muted h-1.5 rounded-full mt-3 overflow-hidden">
-                             <div className="bg-green-500 h-full w-0" />
+                         {/* Progress Bar */}
+                         <div className="w-full bg-muted/60 h-1.5 rounded-full mt-3 overflow-hidden">
+                             <div className="bg-gradient-to-r from-purple-500 to-purple-600 h-full w-0 rounded-full transition-all duration-500" />
                          </div>
                          <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
                              <span>Progress</span>
                              <span>0/{set.cards?.length || 0} reviewed</span>
                          </div>
                     </CardContent>
-                    <CardFooter className="pt-4 border-t flex justify-center bg-muted/20">
+                    <CardFooter className="pt-4 border-t border-border/50 mt-2 relative">
                          <Link href={`/documents/${set.documentId?._id || set.documentId}`} className="w-full">
-                            <Button className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors" variant="secondary">
+                            <Button className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-sm hover:shadow-md transition-all duration-300">
                                 <BookOpen className="mr-2 h-4 w-4" />
                                 Study Now
                             </Button>
