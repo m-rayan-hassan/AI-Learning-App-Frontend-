@@ -319,7 +319,7 @@ export function VoiceChat({ documentId }: { documentId: string }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Assistant Perspective */}
-        <div className="relative aspect-square md:aspect-auto md:h-[400px] flex flex-col items-center justify-center p-8 bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+        <div className="relative min-h-[200px] sm:min-h-[280px] lg:h-[350px] flex flex-col items-center justify-center p-6 sm:p-8 bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
           <div className={`absolute inset-0 bg-primary/5 transition-opacity duration-1000 ${isSpeaking ? "opacity-100" : "opacity-0"}`} />
           
           <div className="relative z-10 flex flex-col items-center">
@@ -328,17 +328,17 @@ export function VoiceChat({ documentId }: { documentId: string }) {
                 <div className="absolute -inset-6 bg-primary/20 rounded-full blur-2xl animate-pulse" />
               )}
               <div className={`
-                relative w-32 h-32 rounded-full bg-primary p-1 shadow-lg transition-all duration-500
+                relative w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full bg-primary p-1 shadow-lg transition-all duration-500
                 ${isSpeaking ? "scale-105" : "scale-100"}
               `}>
                 <div className="w-full h-full rounded-full bg-background flex items-center justify-center border-2 border-primary/20 overflow-hidden">
-                   <Bot size={56} className={`text-primary transition-all duration-500 ${isSpeaking ? "scale-110 drop-shadow-[0_0_8px_rgba(var(--primary),0.5)]" : "opacity-90"}`} />
+                   <Bot size={40} className={`text-primary transition-all duration-500 sm:[&]:!w-14 sm:[&]:!h-14 ${isSpeaking ? "scale-110 drop-shadow-[0_0_8px_rgba(var(--primary),0.5)]" : "opacity-90"}`} />
                 </div>
               </div>
             </div>
 
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-foreground">Genius AI</h3>
+              <h3 className="text-lg sm:text-2xl font-bold text-foreground">Genius AI</h3>
               <div className={`
                 mt-3 inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-300
                 ${isSpeaking 
@@ -361,11 +361,11 @@ export function VoiceChat({ documentId }: { documentId: string }) {
         </div>
 
         {/* User Perspective */}
-        <div className="relative aspect-square md:aspect-auto md:h-[400px] flex flex-col items-center justify-center p-8 bg-muted/30 border border-border rounded-2xl">
+        <div className="relative min-h-[200px] sm:min-h-[280px] lg:h-[350px] flex flex-col items-center justify-center p-6 sm:p-8 bg-muted/30 border border-border rounded-2xl">
           <div className="relative z-10 flex flex-col items-center">
             <div className="relative group mb-6">
               <div className="absolute -inset-1 bg-gradient-to-tr from-primary to-purple-500 rounded-full opacity-20 blur-sm" />
-              <div className="relative w-32 h-32 rounded-full bg-background border-2 border-border shadow-md overflow-hidden flex items-center justify-center">
+              <div className="relative w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full bg-background border-2 border-border shadow-md overflow-hidden flex items-center justify-center">
                 {userProfileImage ? (
                   <img src={userProfileImage} alt="User" className="w-full h-full object-cover" />
                 ) : (
@@ -375,7 +375,7 @@ export function VoiceChat({ documentId }: { documentId: string }) {
             </div>
 
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-foreground">
+              <h3 className="text-lg sm:text-2xl font-bold text-foreground">
                 {username || "Scholar"}
               </h3>
               <div className="mt-3 px-4 py-1.5 rounded-full bg-background border border-border text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
@@ -395,7 +395,7 @@ export function VoiceChat({ documentId }: { documentId: string }) {
             onClick={toggleCall}
             disabled={loadingData || connecting || !documentContent}
             className={`
-              relative w-full h-full min-h-[100px] rounded-2xl flex flex-col items-center justify-center gap-2 font-bold transition-all duration-300 shadow-sm
+              relative w-full h-full min-h-[70px] sm:min-h-[100px] rounded-2xl flex flex-col items-center justify-center gap-2 font-bold transition-all duration-300 shadow-sm
               ${callActive 
                 ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" 
                 : "bg-primary text-primary-foreground hover:bg-primary/90"}
@@ -430,7 +430,7 @@ export function VoiceChat({ documentId }: { documentId: string }) {
           
           <div 
             ref={scrollRef}
-            className="h-[100px] overflow-y-auto px-1 space-y-3 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border hover:scrollbar-thumb-muted-foreground/20 transition-colors"
+            className="h-[80px] sm:h-[100px] overflow-y-auto px-1 space-y-3 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border hover:scrollbar-thumb-muted-foreground/20 transition-colors"
           >
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-muted-foreground/50 text-xs italic">

@@ -427,7 +427,7 @@ export function QuizTab({ documentId }: { documentId: string }) {
         {/* Single Question (Scrollable) */}
         <div className="flex-1 flex flex-col items-center justify-start p-4 overflow-y-auto">
           {currentQuestion && (
-            <Card className="w-full max-w-3xl my-auto animate-in fade-in slide-in-from-bottom-4 duration-300 border-none shadow-md bg-card/50 backdrop-blur-sm">
+            <Card className="w-full max-w-3xl mt-2 animate-in fade-in slide-in-from-bottom-4 duration-300 border-none shadow-md bg-card/50 backdrop-blur-sm">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg md:text-xl leading-relaxed">
                   {currentQuestion.question}

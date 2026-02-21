@@ -53,4 +53,12 @@ export const API_PATHS = {
   PROGRESS: {
     GET_DASHBOARD: "/api/progress/dashboard",
   },
+
+  PAYMENTS: {
+    SUBSCRIBE: "/api/payments/subscribe",
+    GET_SUBSCRIPTION: "/api/payments/subscription",
+    PREVIEW_UPGRADE: "/api/payments/preview-upgrade",
+    CONFIRM_UPGRADE: "/api/payments/confirm-upgrade",
+    CANCEL_SUBSCRIPTION: "/api/payments/cancel",
+  },
 };

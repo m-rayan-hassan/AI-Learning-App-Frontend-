@@ -90,7 +90,7 @@ const VideoOverviewTab = ({ documentId }: { documentId: string }) => {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="flex flex-col items-center justify-center h-[300px] sm:h-[450px] bg-muted/10 rounded-2xl border-2 border-dashed border-muted-foreground/10"
+                                className="flex flex-col items-center justify-center h-[200px] sm:h-[300px] lg:h-[400px] bg-muted/10 rounded-2xl border-2 border-dashed border-muted-foreground/10"
                             >
                                 <div className="relative">
                                     <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
@@ -105,7 +105,7 @@ const VideoOverviewTab = ({ documentId }: { documentId: string }) => {
                                 key="error"
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                className="flex flex-col items-center justify-center h-[300px] sm:h-[400px] bg-destructive/5 rounded-2xl border border-destructive/20 p-8 text-center"
+                                className="flex flex-col items-center justify-center h-[200px] sm:h-[300px] lg:h-[400px] bg-destructive/5 rounded-2xl border border-destructive/20 p-8 text-center"
                             >
                                 <div className="p-3 bg-destructive/10 rounded-full mb-4">
                                     <AlertCircle className="h-8 w-8 text-destructive" />
@@ -123,7 +123,7 @@ const VideoOverviewTab = ({ documentId }: { documentId: string }) => {
                                 key="empty"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="flex flex-col items-center justify-center h-[300px] sm:h-[450px] bg-muted/10 rounded-2xl border-2 border-dashed border-muted-foreground/20 p-8 text-center"
+                                className="flex flex-col items-center justify-center h-[200px] sm:h-[300px] lg:h-[400px] bg-muted/10 rounded-2xl border-2 border-dashed border-muted-foreground/20 p-8 text-center"
                             >
                                 <div className="p-4 bg-primary/10 rounded-3xl mb-6">
                                     <FileVideo className="h-12 w-12 text-primary/60" />

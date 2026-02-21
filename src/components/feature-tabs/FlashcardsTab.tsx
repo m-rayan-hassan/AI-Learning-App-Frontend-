@@ -325,7 +325,7 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
 
         {/* Card Area */}
         <div className="flex-1 flex flex-col items-center justify-center relative perspective-1000 min-h-[300px] p-4 overflow-y-auto overflow-x-hidden">
-          <div className="w-full max-w-3xl aspect-[4/3] md:aspect-[16/9] lg:aspect-[2/1] relative">
+          <div className="w-full max-w-3xl min-h-[250px] sm:min-h-[300px] md:min-h-[350px] relative">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentIndex}
@@ -386,7 +386,7 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
         </div>
 
         {/* Controls */}
-        <div className="mt-8 space-y-6">
+        <div className="mt-4 space-y-4">
           {/* Progress Bar */}
           <div className="w-full max-w-2xl mx-auto space-y-2">
             <div className="flex justify-between text-xs text-muted-foreground font-medium px-1">
@@ -408,7 +408,7 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-center gap-6">
+          <div className="flex items-center justify-center gap-3 sm:gap-6">
             <Button
               variant="outline"
               size="lg"
@@ -426,7 +426,7 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
               onClick={() => handleToggleStar(currentCard._id)}
               disabled={reviewingCardId === currentCard._id}
               className={cn(
-                "h-14 w-14 rounded-2xl shadow-md transition-all duration-200 border-2",
+                "h-10 w-10 sm:h-14 sm:w-14 rounded-2xl shadow-md transition-all duration-200 border-2",
                 isStarred
                   ? "bg-yellow-400 hover:bg-yellow-500 border-yellow-400 text-white"
                   : "text-muted-foreground hover:text-yellow-500 border-border bg-background",

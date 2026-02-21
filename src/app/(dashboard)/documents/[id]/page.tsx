@@ -58,10 +58,10 @@ export default function DocumentViewPage() {
   if (!document) return <div>Document not found</div>;
 
   return (
-    <div className="h-[calc(100dvh-70px)] md:h-[calc(100vh-80px)] flex flex-col lg:flex-row gap-4 p-2 lg:p-4">
+    <div className="min-h-[calc(100dvh-70px)] md:min-h-[calc(100vh-80px)] flex flex-col lg:flex-row gap-4 p-2 lg:p-4">
       {/* Optional side preview pane (hidden by default) */}
       {showSidePreview && (
-        <div className="hidden lg:block lg:flex-1 h-full border rounded-xl overflow-hidden bg-muted shadow-sm transition-all duration-300">
+        <div className="hidden lg:block lg:flex-1 h-[calc(100vh-100px)] border rounded-xl overflow-hidden bg-muted shadow-sm transition-all duration-300">
           {document.pdfUrl ? (
             <PDFViewer url={document.pdfUrl} />
           ) : (
@@ -75,9 +75,9 @@ export default function DocumentViewPage() {
 
       {/* --- AI Features Area --- */}
       <div
-        className={`flex flex-col border rounded-xl bg-background/50 backdrop-blur-sm shadow-sm overflow-hidden transition-all duration-300 flex-1 w-full h-full ${
+        className={`flex flex-col border rounded-xl bg-background/50 backdrop-blur-sm shadow-sm overflow-hidden transition-all duration-300 flex-1 w-full min-h-0 ${
           showSidePreview
-            ? "lg:flex-none lg:w-[600px] xl:w-[700px]"
+            ? "lg:flex-none lg:w-[500px] xl:w-[700px]"
             : "lg:max-w-6xl lg:mx-auto lg:w-full"
         }`}
       >
@@ -135,7 +135,7 @@ export default function DocumentViewPage() {
         </div>
 
         {/* Content Area - Changed to allow scrolling for ALL tabs to prevent cutoff on mobile */}
-        <div className="flex-1 p-0 md:p-2 h-full overflow-y-auto overflow-x-hidden relative bg-card/30">
+        <div className="flex-1 min-h-0 p-0 md:p-2 overflow-y-auto overflow-x-hidden relative bg-card/30">
           {activeTab === "Preview" && document.pdfUrl && (
             <div className="h-full w-full">
               <PDFViewer url={document.pdfUrl} />

@@ -271,7 +271,7 @@ export function UIActionsTab({ documentId }: { documentId: string }) {
               </Card>
             ) : (
                  // Empty State
-                 <div className="flex flex-col items-center justify-center flex-1 text-center opacity-40 mt-4 sm:mt-0 min-h-[200px]">
+                 <div className="flex flex-col items-center justify-center flex-1 text-center opacity-40 mt-4 sm:mt-0 min-h-[120px] sm:min-h-[200px]">
                     <Lightbulb className="h-12 w-12 mb-3 text-muted-foreground" />
                     <p className="text-sm font-medium">Ask a question above</p>
                     <p className="text-xs text-muted-foreground mt-1">Get instant clarifications on any topic.</p>

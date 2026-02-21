@@ -387,7 +387,7 @@ export default function Home() {
                 <span>AI Learning Assistant V2.0</span>
               </motion.div>
 
-              <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }} className="text-5xl md:text-7xl font-bold tracking-tighter mb-6">
+              <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }} className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tighter mb-6">
                 Turn study materials <br/>
                 into <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400">interactive mastery.</span>
               </motion.h1>
@@ -412,7 +412,7 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="mt-8 relative mx-auto max-w-6xl"
             >
-              <div className="bg-[#0B1220] rounded-xl border border-white/10 shadow-2xl ring-1 ring-white/5 overflow-hidden font-sans flex flex-col h-[700px]">
+              <div className="bg-[#0B1220] rounded-xl border border-white/10 shadow-2xl ring-1 ring-white/5 overflow-hidden font-sans flex flex-col h-[500px] md:h-[600px] lg:h-[700px]">
                  
                  {/* Top Navigation */}
                  <div className="h-14 border-b border-white/5 flex items-center px-4 md:px-6 bg-[#0B1220] shrink-0 gap-6">
@@ -476,11 +476,11 @@ export default function Home() {
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
               variants={staggerContainer}
-              className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-4 gap-4 auto-rows-[minmax(180px,auto)]"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[minmax(180px,auto)]"
             >
               
               <BentoCard 
-                colSpan="md:col-span-3 lg:col-span-2"
+                colSpan="md:col-span-2 lg:col-span-2"
                 rowSpan="row-span-2"
                 title="Chat with Context"
                 description="Stop searching. Ask complex questions and get answers cited directly from your lecture notes."
@@ -499,7 +499,7 @@ export default function Home() {
               </BentoCard>
 
               <BentoCard 
-                colSpan="md:col-span-3 lg:col-span-2"
+                colSpan="md:col-span-2 lg:col-span-2"
                 title="Voice Chat & Viva Mode"
                 description="Real-time voice interaction. Switch to 'Viva Mode' for rigorous oral exam simulation."
                 icon={<Mic className="text-indigo-500" />}
@@ -527,14 +527,14 @@ export default function Home() {
               </BentoCard>
 
               <BentoCard 
-                colSpan="md:col-span-2 lg:col-span-1"
+                colSpan="md:col-span-1 lg:col-span-1"
                 title="Smart Summaries"
                 description="Condense 50 pages into 1 page of actionable insights."
                 icon={<FileText className="text-cyan-600" />}
               />
 
               <BentoCard 
-                colSpan="md:col-span-2 lg:col-span-1"
+                colSpan="md:col-span-1 lg:col-span-1"
                 title="Instant Quizzes"
                 description="Test knowledge immediately with AI-generated MCQs."
                 icon={<Zap className="text-sky-500" />}
@@ -545,7 +545,7 @@ export default function Home() {
               </BentoCard>
 
               <BentoCard 
-                colSpan="md:col-span-2 lg:col-span-1"
+                colSpan="md:col-span-1 lg:col-span-1"
                 title="AI Actions"
                 description="Overview, Podcast, and Concept Explainer tools."
                 icon={<Sparkles className="text-teal-500" />}
@@ -557,7 +557,7 @@ export default function Home() {
               </BentoCard>
 
               <BentoCard 
-                colSpan="md:col-span-3 lg:col-span-1"
+                colSpan="md:col-span-1 lg:col-span-1"
                 rowSpan="md:row-span-2"
                 title="Video Overview"
                 description="Upload MP4s. Get transcripts and visual summaries."
@@ -574,7 +574,7 @@ export default function Home() {
               </BentoCard>
 
               <BentoCard 
-                colSpan="md:col-span-3 lg:col-span-2"
+                colSpan="md:col-span-2 lg:col-span-2"
                 title="Podcast Overview"
                 description="Turn your notes into an audio podcast. Listen while you commute."
                 icon={<Podcast className="text-slate-500" />}
@@ -596,7 +596,7 @@ export default function Home() {
               </BentoCard>
 
               <BentoCard 
-                colSpan="md:col-span-3 lg:col-span-1"
+                colSpan="md:col-span-1 lg:col-span-1"
                 title="Flashcards"
                 description="Spaced repetition made automatic."
                 icon={<Layers className="text-emerald-600" />}
@@ -649,7 +649,7 @@ export default function Home() {
         </section>
 
         {/* ================= CTA SECTION ================= */}
-        <section className="py-32 relative overflow-hidden bg-background border-t border-border/50">
+        <section className="py-16 md:py-32 relative overflow-hidden bg-background border-t border-border/50">
            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--primary)/0.1),transparent_50%)]" />
            
            <div className="container px-4 mx-auto relative z-10 text-center">
