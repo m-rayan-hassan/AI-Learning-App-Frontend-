@@ -19,9 +19,12 @@ export default function DocumentsPage() {
   const [documents, setDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [uploadingTitle, setUploadingTitle] = useState("");
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadMode, setUploadMode] = useState<'file' | 'text'>('file');
+  const [textContent, setTextContent] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchDocuments = async () => {
@@ -65,26 +68,36 @@ export default function DocumentsPage() {
 
   const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setUploading(true);
-    const toastId = toast.loading("Uploading document...");
-
-    const formData = new FormData(e.currentTarget);
     
-    if (selectedFile) {
+    const formData = new FormData(e.currentTarget);
+    const title = formData.get('title') as string || "Uploading Document...";
+    
+    setUploadingTitle(title);
+    setUploading(true);
+    setIsUploadOpen(false);
+    
+    if (uploadMode === 'text') {
+        const textFile = new File([textContent], `${title}.txt`, { type: 'text/plain' });
+        formData.set('file', textFile);
+    } else if (selectedFile) {
         formData.set('file', selectedFile);
     }
+    
+    setSelectedFile(null);
+    
+    const toastId = toast.loading("Uploading document...");
+    (e.target as HTMLFormElement).reset();
+    setTextContent("");
 
     try {
       await documentServices.uploadDocument(formData);
       await fetchDocuments();
-      setIsUploadOpen(false);
-      setSelectedFile(null);
-      (e.target as HTMLFormElement).reset();
       toast.success("Document uploaded successfully!", { id: toastId });
     } catch (err: any) {
        toast.error(err.message || "Failed to upload document", { id: toastId });
     } finally {
       setUploading(false);
+      setUploadingTitle("");
     }
   };
 
@@ -117,6 +130,8 @@ export default function DocumentsPage() {
              setIsUploadOpen(open);
              if (!open) {
                  setSelectedFile(null);
+                 setUploadMode('file');
+                 setTextContent('');
              }
          }}>
             <DialogTrigger asChild>
@@ -143,48 +158,82 @@ export default function DocumentsPage() {
                                 required 
                             />
                         </div>
-                        <div className="grid w-full items-center gap-1.5">
-                            <Label htmlFor="file">File</Label>
-                            <div
-                                className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-xl transition-colors cursor-pointer ${
-                                    isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/50'
-                                }`}
-                                onDragOver={handleDragOver}
-                                onDragLeave={handleDragLeave}
-                                onDrop={handleDrop}
-                                onClick={() => fileInputRef.current?.click()}
-                            >
-                                <div className="space-y-2 text-center">
-                                    <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                                        <Upload className={`h-6 w-6 ${isDragging ? 'text-primary' : 'text-muted-foreground'}`} />
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">
-                                        <span className="font-semibold text-primary">Click to upload</span> or drag and drop
-                                    </div>
-                                    <p className="text-xs text-muted-foreground">
-                                        PDF, DOCX, TXT (max 10MB)
-                                    </p>
-                                    {selectedFile && (
-                                        <div className="mt-4 p-3 bg-primary/10 rounded-lg flex items-center justify-center gap-2 border border-primary/20">
-                                            <FileText className="h-4 w-4 text-primary" />
-                                            <span className="text-sm font-medium truncate max-w-[200px] text-primary">
-                                                {selectedFile.name}
-                                            </span>
-                                        </div>
-                                    )}
-                                    <input 
-                                        id="file" 
-                                        name="file" 
-                                        type="file" 
-                                        ref={fileInputRef}
-                                        className="sr-only" 
-                                        onChange={handleFileChange}
-                                        accept=".pdf,.docx,.txt,.pptx,.odt"
-                                        required={!selectedFile}
-                                    />
-                                </div>
+                        <div className="grid w-full items-center gap-1.5 mb-2">
+                            <div className="flex bg-muted/50 p-1 rounded-lg">
+                                <button
+                                    type="button"
+                                    className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${uploadMode === 'file' ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                                    onClick={() => setUploadMode('file')}
+                                >
+                                    Upload File
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${uploadMode === 'text' ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                                    onClick={() => setUploadMode('text')}
+                                >
+                                    Paste Text
+                                </button>
                             </div>
                         </div>
+
+                        {uploadMode === 'file' ? (
+                            <div className="grid w-full items-center gap-1.5">
+                                <Label htmlFor="file">File</Label>
+                                <div
+                                    className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-xl transition-colors cursor-pointer ${
+                                        isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/50'
+                                    }`}
+                                    onDragOver={handleDragOver}
+                                    onDragLeave={handleDragLeave}
+                                    onDrop={handleDrop}
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    <div className="space-y-2 text-center">
+                                        <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                                            <Upload className={`h-6 w-6 ${isDragging ? 'text-primary' : 'text-muted-foreground'}`} />
+                                        </div>
+                                        <div className="text-sm text-muted-foreground">
+                                            <span className="font-semibold text-primary">Click to upload</span> or drag and drop
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">
+                                            PDF, DOCX, TXT (max 10MB)
+                                        </p>
+                                        {selectedFile && (
+                                            <div className="mt-4 p-3 bg-primary/10 rounded-lg flex items-center justify-center gap-2 border border-primary/20">
+                                                <FileText className="h-4 w-4 text-primary" />
+                                                <span className="text-sm font-medium truncate max-w-[200px] text-primary">
+                                                    {selectedFile.name}
+                                                </span>
+                                            </div>
+                                        )}
+                                        <input 
+                                            id="file" 
+                                            name="file" 
+                                            type="file" 
+                                            ref={fileInputRef}
+                                            className="sr-only" 
+                                            onChange={handleFileChange}
+                                            accept=".pdf,.docx,.txt,.pptx,.odt"
+                                            required={!selectedFile}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="grid w-full items-center gap-1.5 mt-2">
+                                <Label htmlFor="textContent">Document Text</Label>
+                                <textarea 
+                                    id="textContent"
+                                    name="textContent"
+                                    placeholder="Paste or type your document text here..."
+                                    className="flex min-h-[200px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none mt-1"
+                                    value={textContent}
+                                    onChange={(e) => setTextContent(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        )}
                     </div>
                     <DialogFooter>
                         <Button type="submit" disabled={uploading} className="w-full">
@@ -219,7 +268,7 @@ export default function DocumentsPage() {
             </div>
           ))}
         </div>
-      ) : documents.length === 0 ? (
+      ) : documents.length === 0 && !uploading ? (
         <div className="flex flex-col items-center justify-center min-h-[400px] border-2 border-dashed rounded-xl p-8 text-center animate-in fade-in-50">
             <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-4 rounded-2xl mb-4 shadow-lg shadow-blue-500/20">
                 <FileText className="h-8 w-8 text-white" />
@@ -234,6 +283,38 @@ export default function DocumentsPage() {
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+             {uploading && (
+                <Card className="group flex flex-col justify-between border-primary/30 relative overflow-hidden bg-card/50">
+                    <div className="absolute inset-0 bg-primary/5 animate-pulse" />
+                    <CardHeader className="pb-2 relative">
+                        <div className="flex justify-between items-start mb-2">
+                             <div className="h-10 w-10 bg-muted rounded-xl flex items-center justify-center animate-pulse">
+                                  <Loader2 className="h-5 w-5 text-muted-foreground animate-spin" />
+                             </div>
+                        </div>
+                        <CardTitle className="truncate text-base text-muted-foreground">{uploadingTitle || "Uploading Document..."}</CardTitle>
+                        <CardDescription className="text-xs text-primary animate-pulse">
+                            Processing document, AI analyzing etc...
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pb-2 relative">
+                        <div className="flex gap-2 flex-wrap">
+                            <Skeleton className="h-6 w-20 rounded-full opacity-50" />
+                            <Skeleton className="h-6 w-24 rounded-full opacity-50" />
+                        </div>
+                    </CardContent>
+                    <CardFooter className="pt-4 border-t border-border/50 mt-2 relative">
+                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground w-full">
+                            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                            Uploading...
+                         </div>
+                         <Button size="sm" disabled className="w-full ml-auto opacity-50">
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Processing
+                         </Button>
+                    </CardFooter>
+                </Card>
+             )}
              {documents.map((doc) => (
                 <Card key={doc._id} className="group flex flex-col justify-between hover:shadow-xl transition-all duration-300 border border-border/50 hover:border-primary/30 relative overflow-hidden bg-card">
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.03] to-purple-500/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

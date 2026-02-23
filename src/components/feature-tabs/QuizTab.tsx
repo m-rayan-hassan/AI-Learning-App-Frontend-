@@ -245,20 +245,20 @@ export function QuizTab({ documentId }: { documentId: string }) {
         {/* Scrollable Content */}
         <div className="overflow-y-auto flex-1 p-4 space-y-4">
           {/* Score Summary Card */}
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/50 dark:to-blue-900/30 border-blue-200 dark:border-blue-800">
+          <Card className="bg-primary/5 border-primary/20">
             <CardContent className="p-6">
               <div className="text-center space-y-2">
                 <div className="flex items-center justify-center gap-2 mb-3">
-                  <Trophy className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-                  <h2 className="text-4xl font-bold text-blue-900 dark:text-blue-100">
+                  <Trophy className="h-8 w-8 text-primary" />
+                  <h2 className="text-4xl font-bold text-foreground">
                     {quizResults.quiz.score}%
                   </h2>
                 </div>
-                <p className="text-lg font-semibold text-blue-800 dark:text-blue-200">
+                <p className="text-lg font-semibold text-foreground/90">
                   {quizResults.results.filter((r) => r.isCorrect).length} out of{" "}
                   {quizResults.quiz.totalQuestions} Correct
                 </p>
-                <p className="text-sm text-blue-700 dark:text-blue-300">
+                <p className="text-sm text-muted-foreground">
                   Completed on {new Date(quizResults.quiz.completedAt).toLocaleDateString('en-US', {
                     month: 'long',
                     day: 'numeric',
@@ -277,18 +277,18 @@ export function QuizTab({ documentId }: { documentId: string }) {
               style={{
                 borderLeftColor: result.isCorrect 
                   ? 'rgb(34, 197, 94)' // green-500
-                  : 'rgb(239, 68, 68)', // red-500
+                  : 'hsl(var(--destructive))',
               }}
             >
               <CardContent className="p-0">
                 {/* Question Header */}
-                <div className="bg-muted/30 p-4 border-b">
+                <div className="bg-muted/30 p-4 border-b border-border">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
                       <div className="text-xs font-semibold text-muted-foreground mb-1">
                         Question {idx + 1}
                       </div>
-                      <h4 className="font-semibold text-base leading-snug">
+                      <h4 className="font-semibold text-base leading-snug text-foreground">
                         {result.question}
                       </h4>
                     </div>
@@ -314,29 +314,30 @@ export function QuizTab({ documentId }: { documentId: string }) {
                         key={optIdx}
                         className={cn(
                           "relative p-3 rounded-lg border-2 transition-all",
-                          isCorrect && "bg-green-50 border-green-300 dark:bg-green-950/30 dark:border-green-700",
-                          isUserAnswer && !isCorrect && "bg-red-50 border-red-300 dark:bg-red-950/30 dark:border-red-700",
-                          !isCorrect && !isUserAnswer && "bg-muted/30 border-border"
+                          isCorrect && "bg-green-500/10 border-green-500/30",
+                          isUserAnswer && !isCorrect && "bg-destructive/10 border-destructive/30",
+                          !isCorrect && !isUserAnswer && "bg-muted/30 border-transparent"
                         )}
                       >
                         <div className="flex items-center justify-between gap-3">
                           <span className={cn(
                             "flex-1 text-sm",
-                            isCorrect && "font-medium text-green-900 dark:text-green-100",
-                            isUserAnswer && !isCorrect && "font-medium text-red-900 dark:text-red-100"
+                            isCorrect && "font-medium text-green-700 dark:text-green-400",
+                            isUserAnswer && !isCorrect && "font-medium text-foreground",
+                            !isCorrect && !isUserAnswer && "text-muted-foreground"
                           )}>
                             {option}
                           </span>
                           
                           {isCorrect && (
-                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-green-600 text-white dark:bg-green-500">
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-700 dark:text-green-400 border border-green-500/30">
                               <CheckCircle className="h-3 w-3" />
                               Correct
                             </span>
                           )}
                           
                           {isUserAnswer && !isCorrect && (
-                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-red-600 text-white dark:bg-red-500">
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-destructive/20 text-destructive dark:text-red-400 border border-destructive/30">
                               <XCircle className="h-3 w-3" />
                               Your Answer
                             </span>
@@ -350,14 +351,14 @@ export function QuizTab({ documentId }: { documentId: string }) {
                 {/* Explanation Section */}
                 {result.explaination && (
                   <div className="px-4 pb-4">
-                    <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                    <div className="bg-muted border border-border rounded-lg p-3">
                       <div className="flex gap-2">
-                        <BookOpen className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                        <BookOpen className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
                         <div className="flex-1">
-                          <p className="text-xs font-semibold text-blue-900 dark:text-blue-100 mb-1">
+                          <p className="text-xs font-bold text-foreground mb-1">
                             EXPLANATION
                           </p>
-                          <p className="text-sm text-blue-800 dark:text-blue-200 leading-relaxed">
+                          <p className="text-sm text-foreground/80 leading-relaxed">
                             {result.explaination}
                           </p>
                         </div>

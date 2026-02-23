@@ -25,6 +25,10 @@ interface UserProfile {
   planType: 'free' | 'plus' | 'pro' | 'premium';
   subscriptionStatus?: string;
   subscriptionEndDate?: string;
+  paddleScheduledChange?: {
+    action: string;
+    effectiveAt?: string;
+  };
 }
 
 interface UpgradePreviewData {
@@ -392,7 +396,7 @@ export default function PricingPage() {
     try {
       const result = await paymentServices.cancelSubscription();
       setSuccessMsg(result.message || "Subscription canceled");
-      setUser(prev => prev ? { ...prev, subscriptionStatus: 'canceled' } : prev);
+      setUser(prev => prev ? { ...prev, subscriptionStatus: 'canceled', paddleScheduledChange: { action: 'cancel' } } : prev);
     } catch (err: any) {
       console.error("Cancel error:", err);
       setError(err?.message || "Failed to cancel");
@@ -476,8 +480,8 @@ export default function PricingPage() {
             {(() => {
               const planRanks: Record<string, number> = { free: 0, plus: 1, pro: 2, premium: 3 };
               const currentRank = planRanks[user.planType] || 0;
-              const isCanceled = user.subscriptionStatus === 'canceled';
-              const expirationDate = (user as any).subscriptionEndDate; // Will be added to UserProfile interface
+              const isCanceled = user.subscriptionStatus === 'canceled' || user.paddleScheduledChange?.action === 'cancel';
+              const expirationDate = user.subscriptionEndDate;
 
               return (
                 <>
@@ -488,7 +492,7 @@ export default function PricingPage() {
                     isDowngrade={planRanks['free'] < currentRank}
                     onUpgrade={() => {}} />
 
-                  <PricingCard plan="plus" price="10"
+                  <PricingCard plan="plus" price="5"
                     description="Unlock more documents and essential AI study tools."
                     features={PLAN_FEATURES.plus}
                     isCurrent={user.planType === 'plus'} isProcessing={processingPlan === 'plus'}
@@ -497,7 +501,7 @@ export default function PricingPage() {
                     onUpgrade={() => handleSubscription('plus')}
                     onCancel={handleCancel} showCancel={true} />
 
-                  <PricingCard plan="pro" price="20"
+                  <PricingCard plan="pro" price="10"
                     description="The complete experience with Voice Chat and Video Analysis."
                     features={PLAN_FEATURES.pro}
                     isCurrent={user.planType === 'pro'} isProcessing={processingPlan === 'pro'}
@@ -506,7 +510,7 @@ export default function PricingPage() {
                     onUpgrade={() => handleSubscription('pro')}
                     onCancel={handleCancel} showCancel={true} highlight={true} />
 
-                  <PricingCard plan="premium" price="50"
+                  <PricingCard plan="premium" price="20"
                     description="Power-user features for research and deep technical mastery."
                     features={PLAN_FEATURES.premium}
                     isCurrent={user.planType === 'premium'} isProcessing={processingPlan === 'premium'}

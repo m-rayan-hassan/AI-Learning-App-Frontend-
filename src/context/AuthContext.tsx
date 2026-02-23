@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("Token");
     setToken(null);
     setUser(null);
-    router.push("/login"); // Optional: redirect to login
+    router.push("/"); // Optional: redirect to login
   };
 
   return (

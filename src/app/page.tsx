@@ -37,12 +37,12 @@ const staggerContainer = {
 // ==========================================
 
 const Sidebar = () => (
-  <div className="w-64 border-r border-white/5 hidden md:flex flex-col bg-[#0f1629] p-4 gap-2 text-slate-300">
+  <div className="w-64 border-r border-slate-200 dark:border-white/5 hidden md:flex flex-col bg-slate-100 dark:bg-[#0f1629] p-4 gap-2 text-slate-700 dark:text-slate-300">
     <div className="flex items-center gap-2 mb-8 px-2">
       <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center text-blue-500">
         <BrainCircuit className="w-5 h-5" />
       </div>
-      <span className="font-bold text-white tracking-tight">Cognivio AI</span>
+      <span className="font-bold text-slate-900 dark:text-white tracking-tight">Cognivio AI</span>
     </div>
     
     <div className="space-y-1">
@@ -53,10 +53,10 @@ const Sidebar = () => (
     </div>
 
     {/* Bottom Actions */}
-    <div className="mt-auto space-y-1 pt-4 border-t border-white/5">
+    <div className="mt-auto space-y-1 pt-4 border-t border-slate-200 dark:border-white/5">
         <SidebarItem icon={<Sun size={18} />} label="Light Mode" />
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm cursor-pointer text-slate-400 hover:bg-white/5 hover:text-white transition-colors">
-            <div className="w-5 h-5 rounded-full bg-slate-700 flex items-center justify-center text-[10px] text-white font-medium">
+        <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm cursor-pointer text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/5 hover:text-slate-900 dark:text-white transition-colors">
+            <div className="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[10px] text-slate-900 dark:text-white font-medium">
                 JD
             </div>
             <span>Logout</span>
@@ -66,7 +66,7 @@ const Sidebar = () => (
 );
 
 const SidebarItem = ({ active, label, icon }: { active?: boolean, label: string, icon: any }) => (
-  <div className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm cursor-pointer transition-all ${active ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'}`}>
+  <div className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm cursor-pointer transition-all ${active ? 'bg-blue-600 text-slate-900 dark:text-white shadow-lg shadow-blue-900/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/5 hover:text-slate-200'}`}>
     {icon}
     <span>{label}</span>
   </div>
@@ -74,14 +74,14 @@ const SidebarItem = ({ active, label, icon }: { active?: boolean, label: string,
 
 // --- 1. Preview View ---
 const PreviewView = () => (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full bg-[#1a2333] p-8 flex justify-center overflow-y-auto">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full bg-white dark:bg-[#1a2333] p-8 flex justify-center overflow-y-auto">
         <div className="bg-white w-full max-w-3xl min-h-[800px] shadow-xl rounded-sm p-12 text-slate-800">
             <h1 className="text-3xl font-bold mb-6">Introduction to Software Engineering</h1>
             <div className="space-y-4">
                 <div className="h-4 bg-slate-200 w-full rounded" />
                 <div className="h-4 bg-slate-200 w-full rounded" />
                 <div className="h-4 bg-slate-200 w-5/6 rounded" />
-                <div className="h-64 bg-slate-100 w-full rounded border-2 border-dashed border-slate-300 my-8 flex items-center justify-center text-slate-400">Diagram Placeholder</div>
+                <div className="h-64 bg-slate-100 w-full rounded border-2 border-dashed border-slate-300 my-8 flex items-center justify-center text-slate-600 dark:text-slate-400">Diagram Placeholder</div>
                 <div className="h-4 bg-slate-200 w-full rounded" />
                 <div className="h-4 bg-slate-200 w-4/5 rounded" />
             </div>
@@ -94,19 +94,19 @@ const SummaryView = () => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex h-full">
     <div className="flex-1 p-6 overflow-y-auto">
        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-white font-semibold flex items-center gap-2"><FileText size={18} className="text-blue-500"/> Document Summary</h3>
+          <h3 className="text-slate-900 dark:text-white font-semibold flex items-center gap-2"><FileText size={18} className="text-blue-500"/> Document Summary</h3>
           <Button size="sm" variant="ghost" className="h-7 text-xs text-blue-400 bg-blue-500/10 hover:bg-blue-500/20"><Wand2 className="w-3 h-3 mr-1"/> Regenerate</Button>
        </div>
-       <div className="space-y-6 text-sm text-slate-300">
-          <div className="p-5 rounded-xl bg-[#131b2e] border border-white/5">
+       <div className="space-y-6 text-sm text-slate-700 dark:text-slate-300">
+          <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-white/5">
              <h4 className="text-blue-400 font-medium mb-3 text-xs uppercase tracking-wider">Executive Summary</h4>
-             <p className="leading-relaxed text-slate-300">Risk management is a continuous, iterative process designed to proactively identify, analyze, and mitigate uncertainties affecting software projects. By cycling through identification and strategic planning, managers minimize the impact of technical, human, and organizational disruptions.</p>
+             <p className="leading-relaxed text-slate-700 dark:text-slate-300">Risk management is a continuous, iterative process designed to proactively identify, analyze, and mitigate uncertainties affecting software projects. By cycling through identification and strategic planning, managers minimize the impact of technical, human, and organizational disruptions.</p>
           </div>
           <div>
-             <h4 className="text-white font-medium mb-3 text-xs uppercase tracking-wider">Key Concepts</h4>
+             <h4 className="text-slate-900 dark:text-white font-medium mb-3 text-xs uppercase tracking-wider">Key Concepts</h4>
              <ul className="space-y-3">
-                <li className="flex gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors"><div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" /><span className="text-slate-400"><strong className="text-slate-200 block mb-1">Iterative Risk Process</strong>Functions as a feedback loop consisting of four stages: Identification, Analysis, Planning, and Monitoring.</span></li>
-                <li className="flex gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors"><div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" /><span className="text-slate-400"><strong className="text-slate-200 block mb-1">Project vs Product Risks</strong>Project risks affect schedule/resources, while Product risks affect the quality or performance of the software itself.</span></li>
+                <li className="flex gap-3 p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-white/5 transition-colors"><div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" /><span className="text-slate-600 dark:text-slate-400"><strong className="text-slate-200 block mb-1">Iterative Risk Process</strong>Functions as a feedback loop consisting of four stages: Identification, Analysis, Planning, and Monitoring.</span></li>
+                <li className="flex gap-3 p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-white/5 transition-colors"><div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" /><span className="text-slate-600 dark:text-slate-400"><strong className="text-slate-200 block mb-1">Project vs Product Risks</strong>Project risks affect schedule/resources, while Product risks affect the quality or performance of the software itself.</span></li>
              </ul>
           </div>
        </div>
@@ -116,17 +116,17 @@ const SummaryView = () => (
 
 // --- 3. Chat View ---
 const ChatView = () => (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full flex flex-col p-6">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full flex flex-col p-4 md:p-6 overflow-hidden max-w-full">
         <div className="flex-1 space-y-6 overflow-y-auto pr-2">
             <div className="flex gap-4 flex-row-reverse">
-                <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs text-white">JD</div>
-                <div className="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-none text-sm max-w-[80%]">
+                <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs text-slate-900 dark:text-white">JD</div>
+                <div className="bg-blue-600 text-slate-900 dark:text-white p-3 rounded-2xl rounded-tr-none text-sm max-w-[80%]">
                     What is the main difference between project risks and business risks?
                 </div>
             </div>
             <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center"><Bot size={16}/></div>
-                <div className="bg-[#1a2333] border border-white/5 text-slate-300 p-4 rounded-2xl rounded-tl-none text-sm max-w-[90%] space-y-2">
+                <div className="bg-white dark:bg-[#1a2333] border border-slate-200 dark:border-white/5 text-slate-700 dark:text-slate-300 p-4 rounded-2xl rounded-tl-none text-sm max-w-[90%] space-y-2">
                     <p>Based on the document, here is the distinction:</p>
                     <ul className="list-disc pl-4 space-y-1">
                         <li><strong>Project Risks:</strong> Affect the project schedule or resources (e.g., loss of experienced staff).</li>
@@ -136,8 +136,8 @@ const ChatView = () => (
             </div>
         </div>
         <div className="mt-4 relative">
-            <input type="text" placeholder="Ask a follow-up question..." className="w-full bg-[#131b2e] border border-white/10 rounded-xl py-3 pl-4 pr-12 text-sm text-slate-300 focus:outline-none focus:border-blue-500/50" />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 rounded-lg text-white"><ArrowRight size={14}/></div>
+            <input type="text" placeholder="Ask a follow-up question..." className="w-full bg-slate-50 dark:bg-[#131b2e] border border-slate-300 dark:border-white/10 rounded-xl py-3 pl-4 pr-12 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:border-blue-500/50" />
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 rounded-lg text-slate-900 dark:text-white"><ArrowRight size={14}/></div>
         </div>
     </motion.div>
 );
@@ -145,17 +145,17 @@ const ChatView = () => (
 // --- 4. Flashcards View ---
 const FlashcardView = () => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full flex flex-col items-center justify-center p-6">
-     <div className="w-full max-w-2xl aspect-[16/9] bg-[#1a2333] border border-white/5 rounded-2xl flex flex-col items-center justify-center p-12 text-center relative cursor-pointer hover:border-blue-500/30 transition-colors shadow-2xl group perspective-1000">
+     <div className="w-full max-w-2xl aspect-[16/9] bg-white dark:bg-[#1a2333] border border-slate-200 dark:border-white/5 rounded-2xl flex flex-col items-center justify-center p-12 text-center relative cursor-pointer hover:border-blue-500/30 transition-colors shadow-2xl group perspective-1000">
         <div className="absolute top-6 left-6 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold tracking-wider">QUESTION</div>
-        <h3 className="text-xl md:text-3xl text-white font-semibold leading-tight">What are the 4 stages of the Risk Management Process?</h3>
-        <div className="absolute bottom-6 text-slate-500 text-xs flex items-center gap-2 group-hover:text-blue-400 transition-colors">
+        <h3 className="text-xl md:text-3xl text-slate-900 dark:text-white font-semibold leading-tight">What are the 4 stages of the Risk Management Process?</h3>
+        <div className="absolute bottom-6 text-slate-500 dark:text-slate-400 text-xs flex items-center gap-2 group-hover:text-blue-400 transition-colors">
            <span className="animate-pulse">⟳</span> Click to flip card
         </div>
      </div>
      <div className="mt-8 flex items-center gap-6">
-        <Button variant="outline" className="border-white/10 text-slate-400 hover:text-white hover:bg-white/5 gap-2"><ChevronLeft size={16}/> Prev</Button>
-        <span className="text-slate-500 font-mono text-sm">Card 1 / 12</span>
-        <Button className="bg-blue-600 text-white hover:bg-blue-500 gap-2">Next <ChevronRight size={16}/></Button>
+        <Button variant="outline" className="border-slate-300 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-white/5 gap-2"><ChevronLeft size={16}/> Prev</Button>
+        <span className="text-slate-500 dark:text-slate-400 font-mono text-sm">Card 1 / 12</span>
+        <Button className="bg-blue-600 text-slate-900 dark:text-white hover:bg-blue-500 gap-2">Next <ChevronRight size={16}/></Button>
      </div>
   </motion.div>
 );
@@ -163,28 +163,28 @@ const FlashcardView = () => (
 // --- 5. Quiz View ---
 const QuizView = () => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-8 max-w-3xl mx-auto h-full flex flex-col justify-center">
-    <div className="flex justify-between text-sm text-slate-400 mb-2">
+    <div className="flex justify-between text-sm text-slate-600 dark:text-slate-400 mb-2">
        <span>Question 1 of 5</span>
        <span className="text-blue-400">0/5 Answered</span>
     </div>
-    <div className="h-1.5 w-full bg-slate-800 rounded-full mb-8 overflow-hidden">
+    <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full mb-8 overflow-hidden">
        <div className="h-full w-1/5 bg-blue-600 rounded-full" />
     </div>
-    <h3 className="text-xl text-white font-medium mb-8 leading-relaxed">
+    <h3 className="text-xl text-slate-900 dark:text-white font-medium mb-8 leading-relaxed">
        Your team realizes the database currently in use cannot support the required transaction volume. Which action demonstrates the most appropriate proactive risk management strategy?
     </h3>
     <div className="space-y-3">
        {["Reduce project scope to lower requirements.", "Request an immediate extension.", "Investigate acquisition of a higher-performance database.", "Allocate more staff to optimize code."].map((opt, i) => (
-          <div key={i} className={`p-4 rounded-xl border ${i === 2 ? 'border-blue-500/50 bg-blue-500/10' : 'border-white/5 bg-[#131b2e] hover:bg-[#1a243a]'} cursor-pointer transition-colors flex items-center gap-3 group`}>
+          <div key={i} className={`p-4 rounded-xl border ${i === 2 ? 'border-blue-500/50 bg-blue-500/10' : 'border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#131b2e] hover:bg-[#1a243a]'} cursor-pointer transition-colors flex items-center gap-3 group`}>
              <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${i === 2 ? 'border-blue-500' : 'border-slate-600 group-hover:border-slate-400'}`}>
                 {i === 2 && <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />}
              </div>
-             <span className={i === 2 ? 'text-white' : 'text-slate-400'}>{opt}</span>
+             <span className={i === 2 ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400'}>{opt}</span>
           </div>
        ))}
     </div>
     <div className="mt-8 flex justify-end">
-        <Button className="bg-blue-600 hover:bg-blue-500 text-white px-6">Next Question</Button>
+        <Button className="bg-blue-600 hover:bg-blue-500 text-slate-900 dark:text-white px-6">Next Question</Button>
     </div>
   </motion.div>
 );
@@ -197,7 +197,7 @@ const AiActionsView = () => {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col h-full p-6">
             {/* Sub-Tabs */}
             <div className="flex justify-center mb-8">
-                <div className="bg-[#1a2333] p-1 rounded-xl inline-flex border border-white/5">
+                <div className="bg-white dark:bg-[#1a2333] p-1 rounded-xl inline-flex border border-slate-200 dark:border-white/5">
                     {[
                         { id: 'overview', label: 'Overview', icon: <Mic size={14}/> },
                         { id: 'podcast', label: 'Podcast', icon: <Podcast size={14}/> },
@@ -208,8 +208,8 @@ const AiActionsView = () => {
                             onClick={() => setSubTab(item.id as any)}
                             className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-medium transition-all ${
                                 subTab === item.id 
-                                ? 'bg-blue-600 text-white shadow-md' 
-                                : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                ? 'bg-blue-600 text-slate-900 dark:text-white shadow-md' 
+                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-white/5'
                             }`}
                         >
                             {item.icon}
@@ -220,22 +220,22 @@ const AiActionsView = () => {
             </div>
 
             {/* Content Area */}
-            <div className="flex-1 bg-[#131b2e] border border-white/5 rounded-2xl p-6 relative overflow-hidden">
+            <div className="flex-1 bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-white/5 rounded-2xl p-6 relative overflow-hidden">
                 <AnimatePresence mode="wait">
                     {/* Overview: Audio Player */}
                     {subTab === 'overview' && (
                         <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="h-full flex flex-col">
-                            <h3 className="text-white font-medium flex items-center gap-2 mb-2"><Mic className="text-blue-500 w-4 h-4" /> Voice Overview</h3>
-                            <p className="text-slate-500 text-xs mb-8">Generate a quick audio summary of this document.</p>
-                            <div className="bg-[#0b1220] border border-white/5 rounded-xl p-4 mt-4">
+                            <h3 className="text-slate-900 dark:text-white font-medium flex items-center gap-2 mb-2"><Mic className="text-blue-500 w-4 h-4" /> Voice Overview</h3>
+                            <p className="text-slate-500 dark:text-slate-400 text-xs mb-8">Generate a quick audio summary of this document.</p>
+                            <div className="bg-slate-200 dark:bg-[#0b1220] border border-slate-200 dark:border-white/5 rounded-xl p-4 mt-4">
                                 <div className="flex justify-between items-center text-xs text-blue-400 mb-2 font-medium">
                                     <span>NOW PLAYING</span><span>Audio Summary</span>
                                 </div>
-                                <div className="bg-[#1a2333] rounded-lg p-3 flex items-center gap-4">
+                                <div className="bg-white dark:bg-[#1a2333] rounded-lg p-3 flex items-center gap-4">
                                     <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-900 flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"><Play size={14} fill="currentColor" /></div>
-                                    <span className="text-xs text-slate-300 font-mono">0:00 / 2:02</span>
-                                    <div className="flex-1 h-1.5 bg-slate-700 rounded-full relative"><div className="absolute left-0 top-0 bottom-0 w-1/3 bg-slate-300 rounded-full" /><div className="absolute left-1/3 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm" /></div>
-                                    <Volume2 size={16} className="text-slate-400" /><MoreVertical size={16} className="text-slate-400" />
+                                    <span className="text-xs text-slate-700 dark:text-slate-300 font-mono">0:00 / 2:02</span>
+                                    <div className="flex-1 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full relative"><div className="absolute left-0 top-0 bottom-0 w-1/3 bg-slate-300 rounded-full" /><div className="absolute left-1/3 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm" /></div>
+                                    <Volume2 size={16} className="text-slate-600 dark:text-slate-400" /><MoreVertical size={16} className="text-slate-600 dark:text-slate-400" />
                                 </div>
                             </div>
                         </motion.div>
@@ -244,13 +244,13 @@ const AiActionsView = () => {
                     {/* Podcast: Empty State */}
                     {subTab === 'podcast' && (
                         <motion.div key="podcast" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="h-full flex flex-col">
-                            <h3 className="text-white font-medium flex items-center gap-2 mb-2"><Podcast className="text-blue-500 w-4 h-4" /> Audio Podcast</h3>
-                            <p className="text-slate-500 text-xs mb-8">Turn this document into an engaging deep-dive podcast.</p>
-                            <div className="flex-1 border border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center">
-                                <div className="w-12 h-12 rounded-full bg-[#1a2333] flex items-center justify-center mb-4 text-blue-500"><Podcast size={24} /></div>
-                                <h4 className="text-white font-medium mb-1">No podcast available</h4>
-                                <p className="text-slate-500 text-xs mb-6 max-w-xs text-center">Generate a conversation-style podcast to listen on the go.</p>
-                                <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white gap-2"><PlayCircle size={14} /> Generate</Button>
+                            <h3 className="text-slate-900 dark:text-white font-medium flex items-center gap-2 mb-2"><Podcast className="text-blue-500 w-4 h-4" /> Audio Podcast</h3>
+                            <p className="text-slate-500 dark:text-slate-400 text-xs mb-8">Turn this document into an engaging deep-dive podcast.</p>
+                            <div className="flex-1 border border-dashed border-slate-300 dark:border-white/10 rounded-xl flex flex-col items-center justify-center">
+                                <div className="w-12 h-12 rounded-full bg-white dark:bg-[#1a2333] flex items-center justify-center mb-4 text-blue-500"><Podcast size={24} /></div>
+                                <h4 className="text-slate-900 dark:text-white font-medium mb-1">No podcast available</h4>
+                                <p className="text-slate-500 dark:text-slate-400 text-xs mb-6 max-w-xs text-center">Generate a conversation-style podcast to listen on the go.</p>
+                                <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-slate-900 dark:text-white gap-2"><PlayCircle size={14} /> Generate</Button>
                             </div>
                         </motion.div>
                     )}
@@ -258,15 +258,15 @@ const AiActionsView = () => {
                     {/* Concept: Input */}
                     {subTab === 'concept' && (
                         <motion.div key="concept" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="h-full flex flex-col">
-                            <h3 className="text-white font-medium flex items-center gap-2 mb-2"><Lightbulb className="text-blue-500 w-4 h-4" /> Explain Concept</h3>
-                            <p className="text-slate-500 text-xs mb-6">Ask the AI to explain specific topics found in the document.</p>
+                            <h3 className="text-slate-900 dark:text-white font-medium flex items-center gap-2 mb-2"><Lightbulb className="text-blue-500 w-4 h-4" /> Explain Concept</h3>
+                            <p className="text-slate-500 dark:text-slate-400 text-xs mb-6">Ask the AI to explain specific topics found in the document.</p>
                             <div className="relative mb-8">
-                                <input type="text" placeholder="E.g., What is the main conclusion?" className="w-full bg-[#0b1220] border border-white/10 rounded-lg py-3 pl-4 pr-10 text-sm text-slate-300 focus:outline-none focus:border-blue-500/50" readOnly />
-                                <div className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 rounded-md text-white"><Lightbulb size={12} /></div>
+                                <input type="text" placeholder="E.g., What is the main conclusion?" className="w-full bg-slate-200 dark:bg-[#0b1220] border border-slate-300 dark:border-white/10 rounded-lg py-3 pl-4 pr-10 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:border-blue-500/50" readOnly />
+                                <div className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 rounded-md text-slate-900 dark:text-white"><Lightbulb size={12} /></div>
                             </div>
                             <div className="flex-1 flex flex-col items-center justify-center opacity-40">
                                 <Lightbulb size={48} className="text-slate-600 mb-4" />
-                                <p className="text-slate-500 text-sm font-medium">Ask a question above</p>
+                                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Ask a question above</p>
                             </div>
                         </motion.div>
                     )}
@@ -281,43 +281,43 @@ const VoiceChatView = () => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-6 h-full flex flex-col">
      <div className="flex justify-between items-center mb-6">
         <div>
-           <h2 className="text-white text-lg font-semibold flex items-center gap-2">
+           <h2 className="text-slate-900 dark:text-white text-lg font-semibold flex items-center gap-2">
               <Mic className="w-5 h-5 text-blue-500" /> Voice Assistant
            </h2>
            <p className="text-xs text-blue-400 font-mono mt-1">• INTERACTIVE LEARNING</p>
         </div>
-        <div className="bg-[#1a2333] rounded-lg p-1 flex gap-1 border border-white/5">
-           <div className="px-3 py-1.5 rounded-md text-xs text-slate-400 cursor-pointer hover:text-white">Discuss</div>
-           <div className="px-3 py-1.5 rounded-md bg-[#252f42] text-xs text-white shadow-sm border border-white/5 flex items-center gap-1.5">
+        <div className="bg-white dark:bg-[#1a2333] rounded-lg p-1 flex gap-1 border border-slate-200 dark:border-white/5">
+           <div className="px-3 py-1.5 rounded-md text-xs text-slate-600 dark:text-slate-400 cursor-pointer hover:text-slate-900 dark:text-white">Discuss</div>
+           <div className="px-3 py-1.5 rounded-md bg-slate-200 dark:bg-[#252f42] text-xs text-slate-900 dark:text-white shadow-sm border border-slate-200 dark:border-white/5 flex items-center gap-1.5">
               <BookOpen className="w-3 h-3" /> Viva Mode
            </div>
         </div>
      </div>
      <div className="flex-1 grid grid-cols-2 gap-4 mb-4">
-        <div className="bg-[#131b2e] border border-white/5 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden group">
+        <div className="bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-white/5 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden group">
            <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
            <div className="w-24 h-24 rounded-full border-2 border-blue-500/30 flex items-center justify-center relative">
               <div className="absolute inset-0 bg-blue-500/10 blur-xl rounded-full animate-pulse" />
               <Bot className="w-10 h-10 text-blue-400" />
            </div>
            <div className="mt-4 text-center">
-              <div className="text-white font-medium">Cognivio AI</div>
+              <div className="text-slate-900 dark:text-white font-medium">Cognivio AI</div>
               <div className="text-xs text-blue-400/80 mt-1 bg-blue-500/10 px-2 py-0.5 rounded-full inline-block border border-blue-500/20">LISTENING...</div>
            </div>
         </div>
-        <div className="bg-[#131b2e] border border-white/5 rounded-2xl flex flex-col items-center justify-center relative">
-           <div className="w-24 h-24 rounded-full border-2 border-slate-700 bg-slate-800/50 flex items-center justify-center">
-              <span className="text-slate-400 text-sm">User</span>
+        <div className="bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-white/5 rounded-2xl flex flex-col items-center justify-center relative">
+           <div className="w-24 h-24 rounded-full border-2 border-slate-300 dark:border-slate-700 bg-slate-200 dark:bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center">
+              <span className="text-slate-600 dark:text-slate-400 text-sm">User</span>
            </div>
            <div className="mt-4 text-center">
-              <div className="text-slate-300 font-medium">You</div>
+              <div className="text-slate-700 dark:text-slate-300 font-medium">You</div>
               <div className="text-xs text-slate-600 mt-1">MICROPHONE OFF</div>
            </div>
         </div>
      </div>
-     <div className="h-20 bg-[#131b2e] border border-white/5 rounded-2xl p-4 flex gap-4 items-center">
+     <div className="h-20 bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-white/5 rounded-2xl p-4 flex gap-4 items-center">
         <div className="h-full aspect-square bg-blue-600 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-blue-500 transition-colors shadow-lg shadow-blue-900/20 group">
-           <Mic className="text-white w-5 h-5 group-hover:scale-110 transition-transform" />
+           <Mic className="text-slate-900 dark:text-white w-5 h-5 group-hover:scale-110 transition-transform" />
         </div>
         <div className="flex-1 h-full flex items-center px-4">
            <div className="flex gap-1 items-end h-8 w-full opacity-50">
@@ -333,26 +333,26 @@ const VoiceChatView = () => (
 // --- 8. Video Overview View ---
 const VideoOverviewView = () => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full flex flex-col p-6">
-      <div className="w-full aspect-video bg-black rounded-xl border border-white/10 flex items-center justify-center relative group cursor-pointer overflow-hidden">
+      <div className="w-full aspect-video bg-black rounded-xl border border-slate-300 dark:border-white/10 flex items-center justify-center relative group cursor-pointer overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-8 z-10">
               <div>
-                  <h3 className="text-white font-bold text-2xl mb-1">Navigating Project Risk</h3>
-                  <p className="text-slate-300 text-sm">Chapter 22 • Deep Dive</p>
+                  <h3 className="text-slate-900 dark:text-white font-bold text-2xl mb-1">Navigating Project Risk</h3>
+                  <p className="text-slate-700 dark:text-slate-300 text-sm">Chapter 22 • Deep Dive</p>
               </div>
           </div>
-          <PlayCircle className="w-20 h-20 text-white opacity-80 group-hover:scale-110 transition-transform z-20" />
+          <PlayCircle className="w-20 h-20 text-slate-900 dark:text-white opacity-80 group-hover:scale-110 transition-transform z-20" />
       </div>
       <div className="mt-6 flex gap-6">
           <div className="w-64 hidden lg:block space-y-2">
-              <h4 className="text-white font-medium mb-3">Timestamps</h4>
+              <h4 className="text-slate-900 dark:text-white font-medium mb-3">Timestamps</h4>
               <div className="text-sm p-2 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 cursor-pointer">0:00 Intro to Risk</div>
-              <div className="text-sm p-2 rounded hover:bg-white/5 text-slate-400 cursor-pointer">2:15 Risk Identification</div>
-              <div className="text-sm p-2 rounded hover:bg-white/5 text-slate-400 cursor-pointer">5:40 Mitigation Strategies</div>
+              <div className="text-sm p-2 rounded hover:bg-slate-200 dark:hover:bg-white/5 text-slate-600 dark:text-slate-400 cursor-pointer">2:15 Risk Identification</div>
+              <div className="text-sm p-2 rounded hover:bg-slate-200 dark:hover:bg-white/5 text-slate-600 dark:text-slate-400 cursor-pointer">5:40 Mitigation Strategies</div>
           </div>
           <div className="flex-1">
-              <h4 className="text-white font-medium mb-3">Transcript Segment</h4>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                  "...so when we talk about <span className="text-white bg-blue-500/20">project risk</span>, we are really discussing the uncertainties that threaten the schedule. Now, contrast that with product risk..."
+              <h4 className="text-slate-900 dark:text-white font-medium mb-3">Transcript Segment</h4>
+              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                  "...so when we talk about <span className="text-slate-900 dark:text-white bg-blue-500/20">project risk</span>, we are really discussing the uncertainties that threaten the schedule. Now, contrast that with product risk..."
               </p>
           </div>
       </div>
@@ -384,7 +384,7 @@ export default function Home() {
             <div className="flex flex-col items-center text-center max-w-4xl mx-auto mb-16">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-6">
                 <Sparkles className="w-3 h-3" />
-                <span>AI Learning Assistant V2.0</span>
+                <span>AI Learning Assistant</span>
               </motion.div>
 
               <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }} className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tighter mb-6">
@@ -394,8 +394,8 @@ export default function Home() {
 
               <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
                 Cognivio isn't just a chatbot. It's a complete study workspace that generates 
-                <span className="text-foreground font-medium"> summaries, flashcards, quizzes,</span> and 
-                <span className="text-foreground font-medium"> voice simulations</span> from your documents.
+                <span className="text-foreground font-medium"> summaries, flashcards, quizzes, voice simulations</span> and 
+                <span className="text-foreground font-medium"> video overviews</span> from your uploaded material.
               </motion.p>
 
               <div className="flex gap-4 justify-center">
@@ -412,10 +412,10 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="mt-8 relative mx-auto max-w-6xl"
             >
-              <div className="bg-[#0B1220] rounded-xl border border-white/10 shadow-2xl ring-1 ring-white/5 overflow-hidden font-sans flex flex-col h-[500px] md:h-[600px] lg:h-[700px]">
+              <div className="bg-slate-50 dark:bg-[#0B1220] rounded-xl border border-slate-300 dark:border-white/10 shadow-2xl ring-1 ring-slate-200 dark:ring-white/5 overflow-hidden font-sans flex flex-col h-[500px] md:h-[600px] lg:h-[700px] w-full">
                  
                  {/* Top Navigation */}
-                 <div className="h-14 border-b border-white/5 flex items-center px-4 md:px-6 bg-[#0B1220] shrink-0 gap-6">
+                 <div className="h-14 border-b border-slate-200 dark:border-white/5 flex items-center px-2 md:px-6 bg-slate-50 dark:bg-[#0B1220] shrink-0 gap-2 md:gap-6 w-full">
                     <div className="hidden md:flex items-center gap-2 text-sm text-slate-400 min-w-fit">
                        <FileText className="w-4 h-4" />
                        <span className="font-medium">SE_Lecture_Week4.pdf</span>
@@ -443,7 +443,7 @@ export default function Home() {
                     <Sidebar />
                     
                     {/* Render Active View */}
-                    <div className="flex-1 bg-[#0B1220] relative overflow-hidden">
+                    <div className="flex-1 bg-slate-50 dark:bg-[#0B1220] relative overflow-hidden w-full">
                        <AnimatePresence mode="wait">
                           {activeTab === 'Preview' && <PreviewView key="preview" />}
                           {activeTab === 'Summary' && <SummaryView key="summary" />}
@@ -560,7 +560,7 @@ export default function Home() {
                 colSpan="md:col-span-1 lg:col-span-1"
                 rowSpan="md:row-span-2"
                 title="Video Overview"
-                description="Upload MP4s. Get transcripts and visual summaries."
+                description="Instantly generate AI-powered video explanations with dynamic visuals and natural voice narration."
                 icon={<Video className="text-violet-500" />}
               >
                  <div className="absolute inset-x-4 bottom-4 h-32 bg-muted rounded-lg border border-border overflow-hidden group-hover:border-violet-500/30 transition-colors">
@@ -626,7 +626,7 @@ export default function Home() {
                     <StepCard 
                         number="01"
                         title="Upload"
-                        desc="Drag & drop your PDFs, lecture recordings (MP3/MP4), or paste text directly."
+                        desc="Drag & drop your material (PDFs, PPTs, DOCs etc) or paste text directly."
                         icon={<Upload className="w-5 h-5 text-white" />}
                         gradient="bg-gradient-to-br from-blue-500 to-blue-600"
                     />
@@ -640,7 +640,7 @@ export default function Home() {
                      <StepCard 
                         number="03"
                         title="Master"
-                        desc="Interact with your personal tutor via Chat, Quiz, or Viva Mode to retain knowledge."
+                        desc="Transform your material into mastery with AI-generated summaries, quizzes, flashcards, voice explanations, video overviews, and live tutor chat with viva mode."
                         icon={<Trophy className="w-5 h-5 text-white" />}
                         gradient="bg-gradient-to-br from-cyan-500 to-cyan-600"
                     />

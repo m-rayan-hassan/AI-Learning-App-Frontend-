@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, RefreshCw } from "lucide-react";
+import { Loader2, RefreshCw, FileText, Sparkles } from "lucide-react";
 import { aiServices } from "@/services/aiServices";
 import documentServices from "@/services/documentServices";
 import ReactMarkdown from "react-markdown";
@@ -61,94 +61,111 @@ export function SummaryTab({ documentId }: { documentId: string }) {
   };
 
   return (
-    <div className="space-y-4 h-full flex flex-col">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-bold">Document Summary</h3>
-        <Button onClick={handleGenerate} disabled={loading} size="sm">
+    <div className="space-y-6 h-full flex flex-col pt-2 bg-transparent text-foreground">
+      <div className="flex justify-between items-center px-2">
+        <div className="flex items-center gap-3">
+          <FileText className="w-5 h-5 text-primary" />
+          <h3 className="text-lg font-semibold text-foreground tracking-wide">Document Summary</h3>
+        </div>
+        <Button 
+          onClick={handleGenerate} 
+          disabled={loading} 
+          size="sm"
+          className="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 shadow-sm transition-all rounded-md px-4 py-1.5 h-auto text-sm"
+        >
           {loading ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
-            <RefreshCw className="mr-2 h-4 w-4" />
+            <Sparkles className="mr-2 h-4 w-4 text-primary" />
           )}
-          {summary ? "Regenerate" : "Generate"} Summary
+          {summary ? "Regenerate" : "Generate"}
         </Button>
       </div>
       
-      <div className="flex-1 p-4 border rounded-md bg-muted/20 overflow-y-auto">
+      <div className="flex-1 px-2 rounded-md overflow-y-auto custom-scrollbar pb-6">
         {summary ? (
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              // Bold text
-              strong: ({ node, ...props }: any) => (
-                <span className="font-bold" {...props} />
-              ),
-              // Unordered lists (bullets)
-              ul: ({ node, ordered, ...props }: any) => (
-                <ul className="list-disc pl-4 my-2" {...props} />
-              ),
-              // Ordered lists (1. 2. 3.)
-              ol: ({ node, ordered, ...props }: any) => (
-                <ol className="list-decimal pl-4 my-2" {...props} />
-              ),
-              // List items - Destructure to remove invalid props (ordered, etc.)
-              li: ({
-                node,
-                ordered,
-                checked,
-                index,
-                siblingCount,
-                ...props
-              }: any) => <li className="mb-1" {...props} />,
-              // Paragraphs
-              p: ({ node, ...props }: any) => (
-                <p className="mb-2 last:mb-0 leading-relaxed" {...props} />
-              ),
-              // Headers
-              h1: ({ node, ...props }: any) => (
-                <h1 className="text-xl font-bold my-2" {...props} />
-              ),
-              h2: ({ node, ...props }: any) => (
-                <h2 className="text-lg font-bold my-2" {...props} />
-              ),
-              h3: ({ node, ...props }: any) => (
-                <h3 className="font-bold my-2" {...props} />
-              ),
-              // Code blocks
-              code: ({ node, inline, className, children, ...props }: any) => (
-                <code
-                  className="bg-black/10 dark:bg-white/10 rounded px-1 py-0.5 text-sm font-mono break-words"
-                  {...props}
-                >
-                  {children}
-                </code>
-              ),
-              // Blockquotes
-              blockquote: ({ node, ...props }: any) => (
-                <blockquote
-                  className="border-l-4 border-primary/50 pl-4 italic my-2"
-                  {...props}
-                />
-              ),
-              // Links
-              a: ({ node, ...props }: any) => (
-                <a
-                  className="text-primary underline underline-offset-4 hover:text-primary/80"
-                  target="_blank"
-                  rel="noreferrer"
-                  {...props}
-                />
-              ),
-            }}
-          >
-            {summary}
-          </ReactMarkdown>
+          <div className="prose max-w-none w-full markdown-summary text-foreground/90">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                // Bold text
+                strong: ({ node, ...props }: any) => (
+                  <span className="font-bold text-foreground" {...props} />
+                ),
+                // Unordered lists (bullets)
+                ul: ({ node, ordered, index, ...props }: any) => (
+                  <ul className="list-none space-y-3 my-4 ml-0" {...props} />
+                ),
+                // Ordered lists
+                ol: ({ node, ordered, index, ...props }: any) => (
+                  <ol className="list-decimal pl-5 space-y-3 my-4 text-foreground/90" {...props} />
+                ),
+                // List items
+                li: ({ node, ordered, index, ...props }: any) => (
+                  <li className="flex gap-3 text-foreground/90 leading-relaxed text-[15px] items-start" {...props}>
+                    <span className="text-primary mt-1 flex-shrink-0 text-[10px] leading-relaxed">●</span>
+                    <div>{props.children}</div>
+                  </li>
+                ),
+                // Paragraphs
+                p: ({ node, ...props }: any) => {
+                  return <p className="mb-4 text-foreground/90 leading-relaxed text-[15px]" {...props} />;
+                },
+                // Headers
+                h1: ({ node, ...props }: any) => (
+                  <h1 className="text-xl font-bold text-foreground tracking-wide my-6 uppercase" {...props} />
+                ),
+                h2: ({ node, ...props }: any) => {
+                  const title = String(props.children).toUpperCase();
+                  if (title.includes("EXECUTIVE SUMMARY")) {
+                    return (
+                      <h2 className="text-sm font-bold text-primary tracking-widest my-4 uppercase mt-2">
+                        {props.children}
+                      </h2>
+                    );
+                  }
+                  return (
+                    <h2 className="text-xs font-bold text-foreground/80 tracking-widest my-5 uppercase mt-8 pt-2">
+                      {props.children}
+                    </h2>
+                  );
+                },
+                h3: ({ node, ...props }: any) => (
+                  <h3 className="text-base font-semibold text-foreground/90 my-4" {...props} />
+                ),
+                // Tables
+                table: ({ node, ordered, index, ...props }: any) => (
+                  <div className="w-full overflow-x-auto my-6 rounded-lg border border-border">
+                    <table className="w-full text-sm text-left text-foreground/90 bg-transparent" {...props} />
+                  </div>
+                ),
+                thead: ({ node, ordered, index, ...props }: any) => (
+                  <thead className="text-xs text-muted-foreground uppercase bg-muted/50" {...props} />
+                ),
+                th: ({ node, isHeader, ordered, index, ...props }: any) => (
+                  <th className="px-6 py-4 font-bold text-foreground border-b border-border" {...props} />
+                ),
+                td: ({ node, isHeader, ordered, index, ...props }: any) => (
+                  <td className="px-6 py-4 border-t border-border" {...props} />
+                ),
+                // Blockquotes
+                blockquote: ({ node, ordered, index, ...props }: any) => (
+                  <blockquote
+                    className="border-l-4 border-primary/50 bg-primary/5 pl-6 py-3 my-6 italic text-foreground/80 rounded-r-lg"
+                    {...props}
+                  />
+                ),
+              }}
+            >
+              {summary}
+            </ReactMarkdown>
+          </div>
         ) : loading ? (
           <div className="flex justify-center items-center h-full">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : (
-          <div className="flex justify-center items-center h-full text-muted-foreground">
+           <div className="flex justify-center items-center h-[50vh] text-muted-foreground border border-dashed border-border rounded-xl m-2 bg-muted/20">
             No summary yet. Click generate to create one.
           </div>
         )}
@@ -156,3 +173,4 @@ export function SummaryTab({ documentId }: { documentId: string }) {
     </div>
   );
 }
+

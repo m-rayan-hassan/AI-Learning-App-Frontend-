@@ -105,7 +105,7 @@ const generateVideo = async (documentId: string) => {
     const response = await axiosInstance.post(API_PATHS.AI.GENERATE_VIDEO, {
       documentId
     });
-    return response.data;
+    return response.data.data;
   } catch (error: any) {
     throw error.response?.data || { message: "Failed to generate video" };
   }

@@ -49,7 +49,10 @@ const VideoOverviewTab = ({ documentId }: { documentId: string }) => {
             setLoading(true);
             setError(null);
             const res = await aiServices.generateVideo(documentId);
-            const url = res.videoUrl || res.video_url;
+            
+            // Handle both string response and object response for robustness
+            const url = typeof res === 'string' ? res : (res?.videoUrl || res?.video_url || res?.data);
+            
             if (url) {
                 localStorage.setItem(`videoUrl_${documentId}`, url);
                 setVideoUrl(url);
