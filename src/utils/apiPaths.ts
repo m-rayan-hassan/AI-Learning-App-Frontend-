@@ -30,7 +30,10 @@ export const API_PATHS = {
       `/api/ai/chat-history/${documentId}`,
     GENERATE_VOICE_OVERVIEW: "/api/ai/generate-voice-overview",
     GENERATE_PODCAST: "/api/ai/generate-podcast",
-    GENERATE_VIDEO: "/api/ai/generate-video"
+    GENERATE_VIDEO: "/api/ai/generate-video",
+    GET_VOICE_OVERVIEW_URL: (documentId: string) => `/api/ai/voice-overview-url/${documentId}`,
+    GET_PODCAST_OVERVIEW_URL: (documentId: string) => `/api/ai/podcast-overview-url/${documentId}`,
+    GET_VIDEO_OVERVIEW_URL: (documentId: string) => `/api/ai/video-overview-url/${documentId}`
   },
 
   FLASHCARDS: {

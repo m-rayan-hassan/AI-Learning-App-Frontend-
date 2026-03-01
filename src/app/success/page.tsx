@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from "framer-motion";
-import { CheckCircle, BrainCircuit, ArrowRight } from "lucide-react";
+import { CheckCircle, ArrowRight } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 export default function SuccessPage() {
@@ -95,7 +96,13 @@ export default function SuccessPage() {
           transition={{ delay: 1 }}
           className="mt-12 flex items-center gap-2 text-muted-foreground/50"
         >
-          <BrainCircuit className="w-4 h-4" />
+          <Image 
+            src="/app_logo.png" 
+            alt="Cognivio AI Logo" 
+            width={35} 
+            height={35} 
+            className="object-contain opacity-50 block grayscale"
+          />
           <span className="text-xs font-medium">Cognivio AI</span>
         </motion.div>
       </motion.div>

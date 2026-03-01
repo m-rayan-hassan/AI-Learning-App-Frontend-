@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { BrainCircuit, Github, Twitter, Linkedin } from "lucide-react";
+import { Github, Twitter, Linkedin } from "lucide-react";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -10,8 +11,14 @@ export function Footer() {
           {/* Brand Column */}
           <div className="col-span-1 md:col-span-5 space-y-4">
             <div className="flex items-center space-x-2">
-                <div className="bg-primary/10 p-1.5 rounded-lg border border-primary/10">
-                    <BrainCircuit className="h-5 w-5 text-primary" />
+                <div className="bg-primary/5 p-1 rounded-lg border border-primary/10 overflow-hidden">
+                    <Image 
+                      src="/app_logo.png" 
+                      alt="Logo" 
+                      width={35} 
+                      height={35} 
+                      className="object-contain"
+                    />
                 </div>
                 <span className="font-bold text-xl tracking-tight">
                     Cognivio<span className="text-primary">AI</span>

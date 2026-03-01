@@ -42,6 +42,23 @@ export default function DocumentsPage() {
     fetchDocuments();
   }, []);
 
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    const hasProcessingDocs = documents.some(doc => doc.status === "processing");
+    
+    if (hasProcessingDocs) {
+      interval = setInterval(() => {
+        documentServices.getDocuments()
+          .then(docs => {
+             setDocuments(docs || []);
+          })
+          .catch(err => console.error("Polling error", err));
+      }, 5000);
+    }
+    
+    return () => clearInterval(interval);
+  }, [documents]);
+
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
@@ -90,9 +107,9 @@ export default function DocumentsPage() {
     setTextContent("");
 
     try {
-      await documentServices.uploadDocument(formData);
+      const response = await documentServices.uploadDocument(formData);
       await fetchDocuments();
-      toast.success("Document uploaded successfully!", { id: toastId });
+      toast.success(response.message || "Document uploaded. AI processing started.", { id: toastId, duration: 5000 });
     } catch (err: any) {
        toast.error(err.message || "Failed to upload document", { id: toastId });
     } finally {
@@ -316,49 +333,85 @@ export default function DocumentsPage() {
                 </Card>
              )}
              {documents.map((doc) => (
-                <Card key={doc._id} className="group flex flex-col justify-between hover:shadow-xl transition-all duration-300 border border-border/50 hover:border-primary/30 relative overflow-hidden bg-card">
+                <Card key={doc._id} className={`group flex flex-col justify-between transition-all duration-300 border border-border/50 relative overflow-hidden ${doc.status === 'processing' ? 'bg-card/50 border-primary/30' : 'hover:shadow-xl hover:border-primary/30 bg-card'}`}>
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.03] to-purple-500/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    {doc.status === 'processing' && <div className="absolute inset-0 bg-primary/5 animate-pulse" />}
                     <CardHeader className="pb-2 relative">
                         <div className="flex justify-between items-start mb-2">
-                             <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300">
-                                  <FileText className="h-5 w-5 text-white" />
+                             <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${doc.status === 'processing' ? 'bg-muted animate-pulse' : 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-md shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300'}`}>
+                                  {doc.status === 'processing' ? <Loader2 className="h-5 w-5 text-muted-foreground animate-spin" /> : <FileText className="h-5 w-5 text-white" />}
                              </div>
                              <Button 
                                 variant="ghost" 
                                 size="icon" 
-                                className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100" 
+                                className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100 z-10 relative" 
                                 onClick={(e) => handleDelete(e, doc._id)}
                              >
                                  <Trash2 className="h-4 w-4" />
                              </Button>
                         </div>
                         <CardTitle className="truncate text-base" title={doc.title}>{doc.title}</CardTitle>
-                        <CardDescription className="text-xs">
-                            {(doc.fileSize / 1024).toFixed(1)} KB • {new Date(doc.createdAt).toLocaleDateString()}
+                        <CardDescription className={`text-xs ${doc.status === 'processing' ? 'text-primary animate-pulse' : ''}`}>
+                            {doc.status === 'processing' ? 'AI is analyzing and extracting content...' : `${(doc.fileSize / 1024).toFixed(1)} KB • ${new Date(doc.createdAt || doc.uploadDate).toLocaleDateString()}`}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="pb-2 relative">
-                        <div className="flex gap-2 flex-wrap">
-                            <div className="px-2.5 py-1 bg-gradient-to-r from-purple-500/15 to-purple-500/10 text-purple-700 dark:text-purple-300 text-xs rounded-full font-medium flex items-center gap-1.5 border border-purple-500/20">
-                                <GraduationCap className="h-3 w-3" />
-                                {doc.flashcardCount || 0} Cards
+                        {doc.status === 'processing' ? (
+                            <div className="flex gap-2 flex-wrap">
+                                <Skeleton className="h-6 w-20 rounded-full opacity-50" />
+                                <Skeleton className="h-6 w-24 rounded-full opacity-50" />
                             </div>
-                            <div className="px-2.5 py-1 bg-gradient-to-r from-emerald-500/15 to-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-xs rounded-full font-medium flex items-center gap-1.5 border border-emerald-500/20">
-                                <Brain className="h-3 w-3" />
-                                {doc.quizCount || 0} Quizzes
+                        ) : (
+                            <div className="flex gap-2 flex-wrap">
+                                <div className="px-2.5 py-1 bg-gradient-to-r from-purple-500/15 to-purple-500/10 text-purple-700 dark:text-purple-300 text-xs rounded-full font-medium flex items-center gap-1.5 border border-purple-500/20">
+                                    <GraduationCap className="h-3 w-3" />
+                                    {doc.flashcardCount || 0} Cards
+                                </div>
+                                <div className="px-2.5 py-1 bg-gradient-to-r from-emerald-500/15 to-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-xs rounded-full font-medium flex items-center gap-1.5 border border-emerald-500/20">
+                                    <Brain className="h-3 w-3" />
+                                    {doc.quizCount || 0} Quizzes
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </CardContent>
-                    <CardFooter className="pt-4 border-t border-border/50 mt-2 relative">
-                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground w-full">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            Ready to learn
-                         </div>
-                         <Link href={`/documents/${doc._id}`} className="w-full ml-auto">
-                            <Button size="sm" className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-sm hover:shadow-md transition-all duration-300">
-                                View Studio
-                            </Button>
-                         </Link>
+                    <CardFooter className="pt-4 border-t border-border/50 mt-2 relative flex-col gap-2">
+                         {doc.status === 'processing' ? (
+                             <div className="flex w-full items-center justify-between">
+                                 <div className="flex items-center gap-1.5 text-[11px] font-medium text-primary">
+                                    <span className="relative flex h-2 w-2">
+                                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                      <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                                    </span>
+                                    AI Extracting...
+                                 </div>
+                                 <Button size="sm" disabled className="w-auto opacity-70 h-8 text-xs px-2.5 bg-primary/10 text-primary hover:bg-primary/10">
+                                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                                    Processing
+                                 </Button>
+                             </div>
+                         ) : doc.status === 'failed' ? (
+                             <div className="flex w-full items-center justify-between">
+                                 <div className="flex items-center gap-1.5 text-xs text-destructive">
+                                    <span className="w-2 h-2 rounded-full bg-destructive"></span>
+                                    Failed to process
+                                 </div>
+                                 <Button size="sm" variant="destructive" className="w-auto h-8 z-10" onClick={(e) => handleDelete(e, doc._id)}>
+                                    Delete Document
+                                 </Button>
+                             </div>
+                         ) : (
+                             <div className="flex w-full items-center justify-between">
+                                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground w-full">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    Ready to learn
+                                 </div>
+                                 <Link href={`/documents/${doc._id}`} className="w-auto ml-auto">
+                                    <Button size="sm" className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-sm hover:shadow-md transition-all duration-300 h-8">
+                                        View Studio
+                                    </Button>
+                                 </Link>
+                             </div>
+                         )}
                     </CardFooter>
                 </Card>
              ))}

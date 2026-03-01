@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
-import { BrainCircuit, Sparkles, Menu, X } from "lucide-react";
+import { Sparkles, Menu, X } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 
 export function Navbar() {
@@ -24,9 +25,15 @@ export function Navbar() {
         {/* Logo Area */}
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center space-x-2.5 group">
-            <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors border border-primary/20">
-               <BrainCircuit className="h-5 w-5 text-primary" />
-               <div className="absolute inset-0 bg-primary/20 blur-[10px] opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-primary/5 group-hover:bg-primary/10 transition-all duration-300 border border-primary/10 overflow-hidden">
+               <Image 
+                 src="/app_logo.png" 
+                 alt="Cognivio AI Logo" 
+                 width={35} 
+                 height={35} 
+                 className="object-contain"
+               />
+               <div className="absolute inset-0 bg-primary/20 blur-[15px] opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
             <span className="font-bold text-lg tracking-tight text-foreground">
               Cognivio<span className="text-primary">AI</span>

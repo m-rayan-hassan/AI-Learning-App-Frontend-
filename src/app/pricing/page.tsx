@@ -6,8 +6,9 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Check, Sparkles, Zap, ShieldCheck, Star,
-  BrainCircuit, XCircle, ArrowUp, X, AlertTriangle
+  XCircle, ArrowUp, X, AlertTriangle
 } from "lucide-react";
+import Image from "next/image";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -410,8 +411,14 @@ export default function PricingPage() {
         <motion.div animate={{ scale: [0.9, 1.1, 0.9], opacity: [0.5, 1, 0.5] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-            <BrainCircuit className="w-6 h-6" />
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center border border-primary/20 overflow-hidden shadow-xl shadow-primary/5">
+            <Image 
+              src="/app_logo.png" 
+              alt="Logo" 
+              width={35} 
+              height={35} 
+              className="object-contain"
+            />
           </div>
           <p className="text-sm font-medium text-muted-foreground animate-pulse">Loading...</p>
         </motion.div>

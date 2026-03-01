@@ -4,10 +4,10 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Sidebar } from "@/components/Sidebar";
-import { Brain } from "lucide-react";
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
+import Image from "next/image";
 
 export default function DashboardLayout({
   children,
@@ -28,8 +28,14 @@ export default function DashboardLayout({
         <div className="flex h-screen items-center justify-center bg-background">
             <div className="flex flex-col items-center gap-4">
                 <div className="animate-brand-pulse">
-                    <div className="h-14 w-14 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg shadow-primary/25">
-                        <Brain className="h-7 w-7 text-primary-foreground" />
+                    <div className="h-16 w-16 bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 overflow-hidden shadow-xl shadow-primary/5">
+                        <Image 
+                          src="/app_logo.png" 
+                          alt="Logo" 
+                          width={35} 
+                          height={35} 
+                          className="object-contain"
+                        />
                     </div>
                 </div>
                 <div className="flex gap-1.5">
@@ -58,7 +64,18 @@ export default function DashboardLayout({
       <div className="flex flex-col flex-1 w-0 overflow-hidden">
         {/* Mobile Header */}
         <div className="md:hidden border-b p-4 flex items-center justify-between bg-background">
-            <div className="font-bold text-lg text-primary">Cognivio AI</div>
+            <div className="flex items-center gap-2">
+                <Image 
+                  src="/app_logo.png" 
+                  alt="Logo" 
+                  width={35} 
+                  height={35} 
+                  className="object-contain"
+                />
+                <div className="font-bold text-lg text-foreground tracking-tight">
+                    Cognivio<span className="text-primary">AI</span>
+                </div>
+            </div>
             <Sheet>
                 <SheetTrigger>
                     <Menu className="h-6 w-6" />

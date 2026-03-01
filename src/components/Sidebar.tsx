@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { cn } from "@/utils/cn";
 import { useAuth } from "@/context/AuthContext";
-import { LayoutDashboard, FileText, Brain, GraduationCap, User, Settings, LogOut, Moon, Sun } from "lucide-react";
+import { LayoutDashboard, FileText, GraduationCap, User, Settings, LogOut, Moon, Sun } from "lucide-react";
+import Image from "next/image";
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
@@ -22,8 +23,14 @@ export function Sidebar() {
   return (
     <div className="flex bg-background h-screen flex-col border-r w-64 p-4 space-y-6">
       <div className="flex items-center gap-2 px-2 mt-2">
-         <div className="bg-primary/10 p-2 rounded-lg">
-            <Brain className="h-6 w-6 text-primary" />
+         <div className="bg-primary/5 p-1.5 rounded-xl border border-primary/10 overflow-hidden">
+            <Image 
+              src="/app_logo.png" 
+              alt="Logo" 
+              width={35} 
+              height={35} 
+              className="object-contain"
+            />
          </div>
          <span className="font-bold text-xl tracking-tight">Cognivio AI</span>
       </div>

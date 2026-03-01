@@ -26,9 +26,9 @@ const VideoOverviewTab = ({ documentId }: { documentId: string }) => {
                     return;
                 }
 
-                const res = await documentServices.getDocumentById(documentId);
+                const res = await aiServices.getVideoOverviewUrl(documentId);
                 // Check multiple possible field names based on UIActionsTab patterns
-                const dbVideoUrl = res.videoUrl || res.video_url;
+                const dbVideoUrl = res
                 if (dbVideoUrl) {
                     localStorage.setItem(`videoUrl_${documentId}`, dbVideoUrl);
                     setVideoUrl(dbVideoUrl);

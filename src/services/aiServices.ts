@@ -81,7 +81,7 @@ const generateVoiceOverview = async (documentId: string) => {
       API_PATHS.AI.GENERATE_VOICE_OVERVIEW,
       { documentId },
     );
-    return response.data.data;
+    return response.data;
   } catch (error: any) {
     throw (
       error.response?.data || { message: "Failed to generate voice overview" }
@@ -94,7 +94,7 @@ const generatePodcast = async (documentId: string) => {
     const response = await axiosInstance.post(API_PATHS.AI.GENERATE_PODCAST, {
       documentId,
     });
-    return response.data.data;
+    return response.data;
   } catch (error: any) {
     throw error.response?.data || { message: "Failed to generate podcast" };
   }
@@ -110,6 +110,34 @@ const generateVideo = async (documentId: string) => {
     throw error.response?.data || { message: "Failed to generate video" };
   }
 }
+
+const getVoiceOverviewUrl = async (documenId: string) => {
+  try {
+    const response = await axiosInstance.get(API_PATHS.AI.GET_VOICE_OVERVIEW_URL(documenId));
+    return response.data.data
+  } catch (error: any) {
+    throw error.response?.data || { message: "Failed to get voice overview" };
+  }
+}
+
+const getPodcastOverviewUrl = async (documenId: string) => {
+  try {
+    const response = await axiosInstance.get(API_PATHS.AI.GET_PODCAST_OVERVIEW_URL(documenId));
+    return response.data.data;
+  } catch (error: any) {
+    throw error.response?.data || { message: "Failed to get podcast overview" };
+  }
+}
+
+const getVideoOverviewUrl = async (documenId: string) => {
+  try {
+    const response = await axiosInstance.get(API_PATHS.AI.GET_VIDEO_OVERVIEW_URL(documenId));
+    return response.data.data;
+  } catch (error: any) {
+    throw error.response?.data || { message: "Failed to get video overview" };
+  }
+}
+
 const aiServices = {
   generateFlashCards,
   generateQuiz,
@@ -119,6 +147,10 @@ const aiServices = {
   getChatHistory,
   generateVoiceOverview,
   generatePodcast,
-  generateVideo
+  generateVideo,
+  getVoiceOverviewUrl,
+  getPodcastOverviewUrl,
+  getVideoOverviewUrl
 };
+
 export { aiServices };

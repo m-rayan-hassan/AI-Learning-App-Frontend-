@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
 import authServices from "@/services/authServices";
 
 export default function ForgotPasswordPage() {
@@ -34,9 +35,20 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <Card>
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold">Forgot Password</CardTitle>
+    <Card className="overflow-hidden border-border/50 shadow-2xl">
+      <div className="flex justify-center pt-8">
+        <div className="relative h-16 w-16 rounded-2xl bg-primary/5 flex items-center justify-center border border-primary/10 overflow-hidden shadow-lg shadow-primary/5">
+          <Image 
+            src="/app_logo.png" 
+            alt="Cognivio AI Logo" 
+            width={35} 
+            height={35} 
+            className="object-contain"
+          />
+        </div>
+      </div>
+      <CardHeader className="space-y-1 text-center">
+        <CardTitle className="text-3xl font-bold tracking-tight">Forgot Password</CardTitle>
         <CardDescription>
           Enter your email address to receive a password reset link
         </CardDescription>

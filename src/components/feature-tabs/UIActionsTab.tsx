@@ -30,15 +30,16 @@ export function UIActionsTab({ documentId }: { documentId: string }) {
 
       if (!localVoice || !localPodcast) {
         try {
-          const doc = await documentServices.getDocumentById(documentId);
+          const voiceUrl = await aiServices.getVoiceOverviewUrl(documentId);
           
-          const dbVoiceUrl = doc.voiceOverviewUrl || doc.voiceOveviewUrl; 
+          const dbVoiceUrl = voiceUrl
           if (!localVoice && dbVoiceUrl) {
              setVoiceState(prev => ({ ...prev, url: dbVoiceUrl }));
              localStorage.setItem(`voice_${documentId}`, dbVoiceUrl);
           }
-
-          const dbPodcastUrl = doc.podcastUrl || doc.podcast_url;
+          
+          const podcastUrl = await aiServices.getPodcastOverviewUrl(documentId);
+          const dbPodcastUrl = podcastUrl
           if (!localPodcast && dbPodcastUrl) {
              setPodcastState(prev => ({ ...prev, url: dbPodcastUrl }));
              localStorage.setItem(`podcast_${documentId}`, dbPodcastUrl);
@@ -60,7 +61,7 @@ export function UIActionsTab({ documentId }: { documentId: string }) {
     
     try {
       const res = await aiServices.generateVoiceOverview(documentId);
-      const url = res.voiceOveviewUrl || res.voiceOverviewUrl;
+      const url = res.voice_url || res.voiceOveviewUrl || res.voiceOverviewUrl;
       setVoiceState({ loading: false, url: url });
       localStorage.setItem(`voice_${documentId}`, url);
       toast.success("Voice overview ready!", { id: toastId });

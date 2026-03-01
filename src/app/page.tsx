@@ -8,11 +8,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Sparkles, MessageSquare, Zap, FileText, Mic, ArrowRight, 
   PlayCircle, Layers, LayoutDashboard, User, Bot, 
-  BookOpen, Wand2, BrainCircuit, LogOut, Podcast, 
+  BookOpen, Wand2, LogOut, Podcast, 
   CheckCircle2, Sun, Play, MoreVertical, Volume2, 
   Lightbulb, Upload, Brain, Trophy, ChevronLeft, ChevronRight,
   Video, Eye
 } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 // --- Animation Variants ---
@@ -39,8 +40,14 @@ const staggerContainer = {
 const Sidebar = () => (
   <div className="w-64 border-r border-slate-200 dark:border-white/5 hidden md:flex flex-col bg-slate-100 dark:bg-[#0f1629] p-4 gap-2 text-slate-700 dark:text-slate-300">
     <div className="flex items-center gap-2 mb-8 px-2">
-      <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center text-blue-500">
-        <BrainCircuit className="w-5 h-5" />
+      <div className="w-8 h-8 rounded-lg bg-blue-600/10 flex items-center justify-center overflow-hidden border border-blue-500/10">
+        <Image 
+          src="/app_logo.png" 
+          alt="Logo" 
+          width={35} 
+          height={35} 
+          className="object-contain"
+        />
       </div>
       <span className="font-bold text-slate-900 dark:text-white tracking-tight">Cognivio AI</span>
     </div>

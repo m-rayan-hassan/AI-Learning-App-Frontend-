@@ -76,7 +76,7 @@ export default function ProfilePage() {
               <form onSubmit={handleUpdate} className="space-y-4">
                   <div className="grid gap-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input id="email" value={profile?.email} disabled readOnly className="bg-muted" />
+                      <Input id="email" value={profile?.email || ""} disabled readOnly className="bg-muted" />
                       <p className="text-xs text-muted-foreground">Email cannot be changed.</p>
                   </div>
                   <div className="grid gap-2">
