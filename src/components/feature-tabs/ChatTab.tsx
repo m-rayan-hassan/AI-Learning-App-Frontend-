@@ -7,6 +7,9 @@ import { Loader2, ArrowRight, Bot, User } from "lucide-react";
 import { aiServices } from "@/services/aiServices";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 import { toast } from "react-hot-toast";
 
 export function ChatTab({ documentId }: { documentId: string }) {
@@ -113,7 +116,8 @@ export function ChatTab({ documentId }: { documentId: string }) {
                 >
                   {m.role !== "user" ? (
                     <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
+                      remarkPlugins={[remarkGfm, remarkMath]}
+                      rehypePlugins={[rehypeKatex]}
                       className="prose max-w-none text-[15px] markdown-chat space-y-4 text-card-foreground"
                       components={{
                         strong: ({ node, ...props }: any) => (

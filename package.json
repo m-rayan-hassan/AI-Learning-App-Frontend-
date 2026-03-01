@@ -18,6 +18,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.29.2",
     "jwt-decode": "^4.0.0",
+    "katex": "^0.16.33",
     "localtunnel": "^2.0.2",
     "lucide-react": "^0.563.0",
     "next": "16.1.4",
@@ -30,7 +31,9 @@
     "react-hot-toast": "^2.6.0",
     "react-markdown": "^7.1.2",
     "react-pdf": "^10.3.0",
+    "rehype-katex": "^6.0.3",
     "remark-gfm": "^3.0.1",
+    "remark-math": "^4.0.0",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {

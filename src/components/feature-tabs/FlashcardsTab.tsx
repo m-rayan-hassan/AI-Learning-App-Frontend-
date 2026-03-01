@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
+import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 
 // --- Types ---
 
@@ -112,7 +113,10 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
       toast.success("Flashcards generated!", { id: toastId });
     } catch (err: any) {
       console.error(err);
-      toast.error(err?.error || err?.message || "Failed to generate flashcards", { id: toastId });
+      toast.error(
+        err?.error || err?.message || "Failed to generate flashcards",
+        { id: toastId },
+      );
     } finally {
       setLoading(false);
     }
@@ -279,7 +283,9 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
       toast.success("Set deleted", { id: toastId });
     } catch (err: any) {
       console.error(err);
-      toast.error(err?.error || err?.message || "Failed to delete set", { id: toastId });
+      toast.error(err?.error || err?.message || "Failed to delete set", {
+        id: toastId,
+      });
     } finally {
       setDeleting(false);
     }
@@ -291,7 +297,7 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
     const isStarred = currentCard.isStared; // Using the fixed backend field
 
     return (
-      <div className="flex flex-col h-full max-w-5xl mx-auto w-full">
+      <div className="flex flex-col max-w-5xl mx-auto w-full">
         {/* Navigation Header */}
         <div className="flex items-center justify-between p-4 border-b mb-6">
           <Button variant="ghost" onClick={handleBackToList} size="sm">
@@ -324,8 +330,8 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
         </div>
 
         {/* Card Area */}
-        <div className="flex-1 flex flex-col items-center justify-center relative perspective-1000 min-h-[300px] p-4 overflow-y-auto overflow-x-hidden">
-          <div className="w-full max-w-3xl min-h-[250px] sm:min-h-[300px] md:min-h-[350px] relative">
+        <div className="flex flex-col items-center justify-center relative perspective-1000 p-4">
+          <div className="w-full max-w-3xl h-70 sm:h-85 md:h-100 relative">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentIndex}
@@ -352,10 +358,10 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
                       <div className="absolute top-4 left-4 md:top-6 md:left-6 bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
                         Question
                       </div>
-                      <div className="w-full h-full flex items-center justify-center overflow-y-auto scrollbar-thin p-2">
-                        <h2 className="text-lg md:text-2xl lg:text-3xl font-bold leading-relaxed text-foreground/90">
-                          {currentCard.question}
-                        </h2>
+                      <div className="w-full flex items-center justify-center p-2">
+                        <div className="text-lg md:text-2xl lg:text-3xl font-bold leading-relaxed text-foreground/90 text-center">
+                          <MarkdownRenderer content={currentCard.question} />
+                        </div>
                       </div>
                       <div className="absolute bottom-4 text-[10px] md:text-xs text-muted-foreground font-medium flex items-center gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
                         <RefreshCw className="h-3 w-3" /> Tap to flip
@@ -369,13 +375,13 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
                     style={{ transform: "rotateY(180deg)" }}
                   >
                     <Card className="w-full h-full flex flex-col items-center justify-center p-6 md:p-10 text-center bg-gradient-to-br from-primary/5 to-primary/10 border-2 border-primary/20 shadow-lg rounded-2xl md:rounded-3xl relative">
-                       <div className="absolute top-4 left-4 md:top-6 md:left-6 bg-primary text-primary-foreground px-3 py-1 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider shadow-sm">
+                      <div className="absolute top-4 left-4 md:top-6 md:left-6 bg-primary text-primary-foreground px-3 py-1 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider shadow-sm">
                         Answer
                       </div>
-                      <div className="w-full h-full flex items-center justify-center overflow-y-auto scrollbar-thin p-2">
-                        <p className="text-base md:text-xl lg:text-2xl font-medium leading-relaxed text-foreground/90">
-                          {currentCard.answer}
-                        </p>
+                      <div className="w-full flex items-center justify-center p-2">
+                        <div className="text-base md:text-xl lg:text-2xl font-medium leading-relaxed text-foreground/90 text-center">
+                          <MarkdownRenderer content={currentCard.answer} />
+                        </div>
                       </div>
                     </Card>
                   </div>

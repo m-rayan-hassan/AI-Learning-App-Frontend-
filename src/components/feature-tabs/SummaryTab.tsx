@@ -7,6 +7,9 @@ import { aiServices } from "@/services/aiServices";
 import documentServices from "@/services/documentServices";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 import { toast } from "react-hot-toast";
 
 export function SummaryTab({ documentId }: { documentId: string }) {
@@ -86,7 +89,8 @@ export function SummaryTab({ documentId }: { documentId: string }) {
         {summary ? (
           <div className="prose max-w-none w-full markdown-summary text-foreground/90">
             <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
+              remarkPlugins={[remarkGfm, remarkMath]}
+              rehypePlugins={[rehypeKatex]}
               components={{
                 // Bold text
                 strong: ({ node, ...props }: any) => (

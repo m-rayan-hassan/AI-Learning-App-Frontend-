@@ -23,6 +23,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/cn";
 import { toast } from "react-hot-toast";
+import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 
 interface QuizResult {
   questionIndex: number;
@@ -288,9 +289,9 @@ export function QuizTab({ documentId }: { documentId: string }) {
                       <div className="text-xs font-semibold text-muted-foreground mb-1">
                         Question {idx + 1}
                       </div>
-                      <h4 className="font-semibold text-base leading-snug text-foreground">
-                        {result.question}
-                      </h4>
+                      <div className="font-semibold text-base leading-snug text-foreground">
+                        <MarkdownRenderer content={result.question} />
+                      </div>
                     </div>
                     <Button
                       variant="ghost"
@@ -320,14 +321,14 @@ export function QuizTab({ documentId }: { documentId: string }) {
                         )}
                       >
                         <div className="flex items-center justify-between gap-3">
-                          <span className={cn(
+                          <div className={cn(
                             "flex-1 text-sm",
                             isCorrect && "font-medium text-green-700 dark:text-green-400",
                             isUserAnswer && !isCorrect && "font-medium text-foreground",
                             !isCorrect && !isUserAnswer && "text-muted-foreground"
                           )}>
-                            {option}
-                          </span>
+                            <MarkdownRenderer content={option} />
+                          </div>
                           
                           {isCorrect && (
                             <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-700 dark:text-green-400 border border-green-500/30">
@@ -358,9 +359,9 @@ export function QuizTab({ documentId }: { documentId: string }) {
                           <p className="text-xs font-bold text-foreground mb-1">
                             EXPLANATION
                           </p>
-                          <p className="text-sm text-foreground/80 leading-relaxed">
-                            {result.explaination}
-                          </p>
+                          <div className="text-sm text-foreground/80 leading-relaxed">
+                            <MarkdownRenderer content={result.explaination} />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -430,9 +431,9 @@ export function QuizTab({ documentId }: { documentId: string }) {
           {currentQuestion && (
             <Card className="w-full max-w-3xl mt-2 animate-in fade-in slide-in-from-bottom-4 duration-300 border-none shadow-md bg-card/50 backdrop-blur-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg md:text-xl leading-relaxed">
-                  {currentQuestion.question}
-                </CardTitle>
+                <div className="text-lg md:text-xl font-semibold leading-relaxed">
+                  <MarkdownRenderer content={currentQuestion.question} />
+                </div>
               </CardHeader>
               <CardContent className="space-y-4 pt-2">
                 <div className="grid gap-3">
@@ -461,7 +462,7 @@ export function QuizTab({ documentId }: { documentId: string }) {
                             <div className="h-2 w-2 rounded-full bg-primary-foreground" />
                           )}
                         </div>
-                        <span className="text-sm md:text-base leading-snug">{opt}</span>
+                        <div className="text-sm md:text-base leading-snug"><MarkdownRenderer content={opt} /></div>
                       </div>
                     ),
                   )}
