@@ -8,7 +8,7 @@ import {
   Bot,
   Loader2,
   MessageCircle,
-  GraduationCap,
+  BookMarked,
   AlertCircle,
 } from "lucide-react";
 import { vapi } from "@/lib/vapi";
@@ -252,11 +252,8 @@ export function VoiceChat({ documentId }: { documentId: string }) {
     }
   };
 
-
-
   return (
     <div className="w-full max-w-6xl mx-auto flex flex-col gap-6 p-4 lg:p-6 animate-in fade-in duration-500">
-      
       {/* Header Card */}
       <div className="relative group overflow-hidden bg-card border border-border p-5 rounded-2xl shadow-sm transition-all duration-300">
         <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
@@ -300,7 +297,7 @@ export function VoiceChat({ documentId }: { documentId: string }) {
                   : "text-muted-foreground hover:text-foreground"
               } ${callActive ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              <GraduationCap size={16} />
+              <BookMarked size={16} />
               Viva Mode
             </button>
           </div>
@@ -317,34 +314,46 @@ export function VoiceChat({ documentId }: { documentId: string }) {
 
       {/* Main Experience Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
         {/* Assistant Perspective */}
         <div className="relative min-h-[200px] sm:min-h-[280px] lg:h-[350px] flex flex-col items-center justify-center p-6 sm:p-8 bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
-          <div className={`absolute inset-0 bg-primary/5 transition-opacity duration-1000 ${isSpeaking ? "opacity-100" : "opacity-0"}`} />
-          
+          <div
+            className={`absolute inset-0 bg-primary/5 transition-opacity duration-1000 ${isSpeaking ? "opacity-100" : "opacity-0"}`}
+          />
+
           <div className="relative z-10 flex flex-col items-center">
             <div className="relative mb-6">
               {isSpeaking && (
                 <div className="absolute -inset-6 bg-primary/20 rounded-full blur-2xl animate-pulse" />
               )}
-              <div className={`
+              <div
+                className={`
                 relative w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full bg-primary p-1 shadow-lg transition-all duration-500
                 ${isSpeaking ? "scale-105" : "scale-100"}
-              `}>
+              `}
+              >
                 <div className="w-full h-full rounded-full bg-background flex items-center justify-center border-2 border-primary/20 overflow-hidden">
-                   <Bot size={40} className={`text-primary transition-all duration-500 sm:[&]:!w-14 sm:[&]:!h-14 ${isSpeaking ? "scale-110 drop-shadow-[0_0_8px_rgba(var(--primary),0.5)]" : "opacity-90"}`} />
+                  <Bot
+                    size={40}
+                    className={`text-primary transition-all duration-500 sm:[&]:!w-14 sm:[&]:!h-14 ${isSpeaking ? "scale-110 drop-shadow-[0_0_8px_rgba(var(--primary),0.5)]" : "opacity-90"}`}
+                  />
                 </div>
               </div>
             </div>
 
             <div className="text-center">
-              <h3 className="text-lg sm:text-2xl font-bold text-foreground">Genius AI</h3>
-              <div className={`
+              <h3 className="text-lg sm:text-2xl font-bold text-foreground">
+                Genius AI
+              </h3>
+              <div
+                className={`
                 mt-3 inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-300
-                ${isSpeaking 
-                  ? "bg-primary text-primary-foreground shadow-sm" 
-                  : "bg-muted text-muted-foreground"}
-              `}>
+                ${
+                  isSpeaking
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "bg-muted text-muted-foreground"
+                }
+              `}
+              >
                 {isSpeaking ? (
                   <span className="flex items-center gap-1">
                     <span className="w-1 h-3 bg-current/50 animate-[voice_1s_ease-in-out_infinite]" />
@@ -367,7 +376,11 @@ export function VoiceChat({ documentId }: { documentId: string }) {
               <div className="absolute -inset-1 bg-gradient-to-tr from-primary to-purple-500 rounded-full opacity-20 blur-sm" />
               <div className="relative w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full bg-background border-2 border-border shadow-md overflow-hidden flex items-center justify-center">
                 {userProfileImage ? (
-                  <img src={userProfileImage} alt="User" className="w-full h-full object-cover" />
+                  <img
+                    src={userProfileImage}
+                    alt="User"
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <User size={64} className="text-muted-foreground/40" />
                 )}
@@ -388,7 +401,6 @@ export function VoiceChat({ documentId }: { documentId: string }) {
 
       {/* Control Strip & Transcript Box */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        
         {/* Call Toggle Button */}
         <div className="lg:col-span-4">
           <button
@@ -396,9 +408,11 @@ export function VoiceChat({ documentId }: { documentId: string }) {
             disabled={loadingData || connecting || !documentContent}
             className={`
               relative w-full h-full min-h-[70px] sm:min-h-[100px] rounded-2xl flex flex-col items-center justify-center gap-2 font-bold transition-all duration-300 shadow-sm
-              ${callActive 
-                ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" 
-                : "bg-primary text-primary-foreground hover:bg-primary/90"}
+              ${
+                callActive
+                  ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  : "bg-primary text-primary-foreground hover:bg-primary/90"
+              }
               ${loadingData || connecting || !documentContent ? "opacity-50 cursor-not-allowed" : "hover:scale-[1.01]"}
             `}
           >
@@ -409,9 +423,13 @@ export function VoiceChat({ documentId }: { documentId: string }) {
             ) : (
               <Mic size={28} />
             )}
-            
+
             <span className="uppercase tracking-widest text-xs">
-              {connecting ? "Connecting..." : callActive ? "End Session" : "Start Learning"}
+              {connecting
+                ? "Connecting..."
+                : callActive
+                  ? "End Session"
+                  : "Start Learning"}
             </span>
           </button>
         </div>
@@ -419,7 +437,9 @@ export function VoiceChat({ documentId }: { documentId: string }) {
         {/* Live Transcript */}
         <div className="lg:col-span-8 bg-card border border-border p-5 rounded-2xl shadow-sm flex flex-col">
           <div className="flex items-center justify-between mb-3 px-1">
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Live Transcript</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              Live Transcript
+            </span>
             {callActive && (
               <div className="flex gap-1">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
@@ -427,24 +447,35 @@ export function VoiceChat({ documentId }: { documentId: string }) {
               </div>
             )}
           </div>
-          
-          <div 
+
+          <div
             ref={scrollRef}
             className="h-[80px] sm:h-[100px] overflow-y-auto px-1 space-y-3 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border hover:scrollbar-thumb-muted-foreground/20 transition-colors"
           >
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-muted-foreground/50 text-xs italic">
-                <p>{callActive ? "Listening for speech..." : "Voice transcript will appear here"}</p>
+                <p>
+                  {callActive
+                    ? "Listening for speech..."
+                    : "Voice transcript will appear here"}
+                </p>
               </div>
             ) : (
               messages.map((msg, idx) => (
-                <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`
+                <div
+                  key={idx}
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`
                     max-w-[85%] px-4 py-2 rounded-xl text-sm leading-relaxed
-                    ${msg.role === "user" 
-                      ? "bg-primary text-primary-foreground rounded-tr-none shadow-sm" 
-                      : "bg-muted text-foreground rounded-tl-none"}
-                  `}>
+                    ${
+                      msg.role === "user"
+                        ? "bg-primary text-primary-foreground rounded-tr-none shadow-sm"
+                        : "bg-muted text-foreground rounded-tl-none"
+                    }
+                  `}
+                  >
                     {msg.content}
                   </div>
                 </div>
@@ -456,8 +487,15 @@ export function VoiceChat({ documentId }: { documentId: string }) {
 
       <style jsx>{`
         @keyframes voice {
-          0%, 100% { transform: scaleY(1); opacity: 0.5; }
-          50% { transform: scaleY(1.8); opacity: 1; }
+          0%,
+          100% {
+            transform: scaleY(1);
+            opacity: 0.5;
+          }
+          50% {
+            transform: scaleY(1.8);
+            opacity: 1;
+          }
         }
       `}</style>
     </div>

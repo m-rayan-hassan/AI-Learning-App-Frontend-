@@ -8,6 +8,14 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ChevronLeft,
+  Eye,
+  Sparkles,
+  MessageCircle,
+  Layers,
+  Trophy,
+  Zap,
+  Mic,
+  Video,
 } from "lucide-react";
 import documentServices from "@/services/documentServices";
 import { ChatTab } from "@/components/feature-tabs/ChatTab";
@@ -22,14 +30,14 @@ import VideoOverviewTab from "@/components/feature-tabs/VideoOverviewTab";
 
 // Simple Tabs usage
 const TABS = [
-  "Preview",
-  "Summary",
-  "Chat",
-  "Flashcards",
-  "Quiz",
-  "AI Actions",
-  "Voice Chat",
-  "Video Overview",
+  { label: "Preview", icon: Eye },
+  { label: "Summary", icon: Sparkles },
+  { label: "Chat", icon: MessageCircle },
+  { label: "Flashcards", icon: Layers },
+  { label: "Quiz", icon: Trophy },
+  { label: "AI Actions", icon: Zap },
+  { label: "Voice Chat", icon: Mic },
+  { label: "Video Overview", icon: Video },
 ];
 
 export default function DocumentViewPage() {
@@ -74,7 +82,7 @@ export default function DocumentViewPage() {
   if (!document) return <div>Document not found</div>;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 p-2 lg:p-4">
+    <div className="flex flex-col lg:flex-row gap-4 p-2 sm:p-3 lg:p-4">
       {/* Optional side preview pane (hidden by default) */}
       {showSidePreview && (
         <div className="hidden lg:block lg:flex-1 h-[calc(100vh-100px)] border rounded-xl overflow-hidden bg-muted shadow-sm transition-all duration-300">
@@ -145,21 +153,22 @@ export default function DocumentViewPage() {
             )}
             <div className="flex flex-nowrap gap-1">
               {(showSidePreview
-                ? TABS.filter((t) => t !== "Preview")
+                ? TABS.filter((t) => t.label !== "Preview")
                 : TABS
-              ).map((tab) => (
+              ).map(({ label, icon: Icon }) => (
                 <Button
-                  key={tab}
-                  variant={activeTab === tab ? "default" : "ghost"}
+                  key={label}
+                  variant={activeTab === label ? "default" : "ghost"}
                   size="sm"
-                  onClick={() => setActiveTab(tab)}
-                  className={`rounded-full text-xs whitespace-nowrap px-4 h-8 transition-all duration-200 ${
-                    activeTab === tab
+                  onClick={() => setActiveTab(label)}
+                  className={`rounded-full text-xs whitespace-nowrap px-3 h-8 transition-all duration-200 flex items-center gap-1.5 ${
+                    activeTab === label
                       ? "shadow-sm bg-primary text-primary-foreground font-medium"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
                 >
-                  {tab}
+                  <Icon className="h-3.5 w-3.5 shrink-0" />
+                  <span>{label}</span>
                 </Button>
               ))}
             </div>
@@ -167,7 +176,7 @@ export default function DocumentViewPage() {
         </div>
 
         {/* Content Area */}
-        <div className="p-0 md:p-2 relative bg-card/30 min-h-screen">
+        <div className="p-3 sm:p-4 md:p-5 relative bg-card/30 min-h-screen overflow-x-hidden">
           {activeTab === "Preview" && document.pdfUrl && (
             <div className="h-full w-full">
               <PDFViewer url={document.pdfUrl} />
@@ -180,7 +189,7 @@ export default function DocumentViewPage() {
             </div>
           )}
 
-          <div className="w-full max-w-full">
+          <div className="w-full max-w-full min-w-0">
             {activeTab === "Summary" && <SummaryTab documentId={id} />}
             {activeTab === "Chat" && <ChatTab documentId={id} />}
             {activeTab === "Flashcards" && <FlashcardsTab documentId={id} />}

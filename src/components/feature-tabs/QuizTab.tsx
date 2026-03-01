@@ -19,8 +19,6 @@ import {
 import { aiServices } from "@/services/aiServices";
 import quizService from "@/services/quizServices";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/cn";
 import { toast } from "react-hot-toast";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
@@ -108,7 +106,9 @@ export function QuizTab({ documentId }: { documentId: string }) {
   const handleSelectQuiz = async (quiz: any) => {
     // Check if quiz is already completed
     if (quiz.completedAt) {
-      toast.error("This quiz has already been completed. You cannot retake it.");
+      toast.error(
+        "This quiz has already been completed. You cannot retake it.",
+      );
       return;
     }
 
@@ -162,13 +162,13 @@ export function QuizTab({ documentId }: { documentId: string }) {
       const results = await quizService.getQuizResults(activeQuiz._id);
       setQuizResults(results);
       setSubmitted(true);
-      
+
       // Fetch fresh list and update cache
       const freshQuizzes = await quizService.getQuizziesForDocument(documentId);
       const data = freshQuizzes?.quizzes || freshQuizzes || [];
       setQuizzes(data);
       localStorage.setItem(`quizzes_${documentId}`, JSON.stringify(data));
-      
+
       toast.success("Quiz submitted!", { id: toastId });
     } catch (err: any) {
       console.error(err);
@@ -186,11 +186,14 @@ export function QuizTab({ documentId }: { documentId: string }) {
     const toastId = toast.loading("Deleting quiz...");
     try {
       await quizService.deleteQuiz(quizId);
-      
+
       // Update cache
       setQuizzes((prev) => {
-        const newQuizzes = prev.filter(q => q._id !== quizId);
-        localStorage.setItem(`quizzes_${documentId}`, JSON.stringify(newQuizzes));
+        const newQuizzes = prev.filter((q) => q._id !== quizId);
+        localStorage.setItem(
+          `quizzes_${documentId}`,
+          JSON.stringify(newQuizzes),
+        );
         return newQuizzes;
       });
 
@@ -222,18 +225,25 @@ export function QuizTab({ documentId }: { documentId: string }) {
     return (
       <div className="flex flex-col h-full">
         {/* Fixed Header */}
-        <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-background z-10">
-          <Button variant="ghost" onClick={handleBackToList} size="sm">
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Back to List
+        <div className="flex items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3 border-b sticky top-0 bg-background z-10">
+          <Button
+            variant="ghost"
+            onClick={handleBackToList}
+            size="sm"
+            className="shrink-0"
+          >
+            <ChevronLeft className="mr-1 h-4 w-4" />
+            <span className="hidden sm:inline">Back</span>
           </Button>
-          <h3 className="font-bold text-lg">Quiz Results</h3>
+          <h3 className="font-bold text-sm sm:text-base lg:text-lg truncate text-center flex-1">
+            Quiz Results
+          </h3>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => handleDeleteQuiz(activeQuiz._id)}
             disabled={deleting}
-            className="hover:bg-destructive/10 hover:text-destructive"
+            className="hover:bg-destructive/10 hover:text-destructive shrink-0"
           >
             {deleting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -260,11 +270,15 @@ export function QuizTab({ documentId }: { documentId: string }) {
                   {quizResults.quiz.totalQuestions} Correct
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Completed on {new Date(quizResults.quiz.completedAt).toLocaleDateString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric'
-                  })}
+                  Completed on{" "}
+                  {new Date(quizResults.quiz.completedAt).toLocaleDateString(
+                    "en-US",
+                    {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    },
+                  )}
                 </p>
               </div>
             </CardContent>
@@ -276,9 +290,9 @@ export function QuizTab({ documentId }: { documentId: string }) {
               key={idx}
               className="overflow-hidden border-l-4"
               style={{
-                borderLeftColor: result.isCorrect 
-                  ? 'rgb(34, 197, 94)' // green-500
-                  : 'hsl(var(--destructive))',
+                borderLeftColor: result.isCorrect
+                  ? "rgb(34, 197, 94)" // green-500
+                  : "hsl(var(--destructive))",
               }}
             >
               <CardContent className="p-0">
@@ -297,7 +311,9 @@ export function QuizTab({ documentId }: { documentId: string }) {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 rounded-full hover:bg-muted"
-                      onClick={() => {/* Could collapse/expand if needed */}}
+                      onClick={() => {
+                        /* Could collapse/expand if needed */
+                      }}
                     >
                       <XCircle className="h-4 w-4 text-muted-foreground" />
                     </Button>
@@ -309,34 +325,45 @@ export function QuizTab({ documentId }: { documentId: string }) {
                   {result.options.map((option, optIdx) => {
                     const isCorrect = result.correctAnswer === option;
                     const isUserAnswer = result.selectedAnswer === option;
-                    
+
                     return (
                       <div
                         key={optIdx}
                         className={cn(
                           "relative p-3 rounded-lg border-2 transition-all",
                           isCorrect && "bg-green-500/10 border-green-500/30",
-                          isUserAnswer && !isCorrect && "bg-destructive/10 border-destructive/30",
-                          !isCorrect && !isUserAnswer && "bg-muted/30 border-transparent"
+                          isUserAnswer &&
+                            !isCorrect &&
+                            "bg-destructive/10 border-destructive/30",
+                          !isCorrect &&
+                            !isUserAnswer &&
+                            "bg-muted/30 border-transparent",
                         )}
                       >
                         <div className="flex items-center justify-between gap-3">
-                          <div className={cn(
-                            "flex-1 text-sm",
-                            isCorrect && "font-medium text-green-700 dark:text-green-400",
-                            isUserAnswer && !isCorrect && "font-medium text-foreground",
-                            !isCorrect && !isUserAnswer && "text-muted-foreground"
-                          )}>
+                          <div
+                            className={cn(
+                              "flex-1 text-sm",
+                              isCorrect &&
+                                "font-medium text-green-700 dark:text-green-400",
+                              isUserAnswer &&
+                                !isCorrect &&
+                                "font-medium text-foreground",
+                              !isCorrect &&
+                                !isUserAnswer &&
+                                "text-muted-foreground",
+                            )}
+                          >
                             <MarkdownRenderer content={option} />
                           </div>
-                          
+
                           {isCorrect && (
                             <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-700 dark:text-green-400 border border-green-500/30">
                               <CheckCircle className="h-3 w-3" />
                               Correct
                             </span>
                           )}
-                          
+
                           {isUserAnswer && !isCorrect && (
                             <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-destructive/20 text-destructive dark:text-red-400 border border-destructive/30">
                               <XCircle className="h-3 w-3" />
@@ -383,18 +410,25 @@ export function QuizTab({ documentId }: { documentId: string }) {
     return (
       <div className="flex flex-col h-full">
         {/* Fixed Header */}
-        <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-background z-10">
-          <Button variant="ghost" onClick={handleBackToList} size="sm">
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Back to List
+        <div className="flex items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3 border-b sticky top-0 bg-background z-10">
+          <Button
+            variant="ghost"
+            onClick={handleBackToList}
+            size="sm"
+            className="shrink-0"
+          >
+            <ChevronLeft className="mr-1 h-4 w-4" />
+            <span className="hidden sm:inline">Back</span>
           </Button>
-          <h3 className="font-bold text-lg">{activeQuiz.title || "Quiz"}</h3>
+          <h3 className="font-bold text-sm sm:text-base lg:text-lg truncate text-center flex-1">
+            {activeQuiz.title || "Quiz"}
+          </h3>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => handleDeleteQuiz(activeQuiz._id)}
             disabled={deleting}
-            className="hover:bg-destructive/10 hover:text-destructive"
+            className="hover:bg-destructive/10 hover:text-destructive shrink-0"
           >
             {deleting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -453,16 +487,18 @@ export function QuizTab({ documentId }: { documentId: string }) {
                         <div
                           className={cn(
                             "h-5 w-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors",
-                             answers[currentQuestionIndex.toString()] === opt
+                            answers[currentQuestionIndex.toString()] === opt
                               ? "border-primary bg-primary"
-                              : "border-muted-foreground/30"
+                              : "border-muted-foreground/30",
                           )}
                         >
                           {answers[currentQuestionIndex.toString()] === opt && (
                             <div className="h-2 w-2 rounded-full bg-primary-foreground" />
                           )}
                         </div>
-                        <div className="text-sm md:text-base leading-snug"><MarkdownRenderer content={opt} /></div>
+                        <div className="text-sm md:text-base leading-snug">
+                          <MarkdownRenderer content={opt} />
+                        </div>
                       </div>
                     ),
                   )}
@@ -516,11 +552,47 @@ export function QuizTab({ documentId }: { documentId: string }) {
 
   // Show Quiz List View
   return (
-    <div className="space-y-4 h-full flex flex-col">
-      <div className="flex flex-col gap-4 border-b pb-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-bold">Quizzes</h3>
-          <Button onClick={handleGenerate} disabled={loading} size="sm">
+    <div className="space-y-5 h-full flex flex-col">
+      <div className="flex flex-col gap-4 border-b pb-5">
+        <h3 className="text-xl font-bold">Quizzes</h3>
+        {/* Generate Section */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-4 rounded-xl bg-muted/40 border border-border/60">
+          <div className="flex items-center gap-4 flex-1">
+            <div className="flex flex-col gap-0.5 flex-1">
+              <span className="text-sm font-semibold">Number of Questions</span>
+              <span className="text-xs text-muted-foreground">
+                Choose between 1 and 20
+              </span>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 rounded-lg"
+                onClick={() => setCount((c) => Math.max(1, c - 1))}
+                type="button"
+              >
+                <span className="text-base font-bold leading-none">−</span>
+              </Button>
+              <span className="w-8 text-center font-bold text-base tabular-nums select-none">
+                {count}
+              </span>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 rounded-lg"
+                onClick={() => setCount((c) => Math.min(20, c + 1))}
+                type="button"
+              >
+                <span className="text-base font-bold leading-none">+</span>
+              </Button>
+            </div>
+          </div>
+          <Button
+            onClick={handleGenerate}
+            disabled={loading}
+            className="w-full sm:w-auto shrink-0"
+          >
             {loading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
@@ -528,20 +600,6 @@ export function QuizTab({ documentId }: { documentId: string }) {
             )}
             Generate Quiz
           </Button>
-        </div>
-        <div className="flex items-center gap-2">
-          <Label htmlFor="q_count" className="text-xs">
-            Questions:
-          </Label>
-          <Input
-            id="q_count"
-            type="number"
-            min={1}
-            max={20}
-            value={count}
-            onChange={(e) => setCount(parseInt(e.target.value) || 5)}
-            className="w-20 h-8 text-xs"
-          />
         </div>
       </div>
 
@@ -551,7 +609,7 @@ export function QuizTab({ documentId }: { documentId: string }) {
             No quizzes found. Generate one!
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 pb-4">
             {quizzes.map((quiz, i) => (
               <Card
                 key={i}
@@ -560,12 +618,14 @@ export function QuizTab({ documentId }: { documentId: string }) {
                 <CardContent className="p-5 flex flex-col gap-4">
                   {/* Score Badge */}
                   <div className="flex items-start justify-between">
-                    <div className={cn(
-                      "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium",
-                      quiz.completedAt
-                        ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
-                        : "bg-muted text-muted-foreground"
-                    )}>
+                    <div
+                      className={cn(
+                        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium",
+                        quiz.completedAt
+                          ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                          : "bg-muted text-muted-foreground",
+                      )}
+                    >
                       <Trophy className="h-4 w-4" />
                       <span>Score: {quiz.score || 0}%</span>
                     </div>
@@ -592,11 +652,14 @@ export function QuizTab({ documentId }: { documentId: string }) {
                       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                         <Calendar className="h-3 w-3" />
                         <span>
-                          CREATED {new Date(quiz.createdAt).toLocaleDateString('en-US', { 
-                            month: 'short', 
-                            day: 'numeric', 
-                            year: 'numeric' 
-                          }).toUpperCase()}
+                          CREATED{" "}
+                          {new Date(quiz.createdAt)
+                            .toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })
+                            .toUpperCase()}
                         </span>
                       </div>
                     )}
@@ -616,13 +679,19 @@ export function QuizTab({ documentId }: { documentId: string }) {
                       className="w-full"
                       onClick={async () => {
                         try {
-                          const results = await quizService.getQuizResults(quiz._id);
+                          const results = await quizService.getQuizResults(
+                            quiz._id,
+                          );
                           setQuizResults(results);
                           setActiveQuiz(quiz);
                           setSubmitted(true);
                         } catch (err: any) {
                           console.error(err);
-                          toast.error(err?.error || err?.message || "Failed to load results");
+                          toast.error(
+                            err?.error ||
+                              err?.message ||
+                              "Failed to load results",
+                          );
                         }
                       }}
                     >
@@ -638,8 +707,6 @@ export function QuizTab({ documentId }: { documentId: string }) {
                       Start Quiz
                     </Button>
                   )}
-
-
                 </CardContent>
               </Card>
             ))}

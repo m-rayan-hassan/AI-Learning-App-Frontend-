@@ -17,8 +17,6 @@ import {
 import { aiServices } from "@/services/aiServices";
 import flashcardsServices from "@/services/flashcardsServices";
 import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
@@ -299,14 +297,19 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
     return (
       <div className="flex flex-col max-w-5xl mx-auto w-full">
         {/* Navigation Header */}
-        <div className="flex items-center justify-between p-4 border-b mb-6">
-          <Button variant="ghost" onClick={handleBackToList} size="sm">
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Back to List
+        <div className="flex items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3 border-b mb-4 sm:mb-6">
+          <Button
+            variant="ghost"
+            onClick={handleBackToList}
+            size="sm"
+            className="shrink-0"
+          >
+            <ChevronLeft className="mr-1 h-4 w-4" />
+            <span className="hidden sm:inline">Back</span>
           </Button>
 
-          <div className="text-center">
-            <h3 className="font-bold text-lg">
+          <div className="text-center flex-1 min-w-0">
+            <h3 className="font-bold text-sm sm:text-base lg:text-lg truncate">
               {selectedSet.title || "Flashcards"}
             </h3>
             <p className="text-xs text-muted-foreground">
@@ -465,11 +468,47 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
 
   // --- Render: Sets List View ---
   return (
-    <div className="space-y-4 h-full flex flex-col">
-      <div className="flex flex-col gap-4 border-b pb-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-bold">Flashcards</h3>
-          <Button onClick={handleGenerate} disabled={loading} size="sm">
+    <div className="space-y-5 h-full flex flex-col">
+      <div className="flex flex-col gap-4 border-b pb-5">
+        <h3 className="text-xl font-bold">Flashcards</h3>
+        {/* Generate Section */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-4 rounded-xl bg-muted/40 border border-border/60">
+          <div className="flex items-center gap-4 flex-1">
+            <div className="flex flex-col gap-0.5 flex-1">
+              <span className="text-sm font-semibold">Number of Cards</span>
+              <span className="text-xs text-muted-foreground">
+                Choose between 1 and 50
+              </span>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 rounded-lg"
+                onClick={() => setCount((c) => Math.max(1, c - 1))}
+                type="button"
+              >
+                <span className="text-base font-bold leading-none">−</span>
+              </Button>
+              <span className="w-8 text-center font-bold text-base tabular-nums select-none">
+                {count}
+              </span>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 rounded-lg"
+                onClick={() => setCount((c) => Math.min(50, c + 1))}
+                type="button"
+              >
+                <span className="text-base font-bold leading-none">+</span>
+              </Button>
+            </div>
+          </div>
+          <Button
+            onClick={handleGenerate}
+            disabled={loading}
+            className="w-full sm:w-auto shrink-0"
+          >
             {loading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
@@ -477,20 +516,6 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
             )}
             Generate Flashcards
           </Button>
-        </div>
-        <div className="flex items-center gap-2">
-          <Label htmlFor="fc_count" className="text-xs">
-            Cards:
-          </Label>
-          <Input
-            id="fc_count"
-            type="number"
-            min={1}
-            max={50}
-            value={count}
-            onChange={(e) => setCount(parseInt(e.target.value) || 5)}
-            className="w-20 h-8 text-xs"
-          />
         </div>
       </div>
 
@@ -500,7 +525,7 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
             No flashcard sets found. Generate one!
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 pb-4">
             {flashcardSets.map((set) => (
               <Card
                 key={set._id}

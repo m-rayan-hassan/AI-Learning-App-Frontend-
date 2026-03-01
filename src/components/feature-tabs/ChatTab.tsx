@@ -11,6 +11,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import { toast } from "react-hot-toast";
+import { useAuth } from "@/context/AuthContext";
 
 export function ChatTab({ documentId }: { documentId: string }) {
   const [messages, setMessages] = useState<{ role: string; content: string }[]>(
@@ -19,6 +20,10 @@ export function ChatTab({ documentId }: { documentId: string }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const userInitials = user?.username
+    ? user.username.slice(0, 2).toUpperCase()
+    : "U";
 
   // Load history
   useEffect(() => {
@@ -33,7 +38,10 @@ export function ChatTab({ documentId }: { documentId: string }) {
         const history = await aiServices.getChatHistory(documentId);
         if (history?.messages) {
           setMessages(history.messages);
-          localStorage.setItem(`chat_${documentId}`, JSON.stringify(history.messages));
+          localStorage.setItem(
+            `chat_${documentId}`,
+            JSON.stringify(history.messages),
+          );
         }
       } catch (e) {
         console.error("Failed to load history:", e);
@@ -81,7 +89,7 @@ export function ChatTab({ documentId }: { documentId: string }) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-transparent text-foreground">
+    <div className="flex flex-col h-full bg-transparent text-foreground overflow-x-hidden">
       <div
         className="flex-1 p-4 pb-6 overflow-y-auto custom-scrollbar"
         ref={scrollRef}
@@ -97,7 +105,7 @@ export function ChatTab({ documentId }: { documentId: string }) {
             return (
               <div
                 key={i}
-                className={`flex gap-3 items-start ${
+                className={`flex gap-3 items-start min-w-0 ${
                   isUser ? "justify-end" : "justify-start"
                 }`}
               >
@@ -106,9 +114,9 @@ export function ChatTab({ documentId }: { documentId: string }) {
                     <Bot className="w-4 h-4 text-primary" />
                   </div>
                 )}
-                
+
                 <div
-                  className={`max-w-[85%] rounded-2xl px-6 py-4 text-base leading-loose shadow-sm ${
+                  className={`min-w-0 max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm overflow-hidden wrap-break-word ${
                     isUser
                       ? "bg-primary text-primary-foreground rounded-tr-sm"
                       : "bg-card text-card-foreground border border-border rounded-tl-sm"
@@ -121,21 +129,39 @@ export function ChatTab({ documentId }: { documentId: string }) {
                       className="prose max-w-none text-[15px] markdown-chat space-y-4 text-card-foreground"
                       components={{
                         strong: ({ node, ...props }: any) => (
-                          <span className="font-bold text-foreground" {...props} />
+                          <span
+                            className="font-bold text-foreground"
+                            {...props}
+                          />
                         ),
                         ul: ({ node, ordered, index, ...props }: any) => (
-                          <ul className="list-disc pl-5 my-4 space-y-2 text-foreground/90" {...props} />
+                          <ul
+                            className="list-disc pl-5 my-4 space-y-2 text-foreground/90"
+                            {...props}
+                          />
                         ),
                         ol: ({ node, ordered, index, ...props }: any) => (
-                          <ol className="list-decimal pl-5 my-4 space-y-2 text-foreground/90" {...props} />
+                          <ol
+                            className="list-decimal pl-5 my-4 space-y-2 text-foreground/90"
+                            {...props}
+                          />
                         ),
                         li: ({ node, ordered, index, ...props }: any) => (
                           <li className="mb-2 leading-relaxed" {...props} />
                         ),
                         p: ({ node, ...props }: any) => (
-                          <p className="mb-4 last:mb-0 leading-loose text-foreground/90" {...props} />
+                          <p
+                            className="mb-4 last:mb-0 leading-loose text-foreground/90"
+                            {...props}
+                          />
                         ),
-                        code: ({ node, inline, className, children, ...props }: any) => {
+                        code: ({
+                          node,
+                          inline,
+                          className,
+                          children,
+                          ...props
+                        }: any) => {
                           return (
                             <code
                               className="bg-muted rounded px-1.5 py-0.5 text-[14px] font-mono break-words text-primary"
@@ -148,17 +174,41 @@ export function ChatTab({ documentId }: { documentId: string }) {
                         // Tables
                         table: ({ node, ordered, index, ...props }: any) => (
                           <div className="w-full overflow-x-auto my-6 rounded-lg border border-border">
-                            <table className="w-full text-[15px] text-left text-foreground/90 bg-transparent" {...props} />
+                            <table
+                              className="w-full text-[15px] text-left text-foreground/90 bg-transparent"
+                              {...props}
+                            />
                           </div>
                         ),
                         thead: ({ node, ordered, index, ...props }: any) => (
-                          <thead className="text-[13px] text-muted-foreground uppercase bg-muted/50" {...props} />
+                          <thead
+                            className="text-[13px] text-muted-foreground uppercase bg-muted/50"
+                            {...props}
+                          />
                         ),
-                        th: ({ node, isHeader, ordered, index, ...props }: any) => (
-                          <th className="px-6 py-4 font-bold text-foreground border-b border-border" {...props} />
+                        th: ({
+                          node,
+                          isHeader,
+                          ordered,
+                          index,
+                          ...props
+                        }: any) => (
+                          <th
+                            className="px-6 py-4 font-bold text-foreground border-b border-border"
+                            {...props}
+                          />
                         ),
-                        td: ({ node, isHeader, ordered, index, ...props }: any) => (
-                          <td className="px-6 py-4 border-t border-border" {...props} />
+                        td: ({
+                          node,
+                          isHeader,
+                          ordered,
+                          index,
+                          ...props
+                        }: any) => (
+                          <td
+                            className="px-6 py-4 border-t border-border"
+                            {...props}
+                          />
                         ),
                       }}
                     >
@@ -171,13 +221,13 @@ export function ChatTab({ documentId }: { documentId: string }) {
 
                 {isUser && (
                   <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-semibold text-secondary-foreground mt-1 border border-border">
-                    JD
+                    {userInitials}
                   </div>
                 )}
               </div>
             );
           })}
-          
+
           {loading && (
             <div className="flex gap-3 justify-start items-start">
               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 mt-1">
@@ -185,27 +235,32 @@ export function ChatTab({ documentId }: { documentId: string }) {
               </div>
               <div className="bg-card border border-border rounded-2xl rounded-tl-sm px-5 py-3.5 flex items-center shadow-sm">
                 <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                <span className="ml-2 pl-1 text-sm text-muted-foreground">Thinking...</span>
+                <span className="ml-2 pl-1 text-sm text-muted-foreground">
+                  Thinking...
+                </span>
               </div>
             </div>
           )}
         </div>
       </div>
-      
-      <div className="p-4 bg-transparent mt-2">
-        <form onSubmit={handleSend} className="relative flex items-center">
+
+      <div className="px-4 pb-4 pt-2 bg-transparent">
+        <form
+          onSubmit={handleSend}
+          className="flex items-center gap-2 rounded-xl border border-border bg-background shadow-sm px-3 py-1.5 focus-within:ring-1 focus-within:ring-primary transition-all"
+        >
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask a follow-up question..."
             disabled={loading}
-            className="w-full bg-background border-border text-foreground rounded-full pl-6 pr-14 py-6 focus-visible:ring-1 focus-visible:ring-primary shadow-sm placeholder:text-muted-foreground text-[15px]"
+            className="flex-1 border-none bg-transparent shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground text-sm h-9 px-0"
           />
-          <Button 
-            type="submit" 
-            size="icon" 
+          <Button
+            type="submit"
+            size="icon"
             disabled={loading || !input.trim()}
-            className="absolute right-2 rounded-full w-9 h-9 bg-primary hover:bg-primary/90 text-primary-foreground transition-all shadow-md disabled:bg-primary/50 disabled:text-primary-foreground/50"
+            className="shrink-0 rounded-lg w-8 h-8 bg-primary hover:bg-primary/90 text-primary-foreground transition-all shadow-sm disabled:opacity-40"
           >
             <ArrowRight className="h-4 w-4" />
           </Button>
