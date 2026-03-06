@@ -1,4 +1,5 @@
-export const BASE_URL = "http://localhost:8080";
+export const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export const API_PATHS = {
   AUTH: {
@@ -31,9 +32,12 @@ export const API_PATHS = {
     GENERATE_VOICE_OVERVIEW: "/api/ai/generate-voice-overview",
     GENERATE_PODCAST: "/api/ai/generate-podcast",
     GENERATE_VIDEO: "/api/ai/generate-video",
-    GET_VOICE_OVERVIEW_URL: (documentId: string) => `/api/ai/voice-overview-url/${documentId}`,
-    GET_PODCAST_OVERVIEW_URL: (documentId: string) => `/api/ai/podcast-overview-url/${documentId}`,
-    GET_VIDEO_OVERVIEW_URL: (documentId: string) => `/api/ai/video-overview-url/${documentId}`
+    GET_VOICE_OVERVIEW_URL: (documentId: string) =>
+      `/api/ai/voice-overview-url/${documentId}`,
+    GET_PODCAST_OVERVIEW_URL: (documentId: string) =>
+      `/api/ai/podcast-overview-url/${documentId}`,
+    GET_VIDEO_OVERVIEW_URL: (documentId: string) =>
+      `/api/ai/video-overview-url/${documentId}`,
   },
 
   FLASHCARDS: {
