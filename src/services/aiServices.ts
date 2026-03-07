@@ -114,18 +114,9 @@ const generateVideo = async (documentId: string) => {
 const getVoiceOverviewUrl = async (documenId: string) => {
   try {
     const response = await axiosInstance.get(API_PATHS.AI.GET_VOICE_OVERVIEW_URL(documenId));
-    return response.data.data
-  } catch (error: any) {
-    throw error.response?.data || { message: "Failed to get voice overview" };
-  }
-}
-
-const getPodcastOverviewUrl = async (documenId: string) => {
-  try {
-    const response = await axiosInstance.get(API_PATHS.AI.GET_PODCAST_OVERVIEW_URL(documenId));
     return response.data.data;
   } catch (error: any) {
-    throw error.response?.data || { message: "Failed to get podcast overview" };
+    throw error.response?.data || { message: "Failed to get voice overview" };
   }
 }
 
@@ -149,7 +140,6 @@ const aiServices = {
   generatePodcast,
   generateVideo,
   getVoiceOverviewUrl,
-  getPodcastOverviewUrl,
   getVideoOverviewUrl
 };
 

@@ -16,17 +16,19 @@ import {
   Zap,
   Mic,
   Video,
+  Lightbulb
 } from "lucide-react";
 import documentServices from "@/services/documentServices";
 import { ChatTab } from "@/components/feature-tabs/ChatTab";
 import { SummaryTab } from "@/components/feature-tabs/SummaryTab";
 import { FlashcardsTab } from "@/components/feature-tabs/FlashcardsTab";
 import { QuizTab } from "@/components/feature-tabs/QuizTab";
-import { UIActionsTab } from "@/components/feature-tabs/UIActionsTab";
+import VideoOverviewTab from "@/components/feature-tabs/VideoOverviewTab";
 import { Button } from "@/components/ui/button";
 import { PDFViewer } from "@/components/PDFViewer"; // <--- IMPORT THIS
 import VoiceChat from "@/components/feature-tabs/VoiceChat";
-import VideoOverviewTab from "@/components/feature-tabs/VideoOverviewTab";
+import ExplainConcept from "@/components/feature-tabs/ExplainConceptTab";
+import { VoiceOverviewTab } from "@/components/feature-tabs/VoiceOverviewTab";
 
 // Simple Tabs usage
 const TABS = [
@@ -35,7 +37,8 @@ const TABS = [
   { label: "Chat", icon: MessageCircle },
   { label: "Flashcards", icon: Layers },
   { label: "Quiz", icon: Trophy },
-  { label: "AI Actions", icon: Zap },
+  { label: "Voice Overview", icon: Mic, },
+  { label: "Concept", icon: Lightbulb },
   { label: "Voice Chat", icon: Mic },
   { label: "Video Overview", icon: Video },
 ];
@@ -194,7 +197,8 @@ export default function DocumentViewPage() {
             {activeTab === "Chat" && <ChatTab documentId={id} />}
             {activeTab === "Flashcards" && <FlashcardsTab documentId={id} />}
             {activeTab === "Quiz" && <QuizTab documentId={id} />}
-            {activeTab === "AI Actions" && <UIActionsTab documentId={id} />}
+            {activeTab === "Voice Overview" && <VoiceOverviewTab documentId={id} />}
+            {activeTab === "Concept" && <ExplainConcept documentId={id} />}
             {activeTab === "Voice Chat" && <VoiceChat documentId={id} />}
             {activeTab === "Video Overview" && (
               <VideoOverviewTab documentId={id} />
