@@ -1,36 +1,124 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cognivio AI Frontend
+
+The frontend for **Cognivio AI**, an AI-powered learning platform that transforms documents into interactive study experiences.
+
+This application provides the user-facing experience for document upload, AI summaries, flashcards, quizzes, contextual chat, `Voice Chat`, `Voice Overview`, `Podcast Overview`, `Video Overview`, authentication, and subscription management.
+
+---
+
+## Features
+
+- Modern App Router experience built with Next.js
+- Authentication flows: login, register, forgot password, reset password
+- Google OAuth integration
+- Document upload and document library UI
+- AI summaries and concept explanations
+- Flashcards and quiz interfaces
+- Contextual document chat
+- `Voice Chat` integration with Vapi
+- `Voice Overview`, `Podcast Overview`, and `Video Overview` user flows
+- Pricing and Paddle-powered subscription screens
+- Dashboard and user profile experience
+
+---
+
+## Tech Stack
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Radix UI
+- Axios
+- Framer Motion
+- React Hook Form
+- KaTeX / Markdown rendering utilities
+
+---
+
+## Project Structure
+
+```text
+frontend/
+├─ public/                   # Static assets
+├─ src/
+│  ├─ app/                   # App Router pages, route groups, layouts
+│  ├─ components/            # Shared components and feature-specific UI
+│  ├─ context/               # Global React context providers
+│  ├─ lib/                   # Library integrations (e.g. Vapi)
+│  ├─ services/              # API service wrappers
+│  ├─ utils/                 # Helpers, API config, shared utilities
+│  └─ types.d.ts             # Shared type declarations
+├─ components.json           # UI component config
+├─ next.config.ts            # Next.js configuration
+├─ package.json              # Scripts and dependencies
+└─ tsconfig.json             # TypeScript configuration
+```
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 20+
+- npm 10+
+- Running Cognivio AI backend server
+
+### Installation
+
+```bash
+npm install
+```
+
+### Environment Variables
+
+Create a `.env.local` file in the `frontend` directory:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8080
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
+NEXT_PUBLIC_VAPI_PUBLIC_KEY=your_vapi_public_key
+NEXT_PUBLIC_VAPI_WORKFLOW_ID=your_vapi_workflow_id
+NEXT_PUBLIC_PADDLE_ENV=sandbox
+NEXT_PUBLIC_PADDLE_CLIENT_TOKEN=your_paddle_client_token
+```
+
+### Run in Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000` in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Available Scripts
 
-## Learn More
+- `npm run dev` — Start the development server
+- `npm run build` — Build the app for production
+- `npm run start` — Start the production server
+- `npm run lint` — Run ESLint
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Frontend Responsibilities
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This repository is responsible for:
 
-## Deploy on Vercel
+- Rendering all user-facing pages and flows
+- Managing authenticated client sessions
+- Calling backend APIs for AI and document operations
+- Handling subscription and pricing flows
+- Displaying generated learning assets and interactive study tools
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Related Repositories
+
+- Root project repository: parent monorepo/submodule container
+- Backend API: Cognivio AI server repository
+
+---
+
