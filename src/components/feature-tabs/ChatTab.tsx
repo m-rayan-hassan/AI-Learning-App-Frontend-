@@ -12,6 +12,60 @@ import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import { toast } from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
+import React from "react";
+
+// Memoize the markdown component so it doesn't re-render on every keystroke
+const MemoizedMarkdown = React.memo(({ content }: { content: string }) => {
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm, remarkMath]}
+      rehypePlugins={[rehypeKatex]}
+      className="prose max-w-none text-[15px] markdown-chat space-y-4 text-card-foreground"
+      components={{
+        strong: ({ node, ...props }: any) => (
+          <span className="font-bold text-foreground" {...props} />
+        ),
+        ul: ({ node, ordered, index, ...props }: any) => (
+          <ul className="list-disc pl-5 my-4 space-y-2 text-foreground/90" {...props} />
+        ),
+        ol: ({ node, ordered, index, ...props }: any) => (
+          <ol className="list-decimal pl-5 my-4 space-y-2 text-foreground/90" {...props} />
+        ),
+        li: ({ node, ordered, index, ...props }: any) => (
+          <li className="mb-2 leading-relaxed" {...props} />
+        ),
+        p: ({ node, ...props }: any) => (
+          <p className="mb-4 last:mb-0 leading-loose text-foreground/90" {...props} />
+        ),
+        code: ({ node, inline, className, children, ...props }: any) => {
+          return (
+            <code className="bg-muted rounded px-1.5 py-0.5 text-[14px] font-mono break-words text-primary" {...props}>
+              {children}
+            </code>
+          );
+        },
+        table: ({ node, ordered, index, ...props }: any) => (
+          <div className="w-full overflow-x-auto my-6 rounded-lg border border-border">
+            <table className="w-full text-[15px] text-left text-foreground/90 bg-transparent" {...props} />
+          </div>
+        ),
+        thead: ({ node, ordered, index, ...props }: any) => (
+          <thead className="text-[13px] text-muted-foreground uppercase bg-muted/50" {...props} />
+        ),
+        th: ({ node, isHeader, ordered, index, ...props }: any) => (
+          <th className="px-6 py-4 font-bold text-foreground border-b border-border" {...props} />
+        ),
+        td: ({ node, isHeader, ordered, index, ...props }: any) => (
+          <td className="px-6 py-4 border-t border-border" {...props} />
+        ),
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
+});
+
+MemoizedMarkdown.displayName = "MemoizedMarkdown";
 
 export function ChatTab({ documentId }: { documentId: string }) {
   const [messages, setMessages] = useState<{ role: string; content: string }[]>(
@@ -50,12 +104,43 @@ export function ChatTab({ documentId }: { documentId: string }) {
     loadHistory();
   }, [documentId]);
 
-  // Auto-scroll
-  useEffect(() => {
+  // Auto-scroll logic (scroll window to bottom)
+  const scrollToBottom = () => {
+    // Scroll the entire window/document body to the bottom
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: "smooth"
+    });
+    // In case the parent scrollable container is not 'window' (which is very common in dashboard layouts like this),
+    // we also scroll the main element into view.
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        scrollRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
     }
+  };
+
+  // Scroll to bottom when messages change or component mounts
+  useEffect(() => {
+    scrollToBottom();
   }, [messages]);
+
+  // Robust auto-scroll observer for the inner content wrapper
+  useEffect(() => {
+    if (!scrollRef.current) return;
+    const contentNode = scrollRef.current.firstElementChild;
+    if (!contentNode) return;
+
+    let timeoutId: NodeJS.Timeout;
+    const observer = new ResizeObserver(() => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(scrollToBottom, 50);
+    });
+
+    observer.observe(contentNode);
+    return () => {
+      observer.disconnect();
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,11 +180,8 @@ export function ChatTab({ documentId }: { documentId: string }) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-transparent text-foreground overflow-x-hidden">
-      <div
-        className="flex-1 p-4 pb-6 overflow-y-auto custom-scrollbar"
-        ref={scrollRef}
-      >
+    <div className="flex flex-col w-full text-foreground relative pb-2" ref={scrollRef}>
+      <div className="flex-1 p-4 pb-16">
         {messages.length === 0 && (
           <div className="flex justify-center items-center h-full text-muted-foreground">
             Ask a question about your document!
@@ -129,97 +211,7 @@ export function ChatTab({ documentId }: { documentId: string }) {
                   }`}
                 >
                   {m.role !== "user" ? (
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm, remarkMath]}
-                      rehypePlugins={[rehypeKatex]}
-                      className="prose max-w-none text-[15px] markdown-chat space-y-4 text-card-foreground"
-                      components={{
-                        strong: ({ node, ...props }: any) => (
-                          <span
-                            className="font-bold text-foreground"
-                            {...props}
-                          />
-                        ),
-                        ul: ({ node, ordered, index, ...props }: any) => (
-                          <ul
-                            className="list-disc pl-5 my-4 space-y-2 text-foreground/90"
-                            {...props}
-                          />
-                        ),
-                        ol: ({ node, ordered, index, ...props }: any) => (
-                          <ol
-                            className="list-decimal pl-5 my-4 space-y-2 text-foreground/90"
-                            {...props}
-                          />
-                        ),
-                        li: ({ node, ordered, index, ...props }: any) => (
-                          <li className="mb-2 leading-relaxed" {...props} />
-                        ),
-                        p: ({ node, ...props }: any) => (
-                          <p
-                            className="mb-4 last:mb-0 leading-loose text-foreground/90"
-                            {...props}
-                          />
-                        ),
-                        code: ({
-                          node,
-                          inline,
-                          className,
-                          children,
-                          ...props
-                        }: any) => {
-                          return (
-                            <code
-                              className="bg-muted rounded px-1.5 py-0.5 text-[14px] font-mono break-words text-primary"
-                              {...props}
-                            >
-                              {children}
-                            </code>
-                          );
-                        },
-                        // Tables
-                        table: ({ node, ordered, index, ...props }: any) => (
-                          <div className="w-full overflow-x-auto my-6 rounded-lg border border-border">
-                            <table
-                              className="w-full text-[15px] text-left text-foreground/90 bg-transparent"
-                              {...props}
-                            />
-                          </div>
-                        ),
-                        thead: ({ node, ordered, index, ...props }: any) => (
-                          <thead
-                            className="text-[13px] text-muted-foreground uppercase bg-muted/50"
-                            {...props}
-                          />
-                        ),
-                        th: ({
-                          node,
-                          isHeader,
-                          ordered,
-                          index,
-                          ...props
-                        }: any) => (
-                          <th
-                            className="px-6 py-4 font-bold text-foreground border-b border-border"
-                            {...props}
-                          />
-                        ),
-                        td: ({
-                          node,
-                          isHeader,
-                          ordered,
-                          index,
-                          ...props
-                        }: any) => (
-                          <td
-                            className="px-6 py-4 border-t border-border"
-                            {...props}
-                          />
-                        ),
-                      }}
-                    >
-                      {m.content}
-                    </ReactMarkdown>
+                    <MemoizedMarkdown content={m.content} />
                   ) : (
                     <div className="whitespace-pre-wrap">{m.content}</div>
                   )}
@@ -250,7 +242,7 @@ export function ChatTab({ documentId }: { documentId: string }) {
         </div>
       </div>
 
-      <div className="px-4 pb-4 pt-2 bg-transparent">
+      <div className="sticky bottom-0 w-full px-4 pb-4 pt-4 bg-background border-t border-border/40 z-10 mt-auto">
         <form
           onSubmit={handleSend}
           className="flex items-center gap-2 rounded-xl border border-border bg-background shadow-sm px-3 py-1.5 focus-within:ring-1 focus-within:ring-primary transition-all"

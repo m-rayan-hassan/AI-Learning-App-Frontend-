@@ -36,6 +36,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  const logout = () => {
+    localStorage.removeItem("Token");
+    setToken(null);
+    setUser(null);
+    router.push("/");
+  };
+
   // Load user from token on mount
   useEffect(() => {
     const initAuth = async () => {
@@ -93,13 +100,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       throw error;
     }
-  };
-
-  const logout = () => {
-    localStorage.removeItem("Token");
-    setToken(null);
-    setUser(null);
-    router.push("/"); // Optional: redirect to login
   };
 
   return (

@@ -95,13 +95,7 @@ export function VoiceOverviewTab({ documentId }: { documentId: string }) {
 
 
   // --- 3. Ensure active tab matches generated content ---
-  useEffect(() => {
-    if (voiceState.url && !podcastState.url && activeTab === "podcast") {
-      setActiveTab("voice");
-    } else if (podcastState.url && !voiceState.url && activeTab === "voice") {
-      setActiveTab("podcast");
-    }
-  }, [voiceState.url, podcastState.url, activeTab]);
+  // Removed useEffect to fix react-hooks/set-state-in-effect warning. Tab state should generally be managed via user interaction.
 
   return (
     <div className="h-full w-full flex flex-col gap-4 sm:gap-6">
