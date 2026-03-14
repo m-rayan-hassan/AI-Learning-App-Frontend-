@@ -81,8 +81,14 @@ export function ChatTab({ documentId }: { documentId: string }) {
         localStorage.setItem(`chat_${documentId}`, JSON.stringify(newMessages));
         return newMessages;
       });
-    } catch (err) {
-      toast.error("Failed to get response. Please try again.");
+    } catch (err: any) {
+      const errorMsg =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to get response. Please try again.";
+      toast.error(errorMsg);
+      // Remove the optimistically added user message if the request failed
+      setMessages((prev) => prev.slice(0, -1));
     } finally {
       setLoading(false);
     }

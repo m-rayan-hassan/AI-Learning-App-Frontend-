@@ -121,4 +121,3 @@ This repository is responsible for:
 - Backend API: Cognivio AI server repository
 
 ---
-

@@ -9,7 +9,12 @@ interface User {
   username: string;
   email: string;
   profileImage?: string;
-  // Add other user fields as needed
+  planType: 'free' | 'plus' | 'pro' | 'premium';
+  subscriptionStatus?: string;
+  subscriptionEndDate?: string;
+  paddleScheduledChange?: { action: string; effectiveAt?: string };
+  quotas?: any;
+  createdAt?: string;
 }
 
 interface AuthContextType {

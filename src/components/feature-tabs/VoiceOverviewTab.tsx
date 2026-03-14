@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Mic, Headphones, Lightbulb, PlayCircle, FileAudio, Send } from "lucide-react";
+import { Loader2, Mic, Headphones, Lightbulb, PlayCircle, FileAudio, Send, Lock } from "lucide-react";
 import { aiServices } from "@/services/aiServices";
 import { toast } from "react-hot-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export function VoiceOverviewTab({ documentId }: { documentId: string }) {
+  const { user } = useAuth();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"voice" | "podcast" | "concept">("voice");
 
   // State
@@ -158,10 +161,17 @@ export function VoiceOverviewTab({ documentId }: { documentId: string }) {
                       <p className="text-sm font-medium text-foreground">No audio generated yet</p>
                       <p className="text-xs text-muted-foreground max-w-[200px] mx-auto">Create a concise voice summary of your document instantly.</p>
                   </div>
-                  <Button onClick={() => handleVoice(false)} disabled={voiceState.loading} className="w-full sm:w-auto min-w-[140px]">
-                    {voiceState.loading ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <PlayCircle className="mr-2 h-4 w-4" />}
-                    Generate
-                  </Button>
+                  {user?.planType === "free" ? (
+                    <Button onClick={() => router.push("/pricing")} variant="outline" className="w-full sm:w-auto min-w-[140px] border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
+                      <Lock className="mr-2 h-4 w-4 text-slate-500" />
+                      Upgrade to Unlock
+                    </Button>
+                  ) : (
+                    <Button onClick={() => handleVoice(false)} disabled={voiceState.loading} className="w-full sm:w-auto min-w-[140px]">
+                      {voiceState.loading ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <PlayCircle className="mr-2 h-4 w-4" />}
+                      Generate
+                    </Button>
+                  )}
               </div>
             ) : (
               <div className="space-y-4">
@@ -203,10 +213,17 @@ export function VoiceOverviewTab({ documentId }: { documentId: string }) {
                       <p className="text-sm font-medium text-foreground">No podcast available</p>
                       <p className="text-xs text-muted-foreground max-w-[200px] mx-auto">Generate a conversation-style podcast to listen on the go.</p>
                   </div>
-                  <Button onClick={() => handlePodcast(false)} disabled={podcastState.loading} className="w-full sm:w-auto min-w-[140px]">
-                    {podcastState.loading ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <PlayCircle className="mr-2 h-4 w-4" />}
-                    Generate
-                  </Button>
+                  {user?.planType === "free" ? (
+                    <Button onClick={() => router.push("/pricing")} variant="outline" className="w-full sm:w-auto min-w-[140px] border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
+                      <Lock className="mr-2 h-4 w-4 text-slate-500" />
+                      Upgrade to Unlock
+                    </Button>
+                  ) : (
+                    <Button onClick={() => handlePodcast(false)} disabled={podcastState.loading} className="w-full sm:w-auto min-w-[140px]">
+                      {podcastState.loading ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <PlayCircle className="mr-2 h-4 w-4" />}
+                      Generate
+                    </Button>
+                  )}
               </div>
             ) : (
                 <div className="space-y-4">
