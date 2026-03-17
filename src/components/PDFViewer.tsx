@@ -139,7 +139,7 @@ export function PDFViewer({ url }: PDFViewerProps) {
                   pageNumber={index + 1}
                   width={pageWidth ? Math.round(pageWidth * scale) : undefined}
                   rotate={rotation}
-                  renderTextLayer={false}
+                  renderTextLayer={true}
                   renderAnnotationLayer={false}
                   className="bg-white"
                 />
