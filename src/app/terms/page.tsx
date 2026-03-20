@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Cognivio AI",
+  title: "Terms of Service",
   description:
     "Read the Terms of Service for Cognivio AI. Understand your rights, obligations, and the rules governing your use of our AI-powered learning platform.",
 };

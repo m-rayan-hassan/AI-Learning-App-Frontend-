@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Cognivio AI",
+  title: "Privacy Policy",
   description:
     "Learn how Cognivio AI collects, uses, and protects your personal data. Read our full Privacy Policy.",
 };

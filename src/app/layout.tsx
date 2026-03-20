@@ -9,7 +9,10 @@ import { Toaster } from "react-hot-toast";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Cognivio AI",
+  title: {
+    template: "%s | Cognivio AI",
+    default: "Cognivio AI",
+  },
   description: "Your personal AI learning assistant",
 };
 

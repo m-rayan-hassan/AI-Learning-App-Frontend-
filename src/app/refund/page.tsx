@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Refund Policy | Cognivio AI",
+  title: "Refund Policy",
   description:
     "Understand our refund and cancellation policies for Cognivio AI subscriptions. Learn about eligibility, timelines, and how to request a refund.",
 };
