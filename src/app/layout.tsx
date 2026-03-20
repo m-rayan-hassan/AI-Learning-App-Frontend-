@@ -9,6 +9,12 @@ import { Toaster } from "react-hot-toast";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
+  applicationName: "Cognivio AI",
+  appleWebApp: {
+    capable: true,
+    title: "Cognivio AI",
+    statusBarStyle: "default",
+  },
   title: {
     template: "%s | Cognivio AI",
     default: "Cognivio AI",
