@@ -291,10 +291,17 @@ export default function PricingPage() {
     (async () => {
       try {
         const authToken = token || localStorage.getItem("Token");
-        if (!authToken) { router.push('/login'); return; }
 
-        const profileData = await authServices.getProfile();
-        setUser(profileData);
+        // Load profile only if authenticated
+        if (authToken) {
+          try {
+            const profileData = await authServices.getProfile();
+            setUser(profileData);
+          } catch (err: any) {
+            console.error("Profile load error:", err);
+            // Not authorized — continue as public visitor
+          }
+        }
 
         const env = (process.env.NEXT_PUBLIC_PADDLE_ENV as 'sandbox' | 'production') || 'sandbox';
         const paddleToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
@@ -315,7 +322,6 @@ export default function PricingPage() {
         }
       } catch (err: any) {
         console.error("Init error:", err);
-        if (err?.message?.includes("Not authorized")) router.push('/login');
       } finally {
         setLoadingUser(false);
       }
@@ -425,7 +431,7 @@ export default function PricingPage() {
       </div>
     );
   }
-  if (!user) return null;
+  // If not logged in, still show the page (public pricing)
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
@@ -460,8 +466,12 @@ export default function PricingPage() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">learning speed.</span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Hello, {user.username}. You are on the{' '}
-              <span className="font-bold text-foreground uppercase">{user.planType}</span> plan.
+              {user ? (
+                <>Hello, {user.username}. You are on the{' '}
+                <span className="font-bold text-foreground uppercase">{user.planType}</span> plan.</>
+              ) : (
+                <>Choose the plan that fits your learning goals.</>  
+              )}
             </p>
 
             {/* Messages */}
@@ -486,44 +496,44 @@ export default function PricingPage() {
             
             {(() => {
               const planRanks: Record<string, number> = { free: 0, plus: 1, pro: 2, premium: 3 };
-              const currentRank = planRanks[user.planType] || 0;
-              const isCanceled = user.subscriptionStatus === 'canceled' || user.paddleScheduledChange?.action === 'cancel';
-              const expirationDate = user.subscriptionEndDate;
+              const currentRank = planRanks[user?.planType ?? ''] ?? -1;
+              const isCanceled = user?.subscriptionStatus === 'canceled' || user?.paddleScheduledChange?.action === 'cancel';
+              const expirationDate = user?.subscriptionEndDate;
 
               return (
                 <>
                   <PricingCard plan="free" price="0"
                     description="Ideal for students starting their AI-enhanced learning journey."
                     features={PLAN_FEATURES.free}
-                    isCurrent={user.planType === 'free'} isProcessing={false} 
+                    isCurrent={user?.planType === 'free'} isProcessing={false} 
                     isDowngrade={planRanks['free'] < currentRank}
-                    onUpgrade={() => {}} />
+                    onUpgrade={() => !user ? router.push('/login') : undefined} />
 
                   <PricingCard plan="plus" price="5"
                     description="Unlock more documents and essential AI study tools."
                     features={PLAN_FEATURES.plus}
-                    isCurrent={user.planType === 'plus'} isProcessing={processingPlan === 'plus'}
+                    isCurrent={user?.planType === 'plus'} isProcessing={processingPlan === 'plus'}
                     isDowngrade={planRanks['plus'] < currentRank}
                     isCanceled={isCanceled} expirationDate={expirationDate}
-                    onUpgrade={() => handleSubscription('plus')}
+                    onUpgrade={() => user ? handleSubscription('plus') : router.push('/login')}
                     onCancel={handleCancel} showCancel={true} />
 
                   <PricingCard plan="pro" price="10"
                     description="The complete experience with Voice Chat and Video Analysis."
                     features={PLAN_FEATURES.pro}
-                    isCurrent={user.planType === 'pro'} isProcessing={processingPlan === 'pro'}
+                    isCurrent={user?.planType === 'pro'} isProcessing={processingPlan === 'pro'}
                     isDowngrade={planRanks['pro'] < currentRank}
                     isCanceled={isCanceled} expirationDate={expirationDate}
-                    onUpgrade={() => handleSubscription('pro')}
+                    onUpgrade={() => user ? handleSubscription('pro') : router.push('/login')}
                     onCancel={handleCancel} showCancel={true} highlight={true} />
 
                   <PricingCard plan="premium" price="20"
                     description="Power-user features for research and deep technical mastery."
                     features={PLAN_FEATURES.premium}
-                    isCurrent={user.planType === 'premium'} isProcessing={processingPlan === 'premium'}
+                    isCurrent={user?.planType === 'premium'} isProcessing={processingPlan === 'premium'}
                     isDowngrade={planRanks['premium'] < currentRank}
                     isCanceled={isCanceled} expirationDate={expirationDate}
-                    onUpgrade={() => handleSubscription('premium')}
+                    onUpgrade={() => user ? handleSubscription('premium') : router.push('/login')}
                     onCancel={handleCancel} showCancel={true} />
                 </>
               );
