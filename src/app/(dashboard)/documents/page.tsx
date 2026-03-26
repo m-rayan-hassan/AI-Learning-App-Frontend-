@@ -194,7 +194,7 @@ export default function DocumentsPage() {
             <DialogHeader>
               <DialogTitle>Upload New Document</DialogTitle>
               <DialogDescription>
-                Add a PDF, DOCX, or TXT document to your library.
+                Add a PDF, DOCX, PPT, ODT or TXT document to your library.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleUpload}>
@@ -254,7 +254,7 @@ export default function DocumentsPage() {
                           or drag and drop
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          PDF, DOCX, TXT (max 10MB)
+                          PDF, DOCX, PPT, ODT, TXT (max 10MB)
                         </p>
                         {selectedFile && (
                           <div className="mt-4 p-3 bg-primary/10 rounded-lg flex items-center justify-center gap-2 border border-primary/20">
