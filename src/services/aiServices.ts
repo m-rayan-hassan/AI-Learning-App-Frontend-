@@ -129,6 +129,24 @@ const getVideoOverviewUrl = async (documenId: string) => {
   }
 }
 
+const deleteVoiceOverview = async (id: string) => {
+  try {
+    const response = await axiosInstance.delete(API_PATHS.AI.DELETE_VOICE_OVERVIEW(id));
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || { message: "Failed to delete voice overview" };
+  }
+}
+
+const deleteVideoOverview = async (id: string) => {
+  try {
+    const response = await axiosInstance.delete(API_PATHS.AI.DELETE_VIDEO_OVERVIEW(id));
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || { message: "Failed to delete video overview" };
+  }
+}
+
 const aiServices = {
   generateFlashCards,
   generateQuiz,
@@ -140,7 +158,9 @@ const aiServices = {
   generatePodcast,
   generateVideo,
   getVoiceOverviewUrl,
-  getVideoOverviewUrl
+  getVideoOverviewUrl,
+  deleteVoiceOverview,
+  deleteVideoOverview,
 };
 
 export { aiServices };

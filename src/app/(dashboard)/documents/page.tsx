@@ -405,7 +405,7 @@ export default function DocumentsPage() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100 z-10 relative"
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors z-10 relative"
                     onClick={(e) => handleDelete(e, doc._id)}
                   >
                     <Trash2 className="h-4 w-4" />

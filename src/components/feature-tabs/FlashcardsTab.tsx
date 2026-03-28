@@ -39,6 +39,8 @@ interface FlashcardSet {
   title: string;
   cards: Flashcard[];
   createdAt: string;
+  isGenerated?: boolean;
+  generationStatus?: "pending" | "completed" | "failed";
 }
 
 // --- Component ---
@@ -52,10 +54,11 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
   const [deleting, setDeleting] = useState(false);
   const [count, setCount] = useState(5);
   const [reviewingCardId, setReviewingCardId] = useState<string | null>(null);
+  const [generationFailed, setGenerationFailed] = useState(false);
 
   // --- Data Loading ---
 
-  const loadFlashcards = async () => {
+  const loadFlashcards = async (isPollingCall = false) => {
     try {
       // 1. Load from LocalStorage for instant render
       const cached = localStorage.getItem(`flashcards_${documentId}`);
@@ -69,17 +72,39 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
       // Handle various response structures (res.data, res.flashcards, or raw array)
       const rawData = res?.data || res?.flashcards || res || [];
 
-      // 3. Normalize Data
+      // 3. Separate failed records from valid ones
+      const failedSets = rawData.filter((set: any) => set.generationStatus === "failed");
+      const validData = rawData.filter((set: any) => set.generationStatus !== "failed");
+
+      // 4. If there are failed records, handle them
+      if (failedSets.length > 0) {
+        if (isPollingCall) {
+          // Show error toast and allow retry
+          toast.error("Flashcard generation failed. Please try again.");
+          setGenerationFailed(true);
+        }
+
+        // Delete failed records from the backend
+        for (const failed of failedSets) {
+          try {
+            await flashcardsServices.deleteFlashCardSet(failed._id);
+          } catch (deleteErr) {
+            console.error("Failed to delete failed flashcard set:", deleteErr);
+          }
+        }
+      }
+
+      // 5. Normalize Data (only valid sets)
       // Ensure 'isStared' is boolean. This fixes issues where DB might return null/undefined
-      const normalizedData = rawData.map((set: any) => ({
+      const normalizedData = validData.map((set: any) => ({
         ...set,
-        cards: set.cards.map((c: any) => ({
+        cards: (set.cards || []).map((c: any) => ({
           ...c,
           isStared: !!c.isStared, // Force boolean
         })),
       }));
 
-      // 4. Update State & Cache
+      // 6. Update State & Cache
       setFlashcardSets(normalizedData);
       localStorage.setItem(
         `flashcards_${documentId}`,
@@ -100,15 +125,41 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [documentId]);
 
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    const hasPendingGeneration = flashcardSets.some(
+      (set) => set.generationStatus === "pending",
+    );
+
+    if (hasPendingGeneration) {
+      interval = setInterval(() => {
+        loadFlashcards(true);
+      }, 3000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [flashcardSets, documentId]);
+
   // --- Actions ---
 
   const handleGenerate = async () => {
     setLoading(true);
+    setGenerationFailed(false);
     const toastId = toast.loading("Generating flashcards...");
     try {
       await aiServices.generateFlashCards(documentId, { count });
       await loadFlashcards(); // Reload to get the new set
-      toast.success("Flashcards generated!", { id: toastId });
+      toast("Flashcards are being generated!", {
+        id: toastId,
+        icon: "ℹ️",
+        style: {
+          background: "#eff6ff",
+          color: "#2563eb",
+          border: "1px solid #bfdbfe",
+        },
+      });
     } catch (err: any) {
       console.error(err);
       toast.error(
@@ -506,15 +557,22 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
           </div>
           <Button
             onClick={handleGenerate}
-            disabled={loading}
+            disabled={
+              loading || flashcardSets.some((set) => set.generationStatus === "pending")
+            }
             className="w-full sm:w-auto shrink-0"
           >
-            {loading ? (
+            {loading ||
+            flashcardSets.some((set) => set.generationStatus === "pending") ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <RefreshCw className="mr-2 h-4 w-4" />
             )}
-            Generate Flashcards
+            {flashcardSets.some((set) => set.generationStatus === "pending")
+              ? "Generating..."
+              : generationFailed
+                ? "Retry"
+                : "Generate Flashcards"}
           </Button>
         </div>
       </div>
@@ -529,19 +587,32 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
             {flashcardSets.map((set) => (
               <Card
                 key={set._id}
-                className="relative hover:shadow-lg transition-all duration-200 border-border/50 cursor-pointer group"
-                onClick={() => handleSelectSet(set)}
+                className={cn(
+                  "relative transition-all duration-200 border-border/50",
+                  set.isGenerated === false
+                    ? "opacity-70 cursor-not-allowed"
+                    : "cursor-pointer hover:shadow-lg group",
+                )}
+                onClick={() => {
+                  if (set.isGenerated !== false) {
+                    handleSelectSet(set);
+                  }
+                }}
               >
                 <CardContent className="p-5 flex flex-col gap-4">
                   <div className="flex items-start justify-between">
                     <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <BookOpen className="h-5 w-5 text-primary" />
+                      {set.isGenerated === false ? (
+                        <Loader2 className="h-5 w-5 text-primary animate-spin" />
+                      ) : (
+                        <BookOpen className="h-5 w-5 text-primary" />
+                      )}
                     </div>
                     <div className="flex flex-col items-end gap-1">
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
+                        className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive transition-colors"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDeleteSet(set._id);
@@ -569,14 +640,18 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
 
                   <div className="space-y-1">
                     <h4 className="font-bold text-lg leading-tight">
-                      Flashcard Set
+                      {set.isGenerated === false
+                        ? "Generating..."
+                        : "Flashcard Set"}
                     </h4>
                   </div>
 
                   <div className="inline-flex items-center gap-2 bg-muted px-3 py-2 rounded-md w-fit">
                     <Layers className="h-4 w-4" />
                     <span className="font-semibold text-sm">
-                      {set.cards?.length || 0} Cards
+                      {set.isGenerated === false
+                        ? "---"
+                        : `${set.cards?.length || 0} Cards`}
                     </span>
                   </div>
 
@@ -586,9 +661,21 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
                     </div>
                   )}
 
-                  <Button className="w-full bg-primary hover:bg-primary/90 mt-2">
-                    <Play className="mr-2 h-4 w-4" />
-                    Review Cards
+                  <Button
+                    className="w-full bg-primary hover:bg-primary/90 mt-2"
+                    disabled={set.isGenerated === false}
+                  >
+                    {set.isGenerated === false ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Generating
+                      </>
+                    ) : (
+                      <>
+                        <Play className="mr-2 h-4 w-4" />
+                        Review Cards
+                      </>
+                    )}
                   </Button>
                 </CardContent>
               </Card>

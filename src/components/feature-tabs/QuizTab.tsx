@@ -56,8 +56,9 @@ export function QuizTab({ documentId }: { documentId: string }) {
   const [quizResults, setQuizResults] = useState<QuizData | null>(null);
   const [count, setCount] = useState(5);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [generationFailed, setGenerationFailed] = useState(false);
 
-  const loadQuizzes = async () => {
+  const loadQuizzes = async (isPollingCall = false) => {
     try {
       // 1. Try LocalStorage first
       const cached = localStorage.getItem(`quizzes_${documentId}`);
@@ -66,9 +67,30 @@ export function QuizTab({ documentId }: { documentId: string }) {
       }
 
       const res = await quizService.getQuizziesForDocument(documentId);
-      const data = res?.quizzes || res || [];
-      setQuizzes(data);
-      localStorage.setItem(`quizzes_${documentId}`, JSON.stringify(data));
+      const rawData = res?.quizzes || res || [];
+
+      // Separate failed from valid records
+      const failedQuizzes = rawData.filter((q: any) => q.generationStatus === "failed");
+      const validData = rawData.filter((q: any) => q.generationStatus !== "failed");
+
+      // Handle failed records
+      if (failedQuizzes.length > 0) {
+        if (isPollingCall) {
+          toast.error("Quiz generation failed. Please try again.");
+          setGenerationFailed(true);
+        }
+
+        for (const failed of failedQuizzes) {
+          try {
+            await quizService.deleteQuiz(failed._id);
+          } catch (deleteErr) {
+            console.error("Failed to delete failed quiz:", deleteErr);
+          }
+        }
+      }
+
+      setQuizzes(validData);
+      localStorage.setItem(`quizzes_${documentId}`, JSON.stringify(validData));
     } catch (err: any) {
       console.error(err);
       toast.error(err?.error || err?.message || "Failed to load quizzes");
@@ -79,21 +101,40 @@ export function QuizTab({ documentId }: { documentId: string }) {
     loadQuizzes();
   }, [documentId]);
 
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    const hasPendingGeneration = quizzes.some((q) => q.generationStatus === "pending");
+
+    if (hasPendingGeneration) {
+      interval = setInterval(() => {
+        loadQuizzes(true);
+      }, 3000);
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [quizzes, documentId]);
+
   const handleGenerate = async () => {
     setLoading(true);
+    setGenerationFailed(false);
     const toastId = toast.loading("Generating quiz...");
     try {
-      const res = await aiServices.generateQuiz(documentId, {
+      await aiServices.generateQuiz(documentId, {
         difficulty: "Medium",
         numQuestions: count,
       });
-      if (res) {
-        setQuizzes([...quizzes, res]);
-        setActiveQuiz(res);
-        setCurrentQuestionIndex(0);
-      }
       await loadQuizzes();
-      toast.success("Quiz generated successfully!", { id: toastId });
+      toast("Quiz is being generated!", {
+        id: toastId,
+        icon: "ℹ️",
+        style: {
+          background: "#eff6ff",
+          color: "#2563eb",
+          border: "1px solid #bfdbfe",
+        },
+      });
     } catch (err: any) {
       console.error(err);
       const errorMsg = err?.error || err?.message || "Failed to generate quiz";
@@ -225,7 +266,7 @@ export function QuizTab({ documentId }: { documentId: string }) {
     return (
       <div className="flex flex-col h-full">
         {/* Fixed Header */}
-        <div className="flex items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3 border-b sticky top-0 bg-background z-10">
+        <div className="flex items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3 border-b bg-background">
           <Button
             variant="ghost"
             onClick={handleBackToList}
@@ -410,7 +451,7 @@ export function QuizTab({ documentId }: { documentId: string }) {
     return (
       <div className="flex flex-col h-full">
         {/* Fixed Header */}
-        <div className="flex items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3 border-b sticky top-0 bg-background z-10">
+        <div className="flex items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3 border-b bg-background">
           <Button
             variant="ghost"
             onClick={handleBackToList}
@@ -590,15 +631,19 @@ export function QuizTab({ documentId }: { documentId: string }) {
           </div>
           <Button
             onClick={handleGenerate}
-            disabled={loading}
+            disabled={loading || quizzes.some((q) => q.generationStatus === "pending")}
             className="w-full sm:w-auto shrink-0"
           >
-            {loading ? (
+            {loading || quizzes.some((q) => q.generationStatus === "pending") ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <RefreshCw className="mr-2 h-4 w-4" />
             )}
-            Generate Quiz
+            {quizzes.some((q) => q.generationStatus === "pending")
+              ? "Generating..."
+              : generationFailed
+                ? "Retry"
+                : "Generate Quiz"}
           </Button>
         </div>
       </div>
@@ -613,7 +658,10 @@ export function QuizTab({ documentId }: { documentId: string }) {
             {quizzes.map((quiz, i) => (
               <Card
                 key={i}
-                className="relative hover:shadow-lg transition-all duration-200 border-border/50"
+                className={cn(
+                  "relative transition-all duration-200 border-border/50",
+                  quiz.isGenerated === false ? "opacity-70" : "hover:shadow-lg",
+                )}
               >
                 <CardContent className="p-5 flex flex-col gap-4">
                   {/* Score Badge */}
@@ -621,23 +669,33 @@ export function QuizTab({ documentId }: { documentId: string }) {
                     <div
                       className={cn(
                         "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium",
-                        quiz.completedAt
-                          ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
-                          : "bg-muted text-muted-foreground",
+                        quiz.isGenerated === false
+                          ? "bg-muted text-muted-foreground"
+                          : quiz.completedAt
+                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                            : "bg-muted text-muted-foreground",
                       )}
                     >
-                      <Trophy className="h-4 w-4" />
-                      <span>Score: {quiz.score || 0}%</span>
+                      {quiz.isGenerated === false ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trophy className="h-4 w-4" />
+                      )}
+                      <span>
+                        {quiz.isGenerated === false
+                          ? "Generating..."
+                          : `Score: ${quiz.score || 0}%`}
+                      </span>
                     </div>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive transition-colors"
+                      className="h-8 w-8 p-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors border border-transparent hover:border-destructive/20"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDeleteQuiz(quiz._id);
                       }}
-                      disabled={deleting}
+                      disabled={deleting || quiz.isGenerated === false}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -646,7 +704,9 @@ export function QuizTab({ documentId }: { documentId: string }) {
                   {/* Quiz Title */}
                   <div className="space-y-1">
                     <h4 className="font-bold text-lg leading-tight">
-                      {quiz.title || `Quiz ${i + 1}`}
+                      {quiz.isGenerated === false
+                        ? "Quiz Generating..."
+                        : quiz.title || `Quiz ${i + 1}`}
                     </h4>
                     {quiz.createdAt && (
                       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -668,12 +728,19 @@ export function QuizTab({ documentId }: { documentId: string }) {
                   {/* Question Count */}
                   <div className="inline-flex items-center gap-2 bg-muted px-3 py-2 rounded-md w-fit">
                     <span className="font-semibold text-sm">
-                      {quiz.questions?.length || 0} Questions
+                      {quiz.isGenerated === false
+                        ? "---"
+                        : `${quiz.questions?.length || quiz.totalQuestions || 0} Questions`}
                     </span>
                   </div>
 
                   {/* Action Button */}
-                  {quiz.completedAt ? (
+                  {quiz.isGenerated === false ? (
+                    <Button variant="secondary" className="w-full" disabled>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Generating
+                    </Button>
+                  ) : quiz.completedAt ? (
                     <Button
                       variant="secondary"
                       className="w-full"

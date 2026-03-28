@@ -85,10 +85,10 @@ export default function DocumentViewPage() {
   if (!document) return <div>Document not found</div>;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 p-2 sm:p-3 lg:p-4">
+    <div className="flex flex-col lg:flex-row gap-4 p-2 sm:p-3 lg:p-4 h-full w-full overflow-hidden">
       {/* Optional side preview pane (hidden by default) */}
       {showSidePreview && (
-        <div className="hidden lg:block lg:flex-1 h-[calc(100vh-100px)] border rounded-xl overflow-hidden bg-muted shadow-sm transition-all duration-300">
+        <div className="hidden lg:block lg:flex-1 h-full border rounded-xl overflow-hidden bg-muted shadow-sm transition-all duration-300">
           {document.pdfUrl ? (
             <PDFViewer url={document.pdfUrl} />
           ) : (
@@ -102,14 +102,14 @@ export default function DocumentViewPage() {
 
       {/* --- AI Features Area --- */}
       <div
-        className={`flex flex-col border rounded-xl bg-background shadow-sm transition-all duration-300 flex-1 w-full ${
+        className={`flex flex-col border rounded-xl bg-background shadow-sm transition-all duration-300 flex-1 w-full min-h-0 ${
           showSidePreview
             ? "lg:flex-none lg:w-[500px] xl:w-[700px]"
             : "lg:max-w-6xl lg:mx-auto lg:w-full"
         }`}
       >
         {/* Header with Title and Tabs */}
-        <div className="border-b bg-background flex flex-col shrink-0 sticky top-0 z-20 rounded-t-xl">
+        <div className="border-b bg-background flex flex-col shrink-0 z-20 rounded-t-xl transition-all">
           {/* Title Bar */}
           <div className="flex items-center justify-between px-3 py-2 border-b border-border/50 bg-background">
             <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -179,7 +179,7 @@ export default function DocumentViewPage() {
         </div>
 
         {/* Content Area */}
-        <div className="p-3 sm:p-4 md:p-5 relative bg-card/30 min-h-screen overflow-x-hidden">
+        <div className="p-3 sm:p-4 md:p-5 relative bg-card/30 flex-1 min-h-0 overflow-y-auto overflow-x-hidden rounded-b-xl">
           {activeTab === "Preview" && document.pdfUrl && (
             <div className="h-full w-full">
               <PDFViewer url={document.pdfUrl} />

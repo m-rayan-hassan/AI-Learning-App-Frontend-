@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Sidebar } from "@/components/Sidebar";
 
@@ -15,7 +15,12 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { isAuthenticated, loading } = useAuth();
+
+  // Detect if we are in a "Studio" view (document/[id])
+  // Regex match for /documents/[id] but NOT /documents itself
+  const isStudioView = /^\/documents\/[a-zA-Z0-9]+/.test(pathname);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -89,12 +94,16 @@ export default function DashboardLayout({
             </Sheet>
         </div>
 
-        <main className="flex-1 relative overflow-y-auto focus:outline-none">
-          <div className="py-6">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-              {children}
+        <main className={`flex-1 relative focus:outline-none ${isStudioView ? "overflow-hidden" : "overflow-y-auto"}`}>
+          {isStudioView ? (
+            children
+          ) : (
+            <div className="py-6">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+                {children}
+              </div>
             </div>
-          </div>
+          )}
         </main>
       </div>
     </div>

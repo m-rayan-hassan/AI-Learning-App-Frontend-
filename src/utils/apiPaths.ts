@@ -38,6 +38,8 @@ export const API_PATHS = {
       `/api/ai/podcast-overview-url/${documentId}`,
     GET_VIDEO_OVERVIEW_URL: (documentId: string) =>
       `/api/ai/video-overview-url/${documentId}`,
+    DELETE_VOICE_OVERVIEW: (id: string) => `/api/ai/voice-overview/${id}`,
+    DELETE_VIDEO_OVERVIEW: (id: string) => `/api/ai/video-overview/${id}`,
   },
 
   FLASHCARDS: {
