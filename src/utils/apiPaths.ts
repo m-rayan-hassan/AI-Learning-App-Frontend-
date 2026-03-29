@@ -31,7 +31,7 @@ export const API_PATHS = {
       `/api/ai/chat-history/${documentId}`,
     GENERATE_VOICE_OVERVIEW: "/api/ai/generate-voice-overview",
     GENERATE_PODCAST: "/api/ai/generate-podcast",
-    GENERATE_VIDEO: "/api/ai/generate-video",
+    GENERATE_VIDEO: "/api/ai/generate-remotion-video",
     GET_VOICE_OVERVIEW_URL: (documentId: string) =>
       `/api/ai/voice-overview-url/${documentId}`,
     GET_PODCAST_OVERVIEW_URL: (documentId: string) =>
