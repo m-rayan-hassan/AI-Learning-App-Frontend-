@@ -31,18 +31,24 @@ export function Sidebar() {
 
   return (
     <div className="flex bg-background h-screen flex-col border-r w-64 p-4 space-y-6">
-      <div className="flex items-center gap-2 px-2 mt-2">
-        <div className="bg-primary/5 p-1.5 rounded-xl border border-primary/10 overflow-hidden">
+      <Link
+        href="/dashboard"
+        className="flex items-center space-x-2.5 px-2 mt-2 group w-fit"
+      >
+        <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-primary/5 group-hover:bg-primary/10 transition-all duration-300 border border-primary/10 overflow-hidden">
           <Image
             src="/app_logo.png"
-            alt="Logo"
+            alt="Cognivio AI Logo"
             width={35}
             height={35}
-            className="object-contain"
+            className="object-contain z-10"
           />
+          <div className="absolute inset-0 bg-primary/20 blur-[15px] opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
-        <span className="font-bold text-xl tracking-tight">Cognivio AI</span>
-      </div>
+        <span className="font-bold text-xl tracking-tight text-foreground">
+          Cognivio<span className="text-primary">AI</span>
+        </span>
+      </Link>
 
       <nav className="flex-1 space-y-1">
         {sidebarItems.map((item) => {
