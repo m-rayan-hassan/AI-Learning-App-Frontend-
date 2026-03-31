@@ -65,40 +65,58 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (credentials: any) => {
     try {
+      setLoading(true);
       const data = await authServices.login(credentials);
       if (data.token) {
         localStorage.setItem("Token", data.token);
         setToken(data.token);
-        setUser(data); // Assuming login response includes user info
+        // Fetch full profile to ensure all fields are present
+        const profile = await authServices.getProfile();
+        setUser(profile);
       }
     } catch (error) {
+      setLoading(false);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const googleLogin = async (googleToken: string) => {
     try {
+      setLoading(true);
       const data = await authServices.googleLogin(googleToken);
       if (data.token) {
         localStorage.setItem("Token", data.token);
         setToken(data.token);
-        setUser(data); // Assuming login response includes user info
+        // Fetch full profile to ensure all fields are present
+        const profile = await authServices.getProfile();
+        setUser(profile);
       }
     } catch (error) {
+      setLoading(false);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const register = async (username: string, email: string, password: string) => {
     try {
+      setLoading(true);
       const data = await authServices.register(username, email, password);
       if (data.token) {
         localStorage.setItem("Token", data.token);
         setToken(data.token);
-        setUser(data);
+        // Fetch full profile to ensure all fields are present
+        const profile = await authServices.getProfile();
+        setUser(profile);
       }
     } catch (error) {
+      setLoading(false);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 

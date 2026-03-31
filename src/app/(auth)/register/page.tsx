@@ -18,9 +18,11 @@ import {
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import authServices from "@/services/authServices";
+import { useAuth } from "@/context/AuthContext";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { register, googleLogin } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -42,9 +44,8 @@ export default function RegisterPage() {
     }
 
     try {
-      await authServices.register(username, email, password);
-      // Automatically login or redirect to login. Let's redirect to login for safety.
-      router.push("/login?registered=true");
+      await register(username, email, password);
+      router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Registration failed. Please try again.");
     } finally {
@@ -60,7 +61,7 @@ export default function RegisterPage() {
         const tokenToSend =
           (tokenResponse as any).credential ||
           (tokenResponse as any).access_token;
-        await authServices.googleLogin(tokenToSend);
+        await googleLogin(tokenToSend);
         router.push("/dashboard");
       } catch (err: any) {
         setError(err.message || "Google signup failed");
@@ -75,17 +76,19 @@ export default function RegisterPage() {
     <Card className="overflow-hidden border-border/50 shadow-2xl">
       <div className="flex justify-center pt-8">
         <div className="relative h-16 w-16 rounded-2xl bg-primary/5 flex items-center justify-center border border-primary/10 overflow-hidden shadow-lg shadow-primary/5">
-          <Image 
-            src="/app_logo.png" 
-            alt="Cognivio AI Logo" 
-            width={35} 
-            height={35} 
+          <Image
+            src="/app_logo.png"
+            alt="Cognivio AI Logo"
+            width={35}
+            height={35}
             className="object-contain"
           />
         </div>
       </div>
       <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-3xl font-bold tracking-tight">Create an account</CardTitle>
+        <CardTitle className="text-3xl font-bold tracking-tight">
+          Create an account
+        </CardTitle>
         <CardDescription>
           Enter your email below to create your account
         </CardDescription>
