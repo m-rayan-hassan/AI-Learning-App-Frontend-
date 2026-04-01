@@ -3,7 +3,7 @@ import { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Cognivio AI",
-    short_name: "Cognivio",
+    short_name: "Cognivio AI",
     description: "Your personal AI learning assistant",
     start_url: "/",
     display: "standalone",
