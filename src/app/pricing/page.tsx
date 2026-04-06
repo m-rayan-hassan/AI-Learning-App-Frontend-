@@ -404,7 +404,7 @@ function PricingCard({
 
 export default function PricingPage() {
   const router = useRouter();
-  const { token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
   const [paddle, setPaddle] = useState<Paddle | null>(null);
@@ -421,10 +421,8 @@ export default function PricingPage() {
   useEffect(() => {
     (async () => {
       try {
-        const authToken = token || localStorage.getItem("Token");
-
         // Load profile only if authenticated
-        if (authToken) {
+        if (isAuthenticated) {
           try {
             const profileData = await authServices.getProfile();
             setUser(profileData);
@@ -459,7 +457,7 @@ export default function PricingPage() {
         setLoadingUser(false);
       }
     })();
-  }, [router, token]);
+  }, [router, isAuthenticated]);
 
   // Clear messages after 5 seconds
   useEffect(() => {

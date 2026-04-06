@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import authServices from "@/services/authServices";
+import { setAccessToken } from "@/utils/axiosInstance";
 import { useRouter } from "next/navigation";
 
 interface User {
@@ -19,7 +20,6 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
   isAuthenticated: boolean;
   loading: boolean;
   login: (credentials: any) => Promise<void>;
@@ -32,30 +32,50 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const logout = () => {
-    localStorage.removeItem("Token");
-    setToken(null);
+  const logout = useCallback(async () => {
+    try {
+      await authServices.logout(); // Clears refresh cookie on server
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+    setAccessToken(null); // Clear in-memory access token
     setUser(null);
     router.push("/");
-  };
+  }, [router]);
 
-  // Load user from token on mount
+  // Listen for session expired events from the axios interceptor
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      setAccessToken(null);
+      setUser(null);
+      router.push("/login");
+    };
+
+    window.addEventListener('auth:sessionExpired', handleSessionExpired);
+    return () => {
+      window.removeEventListener('auth:sessionExpired', handleSessionExpired);
+    };
+  }, [router]);
+
+  // On mount: try to refresh the access token using the HttpOnly cookie
   useEffect(() => {
     const initAuth = async () => {
-      const storedToken = localStorage.getItem("Token");
-      if (storedToken) {
-        setToken(storedToken);
-        try {
+      try {
+        // The refresh endpoint reads the HttpOnly cookie automatically
+        const data = await authServices.refreshToken();
+        if (data.accessToken) {
+          setAccessToken(data.accessToken);
+          // Fetch full profile with the new access token
           const profile = await authServices.getProfile();
           setUser(profile);
-        } catch (error) {
-          console.error("Failed to fetch profile with stored token", error);
-          logout(); // Invalid token
         }
+      } catch (error) {
+        // No valid refresh token — user is not authenticated
+        setAccessToken(null);
+        setUser(null);
       }
       setLoading(false);
     };
@@ -67,9 +87,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setLoading(true);
       const data = await authServices.login(credentials);
-      if (data.token) {
-        localStorage.setItem("Token", data.token);
-        setToken(data.token);
+      if (data.accessToken) {
+        setAccessToken(data.accessToken);
         // Fetch full profile to ensure all fields are present
         const profile = await authServices.getProfile();
         setUser(profile);
@@ -86,9 +105,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setLoading(true);
       const data = await authServices.googleLogin(googleToken);
-      if (data.token) {
-        localStorage.setItem("Token", data.token);
-        setToken(data.token);
+      if (data.accessToken) {
+        setAccessToken(data.accessToken);
         // Fetch full profile to ensure all fields are present
         const profile = await authServices.getProfile();
         setUser(profile);
@@ -105,9 +123,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setLoading(true);
       const data = await authServices.register(username, email, password);
-      if (data.token) {
-        localStorage.setItem("Token", data.token);
-        setToken(data.token);
+      if (data.accessToken) {
+        setAccessToken(data.accessToken);
         // Fetch full profile to ensure all fields are present
         const profile = await authServices.getProfile();
         setUser(profile);
@@ -124,7 +141,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     <AuthContext.Provider
       value={{
         user,
-        token,
         isAuthenticated: !!user,
         loading,
         login,
