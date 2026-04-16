@@ -46,10 +46,13 @@ export function Navbar() {
               Features
             </Link>
             <Link href="/#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-              Methodology
+              How It Works
             </Link>
             <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
               Pricing
+            </Link>
+            <Link href="/#faq" className="text-muted-foreground hover:text-foreground transition-colors">
+              FAQ
             </Link>
           </nav>
         </div>
@@ -121,7 +124,7 @@ export function Navbar() {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
               >
-                Methodology
+                How It Works
               </Link>
               <Link 
                 href="/pricing" 
@@ -129,6 +132,13 @@ export function Navbar() {
                 className="px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
               >
                 Pricing
+              </Link>
+              <Link 
+                href="/#faq" 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              >
+                FAQ
               </Link>
               
               <div className="h-px bg-border/50 my-2" />
