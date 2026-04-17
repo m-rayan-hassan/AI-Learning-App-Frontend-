@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 
 // --- Animation Variants ---
 const smoothEase: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
@@ -395,9 +396,6 @@ export default function Home() {
     target: heroRef,
     offset: ["start start", "end start"]
   });
-  
-  const dashboardY = useTransform(scrollYProgress, [0, 1], [0, -60]);
-  const dashboardScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.97]);
 
   const TABS = [
     { label: "Preview", icon: Eye },
@@ -418,7 +416,7 @@ export default function Home() {
       <main className="flex-1">
         
         {/* ================= HERO SECTION ================= */}
-        <section ref={heroRef} className="relative pt-24 pb-16 md:pt-36 md:pb-24 overflow-hidden">
+        <section ref={heroRef} className="relative pt-32 pb-16 md:pt-48 md:pb-24 overflow-hidden">
           
           {/* Subtle background */}
           <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
@@ -479,17 +477,14 @@ export default function Home() {
             </div>
 
             {/* --- DASHBOARD PREVIEW --- */}
-            <motion.div 
-              style={{ y: dashboardY, scale: dashboardScale }}
-              initial={{ opacity: 0, y: 50 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              transition={{ duration: 0.8, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="mt-4 relative mx-auto max-w-6xl"
-            >
+            <div className="mt-8 flex flex-col w-full max-w-[1200px] mx-auto pb-12 md:pb-24">
+              <ContainerScroll
+                titleComponent={null}
+              >
               {/* Glow behind dashboard */}
               <div className="absolute -inset-4 bg-primary/[0.03] blur-3xl rounded-3xl" />
               
-              <div className="relative bg-background rounded-xl border border-border shadow-2xl overflow-hidden font-sans flex flex-col h-[500px] md:h-[600px] lg:h-[700px] w-full ring-1 ring-border/50">
+              <div className="relative bg-background rounded-xl border border-border overflow-hidden font-sans flex flex-col h-[500px] md:h-[600px] lg:h-[700px] w-full ring-1 ring-border/50">
                  
                 {/* Top Tab Bar — matches real dashboard */}
                 <div className="border-b border-border flex items-center bg-background shrink-0 gap-2 w-full">
@@ -539,7 +534,8 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+              </ContainerScroll>
+            </div>
           </div>
         </section>
 
