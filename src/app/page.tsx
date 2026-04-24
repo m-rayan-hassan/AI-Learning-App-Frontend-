@@ -40,6 +40,7 @@ import {
   ArrowUpRight,
   Moon,
   Zap,
+  Headphones
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -626,7 +627,7 @@ export default function Home() {
     { label: "Chat", icon: MessageCircle },
     { label: "Flashcards", icon: Layers },
     { label: "Quiz", icon: Trophy },
-    { label: "Voice Overview", icon: Mic },
+    { label: "Voice/Podcast", icon: Headphones },
     { label: "Concept", icon: Lightbulb },
     { label: "Voice Chat", icon: Mic },
     { label: "Video Overview", icon: Video },

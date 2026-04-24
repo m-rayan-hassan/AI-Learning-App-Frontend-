@@ -19,7 +19,8 @@ import {
   Mic,
   Video,
   Lightbulb,
-  NotebookText
+  NotebookText,
+  Headphones
 } from "lucide-react";
 import documentServices from "@/services/documentServices";
 import { Button } from "@/components/ui/button";
@@ -33,7 +34,7 @@ const TABS = [
   { label: "Chat", icon: MessageCircle, path: "chat" },
   { label: "Flashcards", icon: Layers, path: "flashcards" },
   { label: "Quiz", icon: Trophy, path: "quiz" },
-  { label: "Voice Overview", icon: Mic, path: "voice-overview" },
+  { label: "Voice/Podcast", icon: Headphones, path: "voice-overview" },
   { label: "Concept", icon: Lightbulb, path: "concept" },
   { label: "Voice Chat", icon: Mic, path: "voice-chat" },
   { label: "Video Overview", icon: Video, path: "video-overview" },

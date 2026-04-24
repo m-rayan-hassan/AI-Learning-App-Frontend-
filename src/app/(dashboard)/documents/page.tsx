@@ -2,6 +2,9 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,18 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Loader2,
-  FileText,
-  Trash2,
-  Layers,
-  Trophy,
-  Upload,
-} from "lucide-react";
-import documentServices from "@/services/documentServices";
-import { useRouter } from "next/navigation";
-import { toast } from "react-hot-toast";
-
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -35,6 +26,18 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+
+import {
+  Loader2,
+  FileText,
+  Trash2,
+  Layers,
+  Trophy,
+  Upload,
+  FileStack,
+} from "lucide-react";
+import documentServices from "@/services/documentServices";
+import { cn } from "@/lib/utils";
 
 export default function DocumentsPage() {
   const router = useRouter();
@@ -64,6 +67,7 @@ export default function DocumentsPage() {
     fetchDocuments();
   }, []);
 
+  // Polling for processing documents
   useEffect(() => {
     let interval: NodeJS.Timeout;
     const hasProcessingDocs = documents.some(
@@ -165,14 +169,25 @@ export default function DocumentsPage() {
   };
 
   return (
-    <div className="space-y-8 p-4 md:p-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Documents</h1>
-          <p className="text-muted-foreground">
-            Manage your study materials and track your progress.
-          </p>
+    <div className="space-y-8 pb-12 max-w-7xl mx-auto animate-in fade-in duration-500">
+      {/* ── Premium Header Section ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 pt-2 pb-6 border-b border-border/50">
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 ring-1 ring-primary/20">
+            <FileStack className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground leading-tight">
+              Document Workspace
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Upload study materials to generate flashcards and quizzes
+              instantly.
+            </p>
+          </div>
         </div>
+
+        {/* Upload Dialog */}
         <Dialog
           open={isUploadOpen}
           onOpenChange={(open) => {
@@ -185,41 +200,59 @@ export default function DocumentsPage() {
           }}
         >
           <DialogTrigger asChild>
-            <Button className="shadow-lg hover:shadow-primary/20 transition-all">
-              <Upload className="mr-2 h-4 w-4" />
-              New Document
+            <Button className="h-10 px-5 gap-2 shadow-sm shrink-0 font-medium">
+              <Upload className="h-4 w-4" />
+              Upload Document
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Upload New Document</DialogTitle>
-              <DialogDescription>
-                Add a PDF, DOCX, PPT, ODT or TXT document to your library.
+          <DialogContent className="sm:max-w-[460px] p-0 overflow-hidden border-border/60 shadow-xl">
+            <div className="p-6 border-b border-border/50 bg-muted/10">
+              <DialogTitle className="text-lg font-semibold tracking-tight">
+                Upload Material
+              </DialogTitle>
+              <DialogDescription className="text-sm mt-1">
+                Add a PDF, DOCX, PPT, ODT, or TXT file to process via AI.
               </DialogDescription>
-            </DialogHeader>
+            </div>
+
             <form onSubmit={handleUpload}>
-              <div className="grid gap-4 py-4">
-                <div className="grid w-full items-center gap-1.5">
-                  <Label htmlFor="title">Document Title</Label>
+              <div className="p-6 space-y-6">
+                <div className="space-y-2 pb-2">
+                  <Label htmlFor="title" className="text-sm font-medium block">
+                    Document Title
+                  </Label>
                   <Input
                     id="title"
                     name="title"
                     placeholder="e.g., Biology Chapter 1"
+                    className="h-10 bg-background"
                     required
                   />
                 </div>
-                <div className="grid w-full items-center gap-1.5 mb-2">
-                  <div className="flex bg-muted/50 p-1 rounded-lg">
+
+                {/* Segmented Control */}
+                <div className="space-y-1.5">
+                  <div className="flex bg-muted/60 p-1 rounded-lg border border-border/50">
                     <button
                       type="button"
-                      className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${uploadMode === "file" ? "bg-background shadow text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                      className={cn(
+                        "flex-1 py-1.5 text-sm font-medium rounded-md transition-all",
+                        uploadMode === "file"
+                          ? "bg-background shadow-sm text-foreground"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
                       onClick={() => setUploadMode("file")}
                     >
-                      Upload File
+                      File Upload
                     </button>
                     <button
                       type="button"
-                      className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${uploadMode === "text" ? "bg-background shadow text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                      className={cn(
+                        "flex-1 py-1.5 text-sm font-medium rounded-md transition-all",
+                        uploadMode === "text"
+                          ? "bg-background shadow-sm text-foreground"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
                       onClick={() => setUploadMode("text")}
                     >
                       Paste Text
@@ -228,38 +261,44 @@ export default function DocumentsPage() {
                 </div>
 
                 {uploadMode === "file" ? (
-                  <div className="grid w-full items-center gap-1.5">
-                    <Label htmlFor="file">File</Label>
+                  <div className="space-y-1.5">
                     <div
-                      className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-xl transition-colors cursor-pointer ${
+                      className={cn(
+                        "mt-1 flex justify-center px-6 pt-7 pb-8 border-2 border-dashed rounded-xl transition-colors cursor-pointer",
                         isDragging
                           ? "border-primary bg-primary/5"
-                          : "border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/50"
-                      }`}
+                          : "border-border/60 hover:border-primary/40 hover:bg-muted/30 bg-background",
+                      )}
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
                       onDrop={handleDrop}
                       onClick={() => fileInputRef.current?.click()}
                     >
-                      <div className="space-y-2 text-center">
-                        <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                      <div className="space-y-3 text-center">
+                        <div className="mx-auto h-12 w-12 rounded-xl bg-muted flex items-center justify-center ring-1 ring-border/50">
                           <Upload
-                            className={`h-6 w-6 ${isDragging ? "text-primary" : "text-muted-foreground"}`}
+                            className={cn(
+                              "h-5 w-5",
+                              isDragging
+                                ? "text-primary"
+                                : "text-muted-foreground",
+                            )}
                           />
                         </div>
-                        <div className="text-sm text-muted-foreground">
-                          <span className="font-semibold text-primary">
-                            Click to upload
-                          </span>{" "}
-                          or drag and drop
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-foreground">
+                            {isDragging
+                              ? "Drop file here"
+                              : "Click to upload or drag & drop"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            PDF, DOCX, PPT, ODT, TXT (Max 10MB)
+                          </p>
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          PDF, DOCX, PPT, ODT, TXT (max 10MB)
-                        </p>
                         {selectedFile && (
-                          <div className="mt-4 p-3 bg-primary/10 rounded-lg flex items-center justify-center gap-2 border border-primary/20">
-                            <FileText className="h-4 w-4 text-primary" />
-                            <span className="text-sm font-medium truncate max-w-[200px] text-primary">
+                          <div className="mt-4 p-2.5 bg-primary/10 rounded-lg flex items-center justify-center gap-2 border border-primary/20 max-w-[280px] mx-auto">
+                            <FileText className="h-4 w-4 text-primary shrink-0" />
+                            <span className="text-xs font-medium truncate text-primary">
                               {selectedFile.name}
                             </span>
                           </div>
@@ -278,13 +317,12 @@ export default function DocumentsPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="grid w-full items-center gap-1.5 mt-2">
-                    <Label htmlFor="textContent">Document Text</Label>
+                  <div className="space-y-1.5">
                     <textarea
                       id="textContent"
                       name="textContent"
                       placeholder="Paste or type your document text here..."
-                      className="flex min-h-[200px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none mt-1"
+                      className="flex min-h-[220px] w-full rounded-xl border border-input bg-background px-3 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-50 resize-none custom-scrollbar"
                       value={textContent}
                       onChange={(e) => setTextContent(e.target.value)}
                       required
@@ -292,14 +330,30 @@ export default function DocumentsPage() {
                   </div>
                 )}
               </div>
-              <DialogFooter>
-                <Button type="submit" disabled={uploading} className="w-full">
-                  {uploading && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  {uploading ? "Processing..." : "Upload Document"}
+              <div className="p-4 border-t border-border/50 bg-muted/10 flex justify-end gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsUploadOpen(false)}
+                  className="font-medium"
+                >
+                  Cancel
                 </Button>
-              </DialogFooter>
+                <Button
+                  type="submit"
+                  disabled={uploading}
+                  className="font-medium min-w-[120px]"
+                >
+                  {uploading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    "Upload Document"
+                  )}
+                </Button>
+              </div>
             </form>
           </DialogContent>
         </Dialog>
@@ -344,6 +398,7 @@ export default function DocumentsPage() {
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Exact original Uploading Card */}
           {uploading && (
             <Card className="group flex flex-col justify-between border-primary/30 relative overflow-hidden bg-card/50">
               <div className="absolute inset-0 bg-primary/5 animate-pulse" />
@@ -382,6 +437,8 @@ export default function DocumentsPage() {
               </CardFooter>
             </Card>
           )}
+
+          {/* Exact original Document Cards */}
           {documents.map((doc) => (
             <Card
               key={doc._id}
