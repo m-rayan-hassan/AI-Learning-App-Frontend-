@@ -16,11 +16,13 @@ import {
   Zap,
   Mic,
   Video,
-  Lightbulb
+  Lightbulb,
+  NotebookText
 } from "lucide-react";
 import documentServices from "@/services/documentServices";
 import { ChatTab } from "@/components/feature-tabs/ChatTab";
 import { SummaryTab } from "@/components/feature-tabs/SummaryTab";
+import { NotesTab } from "@/components/feature-tabs/NotesTab";
 import { FlashcardsTab } from "@/components/feature-tabs/FlashcardsTab";
 import { QuizTab } from "@/components/feature-tabs/QuizTab";
 import VideoOverviewTab from "@/components/feature-tabs/VideoOverviewTab";
@@ -33,6 +35,7 @@ import { VoiceOverviewTab } from "@/components/feature-tabs/VoiceOverviewTab";
 // Simple Tabs usage
 const TABS = [
   { label: "Preview", icon: Eye },
+  { label: "Notes", icon: NotebookText },
   { label: "Summary", icon: Sparkles },
   { label: "Chat", icon: MessageCircle },
   { label: "Flashcards", icon: Layers },
@@ -193,6 +196,7 @@ export default function DocumentViewPage() {
           )}
 
           <div className="w-full max-w-full min-w-0">
+            {activeTab === "Notes" && <NotesTab documentId={id} />}
             {activeTab === "Summary" && <SummaryTab documentId={id} />}
             {activeTab === "Chat" && <ChatTab documentId={id} />}
             {activeTab === "Flashcards" && <FlashcardsTab documentId={id} />}

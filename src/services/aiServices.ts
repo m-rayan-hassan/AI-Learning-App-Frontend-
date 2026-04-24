@@ -39,6 +39,17 @@ const generateSummary = async (documentId: string) => {
   }
 };
 
+const generateNotes = async (documentId: string) => {
+  try {
+    const response = await axiosInstance.post(API_PATHS.AI.GENERATE_NOTES, {
+      documentId,
+    });
+    return response.data.data.notes;
+  } catch (error: any) {
+    throw error.response?.data || { message: "Failed to generate notes" };
+  }
+};
+
 const chat = async (documentId: string, message: string) => {
   try {
     // Backend expects the field name `question`
@@ -151,6 +162,7 @@ const aiServices = {
   generateFlashCards,
   generateQuiz,
   generateSummary,
+  generateNotes,
   chat,
   explainConcept,
   getChatHistory,
