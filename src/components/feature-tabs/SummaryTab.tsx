@@ -81,7 +81,7 @@ export function SummaryTab({ documentId }: { documentId: string }) {
   };
 
   return (
-    <div className="space-y-6 h-full flex flex-col pt-2 bg-transparent text-foreground">
+    <div className="space-y-6 flex flex-col pt-2 bg-transparent text-foreground">
       <div className="flex justify-between items-center px-2">
         <div className="flex items-center gap-3">
           <FileText className="w-5 h-5 text-primary" />
@@ -104,7 +104,7 @@ export function SummaryTab({ documentId }: { documentId: string }) {
         </Button>
       </div>
       
-      <div className="flex-1 px-2 rounded-md overflow-y-auto custom-scrollbar pb-6">
+      <div className="flex-1 px-2 pb-6">
         {summary ? (
           <div className="prose max-w-none w-full markdown-summary text-foreground/90">
             <ReactMarkdown
