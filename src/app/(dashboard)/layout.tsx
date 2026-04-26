@@ -5,9 +5,15 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Sidebar } from "@/components/Sidebar";
 
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function DashboardLayout({
   children,
@@ -30,33 +36,33 @@ export default function DashboardLayout({
 
   if (loading) {
     return (
-        <div className="flex h-screen items-center justify-center bg-background">
-            <div className="flex flex-col items-center gap-4">
-                <div className="animate-brand-pulse">
-                    <div className="h-16 w-16 bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 overflow-hidden shadow-xl shadow-primary/5">
-                        <Image 
-                          src="/app_logo.png" 
-                          alt="Logo" 
-                          width={35} 
-                          height={35} 
-                          className="object-contain"
-                        />
-                    </div>
-                </div>
-                <div className="flex gap-1.5">
-                    {[0, 1, 2].map((i) => (
-                        <div
-                            key={i}
-                            className="h-2 w-2 rounded-full bg-primary/60"
-                            style={{
-                                animation: `bounce-dot 1.4s ease-in-out ${i * 0.16}s infinite both`,
-                            }}
-                        />
-                    ))}
-                </div>
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-brand-pulse">
+            <div className="h-16 w-16 bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 overflow-hidden shadow-xl shadow-primary/5">
+              <Image
+                src="/app_logo.png"
+                alt="Logo"
+                width={35}
+                height={35}
+                className="object-contain"
+              />
             </div>
+          </div>
+          <div className="flex gap-1.5">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="h-2 w-2 rounded-full bg-primary/60"
+                style={{
+                  animation: `bounce-dot 1.4s ease-in-out ${i * 0.16}s infinite both`,
+                }}
+              />
+            ))}
+          </div>
         </div>
-    )
+      </div>
+    );
   }
 
   return (
@@ -69,32 +75,37 @@ export default function DashboardLayout({
       <div className="flex flex-col flex-1 w-0 overflow-hidden">
         {/* Mobile Header */}
         <div className="md:hidden border-b p-4 flex items-center justify-between bg-background">
-            <div className="flex items-center gap-2">
-                <Image 
-                  src="/app_logo.png" 
-                  alt="Logo" 
-                  width={35} 
-                  height={35} 
-                  className="object-contain"
-                />
-                <div className="font-bold text-lg text-foreground tracking-tight">
-                    Cognivio<span className="text-primary">AI</span>
-                </div>
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2 cursor-pointer"
+          >
+            <Image
+              src="/app_logo.png"
+              alt="Logo"
+              width={35}
+              height={35}
+              className="object-contain"
+            />
+            <div className="font-bold text-lg text-foreground tracking-tight">
+              Cognivio<span className="text-primary">AI</span>
             </div>
-            <Sheet>
-                <SheetTrigger>
-                    <Menu className="h-6 w-6" />
-                </SheetTrigger>
-                <SheetContent side="left" className="p-0 border-r w-[280px]">
-                    <div className="sr-only">
-                        <SheetTitle>Navigation Menu</SheetTitle>
-                    </div>
-                    <Sidebar />
-                </SheetContent>
-            </Sheet>
+          </Link>
+          <Sheet>
+            <SheetTrigger>
+              <Menu className="h-6 w-6" />
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0 border-r w-[280px]">
+              <div className="sr-only">
+                <SheetTitle>Navigation Menu</SheetTitle>
+              </div>
+              <Sidebar />
+            </SheetContent>
+          </Sheet>
         </div>
 
-        <main className={`flex-1 relative focus:outline-none ${isStudioView ? "overflow-hidden" : "overflow-y-auto"}`}>
+        <main
+          className={`flex-1 relative focus:outline-none ${isStudioView ? "overflow-hidden" : "overflow-y-auto"}`}
+        >
           {isStudioView ? (
             children
           ) : (

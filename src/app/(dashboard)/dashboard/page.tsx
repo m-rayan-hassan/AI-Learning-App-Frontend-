@@ -207,8 +207,8 @@ export default function DashboardPage() {
       color: "hsl(var(--foreground))",
     },
     {
-      label: "Flashcards",
-      value: ov.totalFlashcards || 0,
+      label: "Flashcard Sets",
+      value: ov.totalFlashcardsSets || 0,
       color: "hsl(var(--primary))",
     },
     {

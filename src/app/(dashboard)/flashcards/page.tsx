@@ -130,7 +130,7 @@ export default function FlashcardsPage() {
                   className="fixed inset-0 z-10"
                   onClick={() => setIsFilterOpen(false)}
                 />
-                <Card className="absolute right-0 top-[calc(100%+8px)] w-[320px] z-20 shadow-xl border-border/60 animate-in fade-in zoom-in-95 duration-200">
+                <Card className="absolute left-0 sm:left-auto sm:right-0 top-[calc(100%+8px)] w-[300px] sm:w-[320px] z-20 shadow-xl border-border/60 animate-in fade-in zoom-in-95 duration-200">
                   <CardHeader className="p-4 pb-3 border-b border-border/50">
                     <CardTitle className="text-sm font-semibold flex items-center justify-between">
                       Filter by Document
