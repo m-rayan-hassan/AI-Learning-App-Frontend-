@@ -3,12 +3,13 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import Link from "next/link";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   motion,
   AnimatePresence,
   useScroll,
   useTransform,
+  useInView,
 } from "framer-motion";
 import {
   MessageSquare,
@@ -40,7 +41,13 @@ import {
   ArrowUpRight,
   Moon,
   Zap,
-  Headphones
+  Headphones,
+  Star,
+  Shield,
+  CheckCircle2,
+  Users,
+  GraduationCap,
+  Quote,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -68,6 +75,102 @@ const staggerContainer = {
     },
   },
 };
+
+// Blur + scale for feature cards
+const blurScaleIn = {
+  hidden: { opacity: 0, scale: 0.92, filter: "blur(8px)" },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    filter: "blur(0px)",
+    transition: { duration: 0.6, ease: smoothEase },
+  },
+};
+
+// Slide from left
+const slideInLeft = {
+  hidden: { opacity: 0, x: -50 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.7, ease: smoothEase },
+  },
+};
+
+// Slide from right
+const slideInRight = {
+  hidden: { opacity: 0, x: 50 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.7, ease: smoothEase },
+  },
+};
+
+// Scale up with spring
+const scaleUp = {
+  hidden: { opacity: 0, scale: 0.85 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { type: "spring" as const, damping: 20, stiffness: 100 },
+  },
+};
+
+// Feature grid stagger
+const featureStagger = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.06, delayChildren: 0.1 },
+  },
+};
+
+// Testimonial stagger
+const testimonialStagger = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15, delayChildren: 0.2 },
+  },
+};
+
+// --- Animated Counter Hook ---
+function useCountUp(end: number, duration: number = 2000) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+
+  useEffect(() => {
+    if (!inView) return;
+    let start: number | null = null;
+    const step = (ts: number) => {
+      if (!start) start = ts;
+      const p = Math.min((ts - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setCount(Math.floor(eased * end));
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [inView, end, duration]);
+
+  return { count, ref };
+}
+
+function StatItem({ value, suffix, label, icon }: { value: number; suffix: string; label: string; icon: React.ReactNode }) {
+  const { count, ref } = useCountUp(value);
+  return (
+    <div className="flex flex-col items-center text-center px-4 py-3 group">
+      <div className="mb-2 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+        {icon}
+      </div>
+      <span ref={ref} className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
+        {count.toLocaleString()}{suffix}
+      </span>
+      <span className="text-xs text-muted-foreground mt-1 font-medium">{label}</span>
+    </div>
+  );
+}
 
 // ==========================================
 //    INTERACTIVE DASHBOARD COMPONENTS
@@ -144,6 +247,39 @@ const PreviewView = () => (
         </div>
         <div className="h-3.5 bg-muted w-full rounded" />
         <div className="h-3.5 bg-muted w-4/5 rounded" />
+      </div>
+    </div>
+  </motion.div>
+);
+
+const NotesView = () => (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="h-full bg-card/30 p-8 flex justify-center overflow-y-auto"
+  >
+    <div className="bg-card w-full max-w-3xl min-h-[600px] shadow-xl rounded-lg p-12 border border-border">
+      <h1 className="text-2xl font-bold mb-6 text-foreground">
+        Study Notes: Software Engineering
+      </h1>
+      <div className="space-y-6">
+        <div>
+          <div className="h-4 bg-muted w-1/3 rounded mb-3" />
+          <div className="space-y-2">
+            <div className="h-3 bg-muted/60 w-full rounded" />
+            <div className="h-3 bg-muted/60 w-11/12 rounded" />
+            <div className="h-3 bg-muted/60 w-4/5 rounded" />
+          </div>
+        </div>
+        <div>
+          <div className="h-4 bg-muted w-1/4 rounded mb-3" />
+          <div className="space-y-2">
+            <div className="h-3 bg-muted/60 w-full rounded" />
+            <div className="h-3 bg-muted/60 w-full rounded" />
+            <div className="h-3 bg-muted/60 w-5/6 rounded" />
+          </div>
+        </div>
       </div>
     </div>
   </motion.div>
@@ -240,12 +376,12 @@ const ChatView = () => (
           </p>
           <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
             <li>
-              <strong className="text-foreground">Project Risks:</strong> Affect
+              <strong >Project Risks:</strong> Affect
               the project schedule or resources (e.g., loss of experienced
               staff).
             </li>
             <li>
-              <strong className="text-foreground">Business Risks:</strong>{" "}
+              <strong >Business Risks:</strong>{" "}
               Affect the organization causing the software to be developed.
             </li>
           </ul>
@@ -623,6 +759,7 @@ export default function Home() {
 
   const TABS = [
     { label: "Preview", icon: Eye },
+    { label: "Notes", icon: BookOpen },
     { label: "Summary", icon: Sparkles },
     { label: "Chat", icon: MessageCircle },
     { label: "Flashcards", icon: Layers },
@@ -641,78 +778,248 @@ export default function Home() {
         {/* ================= HERO SECTION ================= */}
         <section
           ref={heroRef}
-          className="relative pt-32 pb-16 md:pt-48 md:pb-24 overflow-hidden"
+          className="relative pt-32 pb-8 md:pt-40 md:pb-12 overflow-hidden"
         >
-          {/* Subtle background */}
-          <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[70%] h-[400px] bg-primary/[0.06] blur-[100px] rounded-full" />
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.15)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.15)_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+          {/* Professional animated grid background — uses dangerouslySetInnerHTML because Tailwind v4 strips custom class properties and styled-jsx is not supported in Turbopack */}
+          <style dangerouslySetInnerHTML={{ __html: `
+            .hero-grid-bg {
+              position: absolute;
+              inset: 0;
+              width: 100%;
+              height: 100%;
+              background-size: 50px 50px;
+              background-image:
+                linear-gradient(to right, rgba(0,0,0,0.06) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.06) 1px, transparent 1px);
+              -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 100%);
+              mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 100%);
+              animation: grid-move 20s linear infinite;
+            }
+            .dark .hero-grid-bg {
+              background-image:
+                linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px);
+            }
+          `}} />
+          <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
+            <div className="hero-grid-bg" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background" />
+          </div>
+
+          {/* Floating decorative elements — LEFT */}
+          <div className="absolute left-[2%] xl:left-[5%] top-[22%] hidden lg:flex flex-col gap-4 items-end">
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+              className="animate-float"
+            >
+              <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-3 shadow-lg w-44">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+                    <FileText size={12} className="text-primary" />
+                  </div>
+                  <span className="text-[10px] font-medium text-foreground truncate">
+                    Lecture_Notes.pdf
+                  </span>
+                </div>
+                <div className="space-y-1.5">
+                  <div className="h-1.5 bg-muted rounded-full w-full" />
+                  <div className="h-1.5 bg-muted rounded-full w-4/5" />
+                  <div className="h-1.5 bg-muted rounded-full w-3/5" />
+                </div>
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.1, duration: 0.7 }}
+              className="animate-float-reverse"
+            >
+              <div className="bg-primary/10 border border-primary/20 rounded-full px-3 py-1.5 flex items-center gap-2">
+                <Upload size={10} className="text-primary" />
+                <span className="text-[10px] font-medium text-primary">
+                  Auto-analyzed
+                </span>
+                <CheckCircle2 size={10} className="text-green-500" />
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.3, duration: 0.7 }}
+              className="animate-float mt-2"
+            >
+              <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-full px-3 py-1.5 flex items-center gap-2 shadow-sm">
+                <Video size={10} className="text-primary" />
+                <span className="text-[10px] font-medium text-foreground">
+                  Video Gen
+                </span>
+                <PlayCircle size={10} className="text-primary/60" />
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Floating decorative elements — RIGHT */}
+          <div className="absolute right-[2%] xl:right-[5%] top-[20%] hidden lg:flex flex-col gap-4 items-start">
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.9, duration: 0.8 }}
+              className="animate-float-reverse"
+            >
+              <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-xl p-3 shadow-lg w-40">
+                <div className="text-[9px] uppercase tracking-wider text-primary font-semibold mb-1">
+                  Flashcard
+                </div>
+                <div className="text-[11px] text-foreground font-medium">
+                  What is entropy?
+                </div>
+                <div className="mt-2 text-[10px] text-muted-foreground">
+                  Tap to reveal →
+                </div>
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.2, duration: 0.7 }}
+              className="animate-float"
+            >
+              <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-lg px-3 py-2 shadow-lg flex items-center gap-2">
+                <div className="w-5 h-5 rounded-full bg-green-500/10 flex items-center justify-center">
+                  <CheckCircle2 size={10} className="text-green-500" />
+                </div>
+                <div>
+                  <div className="text-[10px] font-medium text-foreground">
+                    Quiz Score
+                  </div>
+                  <div className="text-[10px] text-primary font-bold">92%</div>
+                </div>
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.4, duration: 0.7 }}
+              className="animate-float-slow"
+            >
+              <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-lg px-3 py-2 shadow-lg flex items-center gap-2">
+                <Headphones size={12} className="text-primary" />
+                <div className="flex items-end gap-[2px] h-4">
+                  {[40, 70, 30, 90, 50, 75, 35, 80, 45].map((h, i) => (
+                    <motion.div
+                      key={i}
+                      animate={{
+                        height: [
+                          `${h}%`,
+                          `${(h + 30) % 100}%`,
+                          `${h}%`,
+                        ],
+                      }}
+                      transition={{
+                        duration: 1.2,
+                        repeat: Infinity,
+                        delay: i * 0.08,
+                      }}
+                      className="w-[2px] bg-primary/60 rounded-full"
+                    />
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.6, duration: 0.7 }}
+              className="animate-float-reverse mt-2"
+            >
+               <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-lg px-3 py-2 shadow-lg flex items-center gap-2">
+                <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Mic size={10} className="text-primary" />
+                </div>
+                <div>
+                  <div className="text-[10px] font-medium text-foreground">
+                    Voice Chat
+                  </div>
+                  <div className="text-[10px] text-primary font-bold animate-pulse">Active</div>
+                </div>
+              </div>
+            </motion.div>
           </div>
 
           <div className="container px-4 mx-auto relative z-10">
             <div className="flex flex-col items-center text-center max-w-4xl mx-auto mb-6 md:mb-10">
+              {/* Badge */}
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border bg-muted/50 text-muted-foreground text-xs font-medium uppercase tracking-wider mb-6"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                 AI-Powered Learning Platform
               </motion.div>
 
+              {/* Heading with professional styling */}
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-[1.1]"
+                className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-5 leading-[1.15] text-foreground"
               >
-                Transform your study materials{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">
-                  into interactive mastery.
+                Transform Your Study Materials Into{" "}
+                <span className="text-primary">
+                  Interactive Mastery.
                 </span>
               </motion.h1>
 
+              {/* Subtitle */}
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
+                className="text-base text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed"
               >
-                Upload any document and instantly generate AI-powered summaries,
-                flashcards, quizzes, voice explanations, and video overviews —
-                all in one workspace.
+                Upload any PDF or document to instantly generate AI summaries, smart flashcards, interactive quizzes, and voice overviews. The ultimate AI study app to learn faster and score higher.
               </motion.p>
 
+              {/* CTAs */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="flex flex-col sm:flex-row gap-3 justify-center"
+                className="flex flex-col items-center gap-4"
               >
-                <Link href="/register">
-                  <Button
-                    size="lg"
-                    className="rounded-full px-8 h-12 shadow-lg shadow-primary/20 text-sm font-medium"
-                  >
-                    Get Started Free
-                    <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
-                </Link>
-                <Link href="#how-it-works">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="rounded-full px-8 h-12 text-sm font-medium"
-                  >
-                    See How It Works
-                  </Button>
-                </Link>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Link href="/register">
+                    <Button
+                      size="lg"
+                      className="rounded-full px-8 h-12 shadow-lg shadow-primary/20 text-sm font-medium group"
+                    >
+                      Get Started Free
+                      <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                    </Button>
+                  </Link>
+                  <Link href="#how-it-works">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="rounded-full px-8 h-12 text-sm font-medium"
+                    >
+                      See How It Works
+                    </Button>
+                  </Link>
+                </div>
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <Shield size={12} className="text-green-500" />
+                  No credit card required · Free forever plan
+                </p>
               </motion.div>
             </div>
 
             {/* --- DASHBOARD PREVIEW --- */}
-            <div className="mt-0 md:mt-2 flex flex-col w-full max-w-[1200px] mx-auto pb-4 md:pb-24">
+            <div className="mt-2 md:mt-4 flex flex-col w-full max-w-[1200px] mx-auto pb-4 md:pb-16">
               <ContainerScroll titleComponent={null}>
                 {/* Glow behind dashboard */}
                 <div className="absolute -inset-4 bg-primary/[0.03] blur-3xl rounded-3xl" />
@@ -755,6 +1062,9 @@ export default function Home() {
                     {/* Render Active View */}
                     <div className="flex-1 bg-card/30 relative overflow-hidden w-full">
                       <AnimatePresence mode="wait">
+                        {activeTab === "Notes" && (
+                          <NotesView key="notes" />
+                        )}
                         {activeTab === "Preview" && (
                           <PreviewView key="preview" />
                         )}
@@ -766,7 +1076,7 @@ export default function Home() {
                           <FlashcardView key="flashcards" />
                         )}
                         {activeTab === "Quiz" && <QuizView key="quiz" />}
-                        {activeTab === "Voice Overview" && (
+                        {activeTab === "Voice/Podcast" && (
                           <VoiceOverviewView key="voice-overview" />
                         )}
                         {activeTab === "Concept" && (
@@ -787,11 +1097,13 @@ export default function Home() {
           </div>
         </section>
 
+
         {/* ================= FEATURES SECTION ================= */}
         <section
           id="features"
-          className="py-24 md:py-32 relative border-t border-border/40"
+          className="py-24 md:py-32 relative"
         >
+          <div className="section-divider" />
           <div className="container px-4 mx-auto">
             <motion.div
               initial="hidden"
@@ -820,20 +1132,21 @@ export default function Home() {
               </motion.p>
             </motion.div>
 
-            <motion.div
+            <motion.div 
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: "-60px" }}
-              variants={staggerContainer}
+              viewport={{ once: true, amount: 0.1 }}
+              variants={featureStagger}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[minmax(180px,auto)]"
             >
+
               <BentoCard
                 colSpan="md:col-span-2 lg:col-span-2"
                 rowSpan="row-span-2"
                 title="Chat with Your Documents"
                 description="Ask complex questions and get precise answers cited directly from your lecture notes and study materials."
-                icon={<MessageSquare className="text-primary" />}
-                className="bg-gradient-to-br from-card to-background"
+                icon={<MessageSquare  />}
+                className="bg-card"
               >
                 <div className="absolute bottom-6 right-6 left-6 space-y-3 opacity-90">
                   <div className="p-3 bg-muted rounded-2xl rounded-tl-none text-xs text-muted-foreground w-3/4">
@@ -852,7 +1165,7 @@ export default function Home() {
                 colSpan="md:col-span-2 lg:col-span-2"
                 title="Voice Chat & Viva Mode"
                 description="Real-time voice interaction with an AI tutor. Switch to Viva Mode for oral exam simulation."
-                icon={<Mic className="text-sky-500" />}
+                icon={<Mic  />}
                 className="overflow-hidden flex flex-col justify-between"
               >
                 <div className="absolute top-4 right-4 flex gap-1">
@@ -863,7 +1176,7 @@ export default function Home() {
                     Viva Mode
                   </span>
                 </div>
-                <div className="mt-6 flex items-end justify-center gap-[3px] h-12 w-full opacity-50">
+                <div className="mt-8 flex items-end justify-center gap-[3px] h-14 w-full">
                   {[
                     40, 65, 30, 80, 50, 70, 35, 90, 45, 60, 75, 40, 85, 55, 70,
                     30, 65, 50, 80, 45,
@@ -879,7 +1192,7 @@ export default function Home() {
                         delay: i * 0.07,
                         ease: "easeInOut",
                       }}
-                      className="w-1.5 bg-sky-500 rounded-full"
+                      className={`w-1 rounded-full ${i % 3 === 0 ? "bg-primary" : "bg-primary/30"}`}
                     />
                   ))}
                 </div>
@@ -889,21 +1202,21 @@ export default function Home() {
                 colSpan="md:col-span-1 lg:col-span-1"
                 title="AI Summaries"
                 description="Condense lengthy documents into structured, actionable insights."
-                icon={<FileText className="text-cyan-500" />}
+                icon={<FileText  />}
               />
 
               <BentoCard
                 colSpan="md:col-span-1 lg:col-span-1"
                 title="Instant Quizzes"
                 description="Test your knowledge with AI-generated multiple choice questions."
-                icon={<Zap className="text-blue-400" />}
+                icon={<Zap  />}
               />
 
               <BentoCard
                 colSpan="md:col-span-1 lg:col-span-1"
                 title="Voice & Concept Tools"
                 description="Audio summaries, podcast generation, and concept explanations."
-                icon={<Podcast className="text-teal-500" />}
+                icon={<Podcast  />}
               >
                 <div className="flex flex-wrap gap-2 mt-3">
                   <span className="text-[10px] px-2 py-1 rounded bg-muted border border-border text-muted-foreground">
@@ -923,15 +1236,15 @@ export default function Home() {
                 rowSpan="md:row-span-2"
                 title="Video Overview"
                 description="AI-generated video explanations with dynamic visuals and natural narration."
-                icon={<Video className="text-sky-600" />}
+                icon={<Video  />}
               >
-                <div className="absolute inset-x-4 bottom-4 h-32 bg-muted rounded-lg border border-border overflow-hidden group-hover:border-sky-500/30 transition-colors">
+                <div className="relative mt-6 h-32 bg-muted rounded-lg border border-border overflow-hidden group-hover:border-primary/30 transition-colors">
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-10 h-10 rounded-full bg-background/90 flex items-center justify-center shadow-lg border border-border">
                       <PlayCircle className="w-5 h-5 text-foreground" />
                     </div>
                   </div>
-                  <div className="absolute bottom-0 left-0 h-1 bg-sky-500 w-1/3" />
+                  <div className="absolute bottom-0 left-0 h-1 bg-primary/40 w-1/3" />
                 </div>
               </BentoCard>
 
@@ -939,15 +1252,15 @@ export default function Home() {
                 colSpan="md:col-span-2 lg:col-span-2"
                 title="Podcast Generation"
                 description="Convert your study materials into engaging audio podcasts for learning on the go."
-                icon={<Podcast className="text-cyan-600" />}
+                icon={<Podcast  />}
               >
                 <div className="flex items-center gap-3 mt-4 p-3 bg-muted/40 rounded-xl border border-border/50">
-                  <div className="w-8 h-8 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-600">
+                  <div className="w-8 h-8 rounded-full bg-background flex items-center justify-center border border-border/60 text-foreground">
                     <Podcast className="w-4 h-4" />
                   </div>
                   <div className="flex-1">
                     <div className="h-1.5 bg-foreground/10 rounded-full w-full mb-1">
-                      <div className="h-full bg-cyan-500 rounded-full w-1/2" />
+                      <div className="h-full bg-primary/40 rounded-full w-1/2" />
                     </div>
                     <div className="flex justify-between text-[10px] text-muted-foreground">
                       <span>04:20</span>
@@ -961,7 +1274,7 @@ export default function Home() {
                 colSpan="md:col-span-1 lg:col-span-1"
                 title="Flashcards"
                 description="Auto-generated flashcards for effective revision."
-                icon={<Layers className="text-indigo-400" />}
+                icon={<Layers  />}
               >
                 <div className="mt-4 flex gap-1 justify-center opacity-40">
                   <div className="w-8 h-10 border border-border rounded bg-background" />
@@ -976,14 +1289,15 @@ export default function Home() {
         {/* ================= HOW IT WORKS ================= */}
         <section
           id="how-it-works"
-          className="py-24 md:py-32 bg-muted/20 relative border-t border-border/40"
+          className="py-24 md:py-32 bg-muted/20 relative"
         >
+          <div className="section-divider" />
           <div className="container px-4 mx-auto">
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-80px" }}
-              variants={staggerContainer}
+              variants={fadeInUp}
               className="text-center mb-16"
             >
               <motion.div
@@ -1010,42 +1324,41 @@ export default function Home() {
             <motion.div
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: "-60px" }}
+              viewport={{ once: true, amount: 0.2 }}
               variants={staggerContainer}
               className="grid md:grid-cols-3 gap-8 lg:gap-12 relative max-w-5xl mx-auto"
             >
-              <div className="hidden md:block absolute top-[3rem] left-[15%] right-[15%] h-px bg-gradient-to-r from-transparent via-border to-transparent z-0" />
+              <div className="hidden md:block absolute top-7 left-[15%] right-[15%] h-px bg-gradient-to-r from-transparent via-border to-transparent z-0" />
 
               <StepCard
                 number="01"
                 title="Upload"
                 desc="Drag and drop your PDFs, PPTX, or DOCX files. Paste text directly if you prefer."
-                icon={<Upload className="w-5 h-5 text-primary-foreground" />}
-                gradient="bg-gradient-to-br from-blue-500 to-blue-600"
+                icon={<Upload className="w-6 h-6" />}
               />
               <StepCard
                 number="02"
                 title="Analyze"
                 desc="Our AI instantly processes and structures your content, identifying key concepts and relationships."
-                icon={<Brain className="w-5 h-5 text-primary-foreground" />}
-                gradient="bg-gradient-to-br from-sky-500 to-sky-600"
+                icon={<Brain className="w-6 h-6" />}
               />
               <StepCard
                 number="03"
                 title="Master"
                 desc="Use AI-generated summaries, quizzes, flashcards, voice tools, and video overviews to achieve mastery."
-                icon={<Trophy className="w-5 h-5 text-primary-foreground" />}
-                gradient="bg-gradient-to-br from-cyan-500 to-cyan-600"
+                icon={<Trophy className="w-6 h-6" />}
               />
             </motion.div>
           </div>
         </section>
 
+
         {/* ================= FAQ SECTION ================= */}
         <section
           id="faq"
-          className="py-24 md:py-32 relative border-t border-border/40"
+          className="py-24 md:py-32 relative"
         >
+          <div className="section-divider" />
           <div className="container px-4 mx-auto">
             <motion.div
               initial="hidden"
@@ -1068,7 +1381,7 @@ export default function Home() {
 
               <motion.div variants={staggerContainer} className="space-y-3">
                 {faqData.map((item, i) => (
-                  <motion.div key={i} variants={fadeInUp}>
+                  <motion.div key={i} variants={slideInLeft}>
                     <FAQItem
                       q={item.q}
                       a={item.a}
@@ -1083,28 +1396,31 @@ export default function Home() {
         </section>
 
         {/* ================= CTA SECTION ================= */}
-        <section className="py-24 md:py-32 relative overflow-hidden border-t border-border/40">
+        <section className="py-24 md:py-32 relative overflow-hidden">
+          <div className="section-divider" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/0.06),transparent_60%)]" />
+          {/* Floating subtle orbs */}
+          <div className="absolute top-[20%] left-[10%] w-[200px] h-[200px] bg-primary/[0.03] blur-[80px] rounded-full hero-orb-2" />
+          <div className="absolute bottom-[10%] right-[10%] w-[250px] h-[200px] bg-cyan-400/[0.03] blur-[80px] rounded-full hero-orb-3" />
 
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-80px" }}
             variants={staggerContainer}
-            className="container px-4 mx-auto relative z-10 text-center"
+            className="container px-4 mx-auto relative z-10 text-center mt-12"
           >
             <motion.h2
-              variants={fadeInUp}
-              className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-foreground"
+              variants={scaleUp}
+              className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6 text-foreground"
             >
-              Ready to transform how you learn?
+              Ready to upgrade your knowledge infrastructure?
             </motion.h2>
             <motion.p
               variants={fadeInUp}
-              className="text-muted-foreground text-lg mb-10 max-w-xl mx-auto"
+              className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto"
             >
-              Join students who are already using AI to study smarter, not
-              harder.
+              Join leading professionals and organizations using our platform to master complex concepts faster.
             </motion.p>
             <motion.div
               variants={fadeInUp}
@@ -1113,10 +1429,10 @@ export default function Home() {
               <Link href="/register">
                 <Button
                   size="lg"
-                  className="h-13 px-10 rounded-full text-base shadow-xl shadow-primary/20 bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-all hover:shadow-2xl hover:shadow-primary/30"
+                  className="h-13 px-10 rounded-full text-base shadow-xl shadow-primary/20 bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-all hover:shadow-2xl hover:shadow-primary/30 group"
                 >
                   Start Learning Free
-                  <ArrowRight className="ml-2 w-4 h-4" />
+                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                 </Button>
               </Link>
               <Link href="/pricing">
@@ -1130,6 +1446,13 @@ export default function Home() {
                 </Button>
               </Link>
             </motion.div>
+            <motion.p
+              variants={fadeInUp}
+              className="text-xs text-muted-foreground mt-6 flex items-center justify-center gap-1.5"
+            >
+              <Shield size={12} className="text-green-500" />
+              Free plan available · No credit card required
+            </motion.p>
           </motion.div>
         </section>
       </main>
@@ -1145,18 +1468,16 @@ function StepCard({
   title,
   desc,
   icon,
-  gradient,
 }: {
   number: string;
   title: string;
   desc: string;
   icon: React.ReactNode;
-  gradient: string;
 }) {
   return (
     <motion.div variants={fadeInUp} className="text-center relative z-10">
       <div
-        className={`w-14 h-14 mx-auto rounded-2xl flex items-center justify-center mb-6 shadow-xl ${gradient} ring-4 ring-background`}
+        className={`w-14 h-14 mx-auto rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-primary/20 bg-primary/10 text-primary`}
       >
         {icon}
       </div>
@@ -1193,13 +1514,12 @@ function BentoCard({
   return (
     <motion.div
       variants={fadeInUp}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
       className={`
-        group relative overflow-hidden rounded-2xl border border-border/50 bg-card p-6 shadow-sm hover:shadow-lg hover:shadow-primary/5 hover:border-primary/20 transition-all duration-300 flex flex-col
+        group relative overflow-hidden rounded-2xl border border-border/50 bg-card p-6 shadow-sm hover:shadow-lg hover:border-border transition-all duration-300 flex flex-col hover:-translate-y-1
         ${colSpan} ${rowSpan} ${className}
       `}
     >
-      <div className="mb-4 w-10 h-10 rounded-xl bg-background border border-border/60 flex items-center justify-center shadow-sm text-foreground">
+      <div className="mb-4 w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-sm text-primary">
         {icon}
       </div>
 
