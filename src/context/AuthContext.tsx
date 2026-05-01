@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import authServices from "@/services/authServices";
 import { setAccessToken } from "@/utils/axiosInstance";
 import { useRouter } from "next/navigation";
@@ -10,7 +16,7 @@ interface User {
   username: string;
   email: string;
   profileImage?: string;
-  planType: 'free' | 'plus' | 'pro' | 'premium';
+  planType: "free" | "plus" | "pro" | "premium";
   subscriptionStatus?: string;
   subscriptionEndDate?: string;
   paddleScheduledChange?: { action: string; effectiveAt?: string };
@@ -24,8 +30,14 @@ interface AuthContextType {
   loading: boolean;
   login: (credentials: any) => Promise<void>;
   googleLogin: (token: string) => Promise<void>;
-  register: (username: string, email: string, password: string) => Promise<void>;
+  register: (
+    username: string,
+    email: string,
+    password: string,
+  ) => Promise<void>;
   logout: () => void;
+  deleteAccount: () => Promise<void>;
+  updateUser: (newData: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -46,6 +58,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     router.push("/");
   }, [router]);
 
+  const deleteAccount = useCallback(async () => {
+    try {
+      setLoading(true);
+      await authServices.deleteAccount();
+      setAccessToken(null);
+      setUser(null);
+      router.push("/");
+    } catch (error) {
+      setLoading(false);
+      throw error;
+    }
+  }, [router]);
+
+  const updateUser = useCallback((newData: Partial<User>) => {
+    setUser((prev) => (prev ? { ...prev, ...newData } : null));
+  }, []);
+
   // Listen for session expired events from the axios interceptor
   useEffect(() => {
     const handleSessionExpired = () => {
@@ -54,9 +83,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       router.push("/login");
     };
 
-    window.addEventListener('auth:sessionExpired', handleSessionExpired);
+    window.addEventListener("auth:sessionExpired", handleSessionExpired);
     return () => {
-      window.removeEventListener('auth:sessionExpired', handleSessionExpired);
+      window.removeEventListener("auth:sessionExpired", handleSessionExpired);
     };
   }, [router]);
 
@@ -119,7 +148,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const register = async (username: string, email: string, password: string) => {
+  const register = async (
+    username: string,
+    email: string,
+    password: string,
+  ) => {
     try {
       setLoading(true);
       const data = await authServices.register(username, email, password);
@@ -147,6 +180,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         googleLogin,
         register,
         logout,
+        deleteAccount,
+        updateUser,
       }}
     >
       {children}

@@ -52,7 +52,8 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [count, setCount] = useState(5);
+  const [countMode, setCountMode] = useState<"quick" | "standard" | "comprehensive" | "custom">("standard");
+  const [count, setCount] = useState(20);
   const [reviewingCardId, setReviewingCardId] = useState<string | null>(null);
   const [generationFailed, setGenerationFailed] = useState(false);
 
@@ -523,57 +524,75 @@ export function FlashcardsTab({ documentId }: { documentId: string }) {
       <div className="flex flex-col gap-4 border-b pb-5">
         <h3 className="text-xl font-bold">Flashcards</h3>
         {/* Generate Section */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-4 rounded-xl bg-muted/40 border border-border/60">
-          <div className="flex items-center gap-4 flex-1">
-            <div className="flex flex-col gap-0.5 flex-1">
-              <span className="text-sm font-semibold">Number of Cards</span>
-              <span className="text-xs text-muted-foreground">
-                Choose between 1 and 50
-              </span>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8 rounded-lg"
-                onClick={() => setCount((c) => Math.max(1, c - 1))}
-                type="button"
-              >
-                <span className="text-base font-bold leading-none">−</span>
-              </Button>
-              <span className="w-8 text-center font-bold text-base tabular-nums select-none">
-                {count}
-              </span>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8 rounded-lg"
-                onClick={() => setCount((c) => Math.min(50, c + 1))}
-                type="button"
-              >
-                <span className="text-base font-bold leading-none">+</span>
-              </Button>
-            </div>
+        <div className="flex flex-col gap-3 p-4 rounded-xl bg-muted/30 border border-border/50">
+          <div>
+            <p className="text-sm text-muted-foreground">
+              Select how many flashcards to generate.
+            </p>
           </div>
-          <Button
-            onClick={handleGenerate}
-            disabled={
-              loading || flashcardSets.some((set) => set.generationStatus === "pending")
-            }
-            className="w-full sm:w-auto shrink-0"
-          >
-            {loading ||
-            flashcardSets.some((set) => set.generationStatus === "pending") ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCw className="mr-2 h-4 w-4" />
-            )}
-            {flashcardSets.some((set) => set.generationStatus === "pending")
-              ? "Generating..."
-              : generationFailed
-                ? "Retry"
-                : "Generate Flashcards"}
-          </Button>
+
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            {/* Scope buttons */}
+            <div className="flex flex-wrap items-center gap-1.5 flex-1">
+              {([
+                { key: "quick" as const, label: "Quick", val: 10, unit: "cards" },
+                { key: "standard" as const, label: "Standard", val: 20, unit: "cards" },
+                { key: "comprehensive" as const, label: "Comprehensive", val: 30, unit: "cards" },
+                { key: "custom" as const, label: "Custom", val: null, unit: null },
+              ] as const).map((opt) => (
+                <button
+                  key={opt.key}
+                  type="button"
+                  onClick={() => { setCountMode(opt.key); if (opt.val) setCount(opt.val); }}
+                  className={cn(
+                    "h-8 px-3 rounded-lg text-xs font-medium border transition-all whitespace-nowrap",
+                    countMode === opt.key
+                      ? "border-primary text-primary bg-primary/5"
+                      : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 bg-background"
+                  )}
+                >
+                  {opt.label}{opt.val ? ` · ${opt.val}` : ""}
+                </button>
+              ))}
+
+              {/* Custom stepper — appears inline */}
+              {countMode === "custom" && (
+                <div className="inline-flex items-center gap-1 h-8 px-1.5 rounded-lg border border-primary bg-primary/5">
+                  <button
+                    type="button"
+                    onClick={() => setCount((c) => Math.max(5, c - 1))}
+                    className="h-6 w-6 flex items-center justify-center rounded-md text-primary hover:bg-primary/10 transition-colors"
+                  >
+                    <span className="text-sm font-bold">−</span>
+                  </button>
+                  <span className="w-6 text-center text-xs font-bold tabular-nums text-primary">{count}</span>
+                  <button
+                    type="button"
+                    onClick={() => setCount((c) => Math.min(30, c + 1))}
+                    className="h-6 w-6 flex items-center justify-center rounded-md text-primary hover:bg-primary/10 transition-colors"
+                  >
+                    <span className="text-sm font-bold">+</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Generate button */}
+            <Button
+              onClick={handleGenerate}
+              disabled={loading || flashcardSets.some((set) => set.generationStatus === "pending")}
+              className="w-full sm:w-auto shrink-0"
+            >
+              {loading || flashcardSets.some((set) => set.generationStatus === "pending") ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="mr-2 h-4 w-4" />
+              )}
+              {flashcardSets.some((set) => set.generationStatus === "pending")
+                ? "Generating..."
+                : generationFailed ? "Retry" : "Generate"}
+            </Button>
+          </div>
         </div>
       </div>
 

@@ -56,11 +56,11 @@ export function Sidebar() {
         <Link
           href="/dashboard"
           className={cn(
-            "flex items-center group relative z-20 cursor-pointer overflow-hidden",
+            "flex items-center group relative z-20 cursor-pointer",
             isCollapsed ? "justify-center w-full" : "gap-3.5",
           )}
         >
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-b from-primary/10 to-primary/5 border border-primary/20 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_1px_0_rgba(255,255,255,0.6)_inset] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2),0_1px_0_rgba(255,255,255,0.05)_inset] group-hover:scale-[1.02] transition-transform duration-300 shrink-0">
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 dark:bg-gradient-to-b dark:from-primary/10 dark:to-primary/5 dark:border dark:border-primary/20 dark:shadow-[0_2px_8px_rgba(0,0,0,0.2),0_1px_0_rgba(255,255,255,0.05)_inset] group-hover:scale-[1.02] transition-transform duration-300 shrink-0">
             <Image
               src="/app_logo.png"
               alt="Cognivio AI Logo"
@@ -91,7 +91,7 @@ export function Sidebar() {
       </div>
 
       {/* ── Main Navigation ── */}
-      <nav className="flex-1 space-y-2 overflow-x-hidden">
+      <nav className="flex-1 space-y-2">
         {!isCollapsed ? (
           <div className="px-3 text-[10px] font-extrabold uppercase tracking-[0.15em] text-muted-foreground/60 mb-3 mt-4 whitespace-nowrap">
             Main Menu
@@ -111,10 +111,8 @@ export function Sidebar() {
                 "flex items-center h-11 rounded-xl transition-all duration-200 group relative",
                 isCollapsed ? "justify-center px-0 w-full" : "gap-3.5 px-3.5",
                 isActive
-                  ? // 3D Active State: Gradient background + Border + Drop Shadow + White Top Inner Bevel
-                    "bg-gradient-to-b from-card to-card/95 border border-border/80 text-primary font-semibold shadow-[0_2px_10px_rgba(0,0,0,0.04),0_1px_0_rgba(255,255,255,0.7)_inset] dark:shadow-[0_2px_10px_rgba(0,0,0,0.2),0_1px_0_rgba(255,255,255,0.06)_inset]"
-                  : // 3D Hover State
-                    "text-muted-foreground hover:bg-card/60 hover:border-border/50 hover:shadow-[0_2px_8px_rgba(0,0,0,0.02),0_1px_0_rgba(255,255,255,0.4)_inset] dark:hover:shadow-[0_2px_8px_rgba(0,0,0,0.1),0_1px_0_rgba(255,255,255,0.03)_inset] hover:text-foreground font-medium border border-transparent",
+                  ? "bg-primary/10 text-primary font-semibold dark:bg-gradient-to-b dark:from-card dark:to-card/95 dark:border dark:border-border/80 dark:shadow-[0_2px_10px_rgba(0,0,0,0.2),0_1px_0_rgba(255,255,255,0.06)_inset]"
+                  : "text-muted-foreground hover:bg-black/5 dark:hover:bg-card/60 dark:hover:border-border/50 dark:hover:shadow-[0_2px_8px_rgba(0,0,0,0.1),0_1px_0_rgba(255,255,255,0.03)_inset] hover:text-foreground font-medium border border-transparent",
               )}
             >
               {/* Glowing Active Indicator Pill */}
@@ -143,13 +141,13 @@ export function Sidebar() {
       </nav>
 
       {/* ── Bottom Actions ── */}
-      <div className="mt-auto pt-5 border-t border-border/60 space-y-2 overflow-x-hidden">
+      <div className="mt-auto pt-5 border-t border-border/60 space-y-2">
         {/* Theme Toggle */}
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           title={isCollapsed ? "Toggle Theme" : undefined}
           className={cn(
-            "flex items-center h-11 rounded-xl text-muted-foreground hover:bg-gradient-to-b hover:from-card hover:to-card/95 hover:border-border/60 hover:shadow-[0_2px_8px_rgba(0,0,0,0.04),0_1px_0_rgba(255,255,255,0.5)_inset] dark:hover:shadow-[0_2px_8px_rgba(0,0,0,0.2),0_1px_0_rgba(255,255,255,0.04)_inset] hover:text-foreground transition-all duration-200 border border-transparent font-medium group",
+            "flex items-center h-11 rounded-xl text-muted-foreground hover:bg-black/5 dark:hover:bg-gradient-to-b dark:hover:from-card dark:hover:to-card/95 dark:hover:border-border/60 dark:hover:shadow-[0_2px_8px_rgba(0,0,0,0.2),0_1px_0_rgba(255,255,255,0.04)_inset] hover:text-foreground transition-all duration-200 border border-transparent font-medium group",
             isCollapsed
               ? "justify-center px-0 w-full"
               : "gap-3.5 px-3.5 w-full",
@@ -190,7 +188,7 @@ export function Sidebar() {
           onClick={logout}
           title={isCollapsed ? "Logout" : undefined}
           className={cn(
-            "flex items-center h-11 rounded-xl text-muted-foreground hover:bg-gradient-to-b hover:from-destructive/10 hover:to-destructive/5 hover:border-destructive/30 hover:shadow-[0_2px_8px_rgba(220,38,38,0.08),0_1px_0_rgba(255,255,255,0.3)_inset] dark:hover:shadow-[0_2px_8px_rgba(220,38,38,0.15),0_1px_0_rgba(255,255,255,0.02)_inset] hover:text-destructive transition-all duration-200 border border-transparent font-medium text-left group",
+            "flex items-center h-11 rounded-xl text-muted-foreground hover:bg-destructive/10 dark:hover:bg-gradient-to-b dark:hover:from-destructive/10 dark:hover:to-destructive/5 dark:hover:border-destructive/30 dark:hover:shadow-[0_2px_8px_rgba(220,38,38,0.15),0_1px_0_rgba(255,255,255,0.02)_inset] hover:text-destructive transition-all duration-200 border border-transparent font-medium text-left group",
             isCollapsed
               ? "justify-center px-0 w-full"
               : "gap-3.5 px-3.5 w-full",

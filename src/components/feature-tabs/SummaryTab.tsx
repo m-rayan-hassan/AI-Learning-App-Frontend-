@@ -158,8 +158,8 @@ export function SummaryTab({ documentId }: { documentId: string }) {
                 ),
                 // Tables
                 table: ({ node, ordered, index, ...props }: any) => (
-                  <div className="w-full overflow-hidden my-8 rounded-xl border border-border shadow-sm">
-                    <table className="w-full text-sm text-left text-foreground/90 bg-card" {...props} />
+                  <div className="w-full overflow-x-auto my-8 rounded-xl border border-border shadow-sm">
+                    <table className="w-full min-w-[500px] text-sm text-left text-foreground/90 bg-card" {...props} />
                   </div>
                 ),
                 thead: ({ node, ordered, index, ...props }: any) => (

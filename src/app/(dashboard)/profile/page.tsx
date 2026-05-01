@@ -1,258 +1,519 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Loader2, User, Crown, Calendar, Settings, ShieldCheck, Zap, Sparkles, Star, ArrowRight, Activity, Bell } from "lucide-react";
+import {
+  Loader2, User, Crown, Calendar, Settings,
+  ShieldCheck, Zap, Sparkles, Star, ArrowRight,
+  Activity, Camera, X, AlertTriangle, CheckCircle2,
+} from "lucide-react";
 import authServices from "@/services/authServices";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-// Constants matching backend plan limits
+/* ─── Plan config ─────────────────────────────── */
 const PLAN_LIMITS = {
-  free: { docs: 5, flashcards: 15, quizzes: 15, voice: 0, video: 1 },
-  plus: { docs: 10, flashcards: 30, quizzes: 30, voice: 1, video: 2 },
-  pro: { docs: 15, flashcards: 45, quizzes: 45, voice: 2, video: 3 },
+  free:    { docs: 5,  flashcards: 15, quizzes: 15, voice: 0, video: 1 },
+  plus:    { docs: 10, flashcards: 30, quizzes: 30, voice: 1, video: 2 },
+  pro:     { docs: 15, flashcards: 45, quizzes: 45, voice: 2, video: 3 },
   premium: { docs: 20, flashcards: 60, quizzes: 60, voice: 5, video: 5 },
 };
 
-const PLAN_ICONS = {
-  free: ShieldCheck,
-  plus: Star,
-  pro: Zap,
-  premium: Sparkles,
+const PLAN_META: Record<string, { icon: any; label: string; badge: string }> = {
+  free:    { icon: ShieldCheck, label: "Free",    badge: "bg-muted text-muted-foreground border-border/60" },
+  plus:    { icon: Star,        label: "Plus",    badge: "bg-blue-500/10 text-blue-600 border-blue-200 dark:border-blue-800 dark:text-blue-400" },
+  pro:     { icon: Zap,         label: "Pro",     badge: "bg-primary/10 text-primary border-primary/20" },
+  premium: { icon: Sparkles,    label: "Premium", badge: "bg-amber-500/10 text-amber-600 border-amber-200 dark:border-amber-800 dark:text-amber-400" },
 };
 
-const PLAN_COLORS = {
-  free: "text-slate-600 bg-slate-100 border-slate-200 dark:text-slate-400 dark:bg-slate-800 dark:border-slate-700",
-  plus: "text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-950 dark:border-blue-800",
-  pro: "text-indigo-600 bg-indigo-50 border-indigo-200 dark:text-indigo-400 dark:bg-indigo-950 dark:border-indigo-800",
-  premium: "text-slate-800 bg-slate-100 border-slate-300 dark:text-slate-200 dark:bg-slate-800 dark:border-slate-600",
-};
+/* ─── Helpers ─────────────────────────────────── */
+function getPct(count: number, limit: number) {
+  if (limit === 0) return 100;
+  return Math.min(Math.round((count / limit) * 100), 100);
+}
 
+/* ═══════════════════════════════════════════════
+   PAGE
+═══════════════════════════════════════════════ */
 export default function ProfilePage() {
   const router = useRouter();
-  const { user: authUser } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<any>(null);
-  const [error, setError] = useState("");
+  const { updateUser, deleteAccount } = useAuth();
+
+  const [loading, setLoading]           = useState(true);
+  const [profile, setProfile]           = useState<any>(null);
+  const [error, setError]               = useState("");
+  const [success, setSuccess]           = useState("");
   const [updateLoading, setUpdateLoading] = useState(false);
-  const [success, setSuccess] = useState("");
+  const [imageLoading, setImageLoading]   = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl]     = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const data = await authServices.getProfile();
-        setProfile(data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load profile");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProfile();
+    authServices.getProfile()
+      .then(setProfile)
+      .catch((e: any) => setError(e.message || "Failed to load profile"))
+      .finally(() => setLoading(false));
   }, []);
+
+  const flash = (msg: string, type: "success" | "error") => {
+    type === "success" ? setSuccess(msg) : setError(msg);
+    setTimeout(() => { setSuccess(""); setError(""); }, 3500);
+  };
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setUpdateLoading(true);
-    setSuccess("");
-    setError("");
-
-    const formData = new FormData(e.currentTarget);
-    const username = formData.get("username") as string;
-
+    const username = (new FormData(e.currentTarget)).get("username") as string;
     try {
       const updated = await authServices.updateProfile({ username });
-      setProfile({ ...profile, ...updated });
-      setSuccess("Profile updated successfully!");
+      setProfile((p: any) => ({ ...p, ...updated }));
+      updateUser({ username: updated.username });
+      flash("Profile updated successfully.", "success");
     } catch (err: any) {
-       setError(err.message || "Failed to update profile");
-    } finally {
-      setUpdateLoading(false);
-      setTimeout(() => setSuccess(""), 3000);
-    }
+      flash(err.message || "Failed to update profile.", "error");
+    } finally { setUpdateLoading(false); }
   };
 
-  if (loading) {
-      return (
-          <div className="flex h-full items-center justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-      )
-  }
-
-  const planType = profile?.planType || "free";
-  const limits = PLAN_LIMITS[planType as keyof typeof PLAN_LIMITS];
-  const quotas = profile?.quotas || {};
-  const PlanIcon = PLAN_ICONS[planType as keyof typeof PLAN_ICONS] || ShieldCheck;
-  const planColorClass = PLAN_COLORS[planType as keyof typeof PLAN_COLORS] || PLAN_COLORS.free;
-
-  // Calculate percentages and ensure they don't exceed 100%
-  const getPercentage = (count: number, limit: number) => {
-    if (limit === 0) return 100; // Special case for zero limit (e.g. Free plan voice)
-    return Math.min(Math.round((count / limit) * 100), 100);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
   };
+
+  const handleImageConfirm = async () => {
+    if (!selectedFile) return;
+    setImageLoading(true);
+    try {
+      const fd = new FormData();
+      fd.append("profileImage", selectedFile);
+      await authServices.updateProfileImage(fd);
+      const updated = await authServices.getProfile();
+      setProfile(updated);
+      updateUser({ profileImage: updated.profileImage });
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      flash("Profile image updated.", "success");
+    } catch (err: any) {
+      flash(err.message || "Failed to update image.", "error");
+    } finally { setImageLoading(false); }
+  };
+
+  const handleImageCancel = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleDelete = async () => {
+    setDeleteLoading(true);
+    try { await deleteAccount(); }
+    catch (err: any) { flash(err.message || "Failed to delete account.", "error"); setDeleteLoading(false); }
+  };
+
+  /* ── Loading ── */
+  if (loading) return (
+    <div className="flex h-[calc(100vh-100px)] items-center justify-center">
+      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground/50" />
+    </div>
+  );
+
+  /* ── Derived data ── */
+  const planType   = profile?.planType || "free";
+  const limits     = PLAN_LIMITS[planType as keyof typeof PLAN_LIMITS] ?? PLAN_LIMITS.free;
+  const quotas     = profile?.quotas ?? {};
+  const planMeta   = PLAN_META[planType] ?? PLAN_META.free;
+  const PlanIcon   = planMeta.icon;
 
   const usageStats = [
-    { name: "Documents", count: quotas.document?.count || 0, limit: limits.docs },
-    { name: "Flashcards", count: quotas.flashcard?.count || 0, limit: limits.flashcards },
-    { name: "Quizzes", count: quotas.quiz?.count || 0, limit: limits.quizzes },
-    { name: "Voice Overviews", count: quotas.voiceOverview?.count || 0, limit: limits.voice },
-    { name: "Videos", count: quotas.video?.count || 0, limit: limits.video },
+    { name: "Documents",     count: quotas.document?.count      || 0, limit: limits.docs       },
+    { name: "Flashcards",    count: quotas.flashcard?.count     || 0, limit: limits.flashcards },
+    { name: "Quizzes",       count: quotas.quiz?.count          || 0, limit: limits.quizzes    },
+    { name: "Voice/Podcast", count: quotas.voiceOverview?.count || 0, limit: limits.voice      },
+    { name: "Videos",        count: quotas.video?.count         || 0, limit: limits.video      },
   ];
 
-  return (
-    <div className="space-y-8 pb-12">
-      <div className="flex flex-col space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Profile Dashboard</h1>
-        <p className="text-muted-foreground">
-          Manage your account settings and view your current plan details.
-        </p>
-      </div>
+  const avatarSrc = previewUrl || profile?.profileImage || null;
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Left Column: User Card & Plan Card */}
-        <div className="md:col-span-1 space-y-6">
-          {/* User Profile Card */}
-          <Card className="border-border/50 shadow-sm overflow-hidden relative">
-            <div className="h-24 bg-gradient-to-r from-primary/10 to-primary/30 w-full absolute top-0 left-0" />
-            <CardContent className="pt-12 relative z-10 flex flex-col items-center text-center pb-8 border-b border-border/10">
-              <div className="h-24 w-24 rounded-full border-4 border-background bg-muted flex items-center justify-center overflow-hidden mb-4 shadow-md">
-                {profile?.profileImage ? (
-                  <img src={profile.profileImage} alt={profile.username} className="h-full w-full object-cover" />
-                ) : (
-                  <User className="h-12 w-12 text-muted-foreground" />
-                )}
+  return (
+    <div className="max-w-[1000px] mx-auto pb-16 space-y-6 animate-in fade-in duration-500">
+
+      {/* ━━━━━ Premium Workspace Header ━━━━━ */}
+      <header className="relative rounded-2xl border border-border/60 bg-card overflow-hidden shadow-sm">
+        <div className="absolute inset-0 bg-[radial-gradient(hsl(var(--muted-foreground)/0.12)_1px,transparent_1px)] [background-size:12px_12px] opacity-40 pointer-events-none" />
+        
+        <div className="relative z-10 p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
+              <User className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <p className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground mb-0.5 leading-none">
+                Account
+              </p>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground leading-tight">
+                Profile Settings
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Manage your account identity, security, and subscription.
+              </p>
+            </div>
+          </div>
+          
+          <Button
+            variant={planType === "free" ? "default" : "outline"}
+            className="h-10 px-5 text-sm font-medium gap-2 shrink-0 shadow-sm"
+            onClick={() => router.push("/pricing")}
+          >
+            <Crown className="h-4 w-4" />
+            {planType === "free" ? "Upgrade Plan" : "Manage Subscription"}
+          </Button>
+        </div>
+      </header>
+
+      {/* ━━━━━ Global feedback ━━━━━ */}
+      {(error || success) && (
+        <div className={cn(
+          "flex items-center gap-3 px-5 py-3.5 rounded-xl border text-sm font-medium animate-in slide-in-from-top-2",
+          error
+            ? "bg-destructive/10 border-destructive/20 text-destructive"
+            : "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+        )}>
+          {error
+            ? <AlertTriangle className="h-4 w-4 shrink-0" />
+            : <CheckCircle2 className="h-4 w-4 shrink-0" />
+          }
+          {error || success}
+        </div>
+      )}
+
+      {/* ━━━━━ Main grid ━━━━━ */}
+      <div className="grid gap-6 lg:grid-cols-3">
+
+        {/* ── Left column ── */}
+        <div className="space-y-6">
+
+          {/* Identity card */}
+          <div className="rounded-2xl border border-border/60 bg-card overflow-hidden shadow-sm">
+            {/* Cover band (Premium subtle gradient) */}
+            <div className="h-24 bg-gradient-to-r from-primary/10 via-primary/5 to-muted border-b border-border/40 relative" />
+
+            {/* Avatar + info */}
+            <div className="px-6 pb-6 relative">
+              {/* Avatar — overlaps the cover band seamlessly */}
+              <div className="relative -mt-12 mb-4 w-fit">
+                <div
+                  className="h-24 w-24 rounded-2xl ring-4 ring-card bg-muted overflow-hidden cursor-pointer group relative shadow-sm"
+                  onClick={() => !imageLoading && fileInputRef.current?.click()}
+                >
+                  {avatarSrc ? (
+                    <img src={avatarSrc} alt={profile?.username} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center bg-muted/80">
+                      <User className="h-10 w-10 text-muted-foreground/50" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Camera className="h-6 w-6 text-white" />
+                  </div>
+                  {imageLoading && (
+                    <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                    </div>
+                  )}
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageChange}
+                  disabled={imageLoading}
+                />
               </div>
-              <h2 className="text-xl font-bold text-foreground">{profile?.username}</h2>
-              <p className="text-sm text-muted-foreground mb-4">{profile?.email}</p>
-              
-              <div className={`px-4 py-1.5 rounded-full border text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${planColorClass}`}>
-                <PlanIcon className="w-3.5 h-3.5" />
-                {planType} Plan
+
+              {/* Image action buttons */}
+              {selectedFile && (
+                <div className="flex gap-2 mb-4 animate-in fade-in zoom-in-95">
+                  <Button size="sm" className="h-8 text-xs font-medium gap-1.5" onClick={handleImageConfirm} disabled={imageLoading}>
+                    {imageLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                    Save Photo
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-8 text-xs font-medium gap-1.5" onClick={handleImageCancel} disabled={imageLoading}>
+                    <X className="h-3.5 w-3.5" /> Cancel
+                  </Button>
+                </div>
+              )}
+
+              <h2 className="text-xl font-bold text-foreground leading-tight tracking-tight">
+                {profile?.username}
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">{profile?.email}</p>
+
+              {/* Plan badge */}
+              <div className={cn(
+                "inline-flex items-center gap-1.5 mt-4 px-3 py-1.5 rounded-lg border text-xs font-semibold shadow-sm",
+                planMeta.badge
+              )}>
+                <PlanIcon className="h-3.5 w-3.5" />
+                {planMeta.label} Plan
               </div>
-            </CardContent>
+            </div>
+
+            {/* Member since footer */}
             {profile?.createdAt && (
-              <div className="bg-muted/30 px-6 py-4 flex items-center justify-between text-xs text-muted-foreground">
-                <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4" /> Member since</span>
-                <span className="font-medium">{new Date(profile.createdAt).toLocaleDateString()}</span>
+              <div className="px-6 py-4 border-t border-border/50 bg-muted/10 flex items-center justify-between">
+                <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                  <Calendar className="h-4 w-4" />
+                  Member Since
+                </span>
+                <span className="text-xs font-semibold text-foreground">
+                  {new Date(profile.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}
+                </span>
               </div>
             )}
-          </Card>
+          </div>
 
-          {/* Subscription Card */}
-          <Card className="border-border/50 shadow-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Crown className="w-5 h-5 text-primary" />
-                Subscription
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-1">
-                <div className="text-sm text-muted-foreground">Status</div>
-                <div className="font-medium flex items-center gap-2 capitalize">
-                  <div className={`w-2 h-2 rounded-full ${profile?.subscriptionStatus === 'active' ? 'bg-green-500' : profile?.subscriptionStatus === 'canceled' ? 'bg-amber-500' : 'bg-slate-400'}`} />
-                  {profile?.subscriptionStatus || 'None'}
+          {/* Subscription card */}
+          <Panel icon={Crown} title="Subscription" sub="Billing & plan details">
+            <div className="space-y-4 mb-6">
+              <div className="flex items-center justify-between py-3 border-b border-border/50">
+                <span className="text-sm font-medium text-muted-foreground">Status</span>
+                <div className="flex items-center gap-2">
+                  <span className={cn(
+                    "h-2 w-2 rounded-full shadow-[0_0_8px_currentColor]",
+                    profile?.subscriptionStatus === "active"   ? "bg-emerald-500 text-emerald-500"  :
+                    profile?.subscriptionStatus === "canceled" ? "bg-amber-500 text-amber-500"  : "bg-muted-foreground/40 text-muted-foreground/40"
+                  )} />
+                  <span className="text-sm font-bold text-foreground capitalize">
+                    {profile?.subscriptionStatus || "None"}
+                  </span>
                 </div>
+              </div>
+
+              <div className="flex items-center justify-between py-1">
+                <span className="text-sm font-medium text-muted-foreground">Current Plan</span>
+                <span className="text-sm font-bold text-foreground capitalize">{planMeta.label}</span>
               </div>
 
               {profile?.subscriptionEndDate && (
-                <div className="space-y-1 pt-2 border-t border-border/50">
-                  <div className="text-sm text-muted-foreground">Period Ends</div>
-                  <div className="font-medium text-sm text-foreground">
-                    {new Date(profile.subscriptionEndDate).toLocaleDateString(undefined, {
-                      year: 'numeric', month: 'long', day: 'numeric'
-                    })}
-                  </div>
+                <div className="flex items-center justify-between py-3 border-t border-border/50">
+                  <span className="text-sm font-medium text-muted-foreground">Renews On</span>
+                  <span className="text-sm font-bold text-foreground">
+                    {new Date(profile.subscriptionEndDate).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}
+                  </span>
                 </div>
               )}
-            </CardContent>
-            <CardFooter className="pt-0 pb-6 px-6">
-              <Button onClick={() => router.push('/pricing')} variant={planType === 'free' ? 'default' : 'outline'} className="w-full">
-                {planType === 'free' ? 'Upgrade Plan' : 'Manage Subscription'}
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </CardFooter>
-          </Card>
+            </div>
+
+            <Button
+              variant={planType === "free" ? "default" : "outline"}
+              className="w-full h-10 text-sm font-medium gap-2 justify-between group"
+              onClick={() => router.push("/pricing")}
+            >
+              <span>{planType === "free" ? "Upgrade Plan" : "Manage Subscription"}</span>
+              <ArrowRight className="h-4 w-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+            </Button>
+          </Panel>
         </div>
 
-        {/* Right Column: Quotas & Settings */}
-        <div className="md:col-span-2 space-y-6">
-          {/* Usage Quotas */}
-          <Card className="border-border/50 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Activity className="w-5 h-5 text-primary" />
-                Monthly Usage
-              </CardTitle>
-              <CardDescription>Your plan limits reset every month.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+        {/* ── Right column ── */}
+        <div className="lg:col-span-2 space-y-6">
+
+          {/* Monthly usage */}
+          <Panel icon={Activity} title="Monthly Usage" sub="Resets at the start of each month">
+            <div className="space-y-5">
               {usageStats.map((stat) => {
-                const percentage = getPercentage(stat.count, stat.limit);
-                const isLimitReached = stat.count >= stat.limit;
-                
+                const pct        = getPct(stat.count, stat.limit);
+                const isMaxed    = stat.count >= stat.limit && stat.limit > 0;
+                const unavailable = stat.limit === 0;
+
                 return (
-                  <div key={stat.name} className="space-y-2">
-                    <div className="flex justify-between items-end text-sm">
-                      <span className="font-medium text-foreground">{stat.name}</span>
-                      <span className="text-muted-foreground">
-                        <span className={isLimitReached && stat.limit > 0 ? "text-destructive font-bold" : ""}>{stat.count}</span> / {stat.limit}
-                      </span>
+                  <div key={stat.name} className="space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold text-foreground">{stat.name}</span>
+                      <div className="flex items-center gap-2">
+                        {unavailable ? (
+                          <span className="text-xs font-medium text-muted-foreground/60 italic px-2 py-0.5 bg-muted rounded-md">
+                            Not on {planMeta.label}
+                          </span>
+                        ) : (
+                          <span className={cn(
+                            "text-sm font-bold tabular-nums",
+                            isMaxed ? "text-destructive" : "text-foreground"
+                          )}>
+                            {stat.count}
+                            <span className="text-muted-foreground font-medium"> / {stat.limit}</span>
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <Progress 
-                      value={percentage} 
-                      className={`h-2 ${isLimitReached && stat.limit > 0 ? "[&>div]:bg-destructive" : ""}`} 
-                    />
-                    {stat.limit === 0 && (
-                      <p className="text-[10px] text-amber-500 font-medium">Not available on {planType} plan</p>
-                    )}
+                    <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
+                      <div
+                        className={cn(
+                          "h-full rounded-full transition-all duration-1000 ease-out",
+                          unavailable ? "bg-muted-foreground/20" :
+                          isMaxed     ? "bg-destructive"          : "bg-primary"
+                        )}
+                        style={{ width: unavailable ? "100%" : `${pct}%` }}
+                      />
+                    </div>
                   </div>
                 );
               })}
-            </CardContent>
-          </Card>
+            </div>
+          </Panel>
 
-          {/* Account Settings */}
-          <Card className="border-border/50 shadow-sm">
-            <CardHeader>
-               <CardTitle className="text-lg flex items-center gap-2">
-                <Settings className="w-5 h-5 text-primary" />
-                Account Settings
-              </CardTitle>
-               <CardDescription>Update your personal details here.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <form onSubmit={handleUpdate} className="space-y-5">
-                    <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input id="email" value={profile?.email || ""} disabled readOnly className="bg-muted/50 text-muted-foreground" />
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <ShieldCheck className="w-3 h-3" /> Email cannot be changed for security reasons.
-                        </p>
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="username">Username</Label>
-                        <Input id="username" name="username" defaultValue={profile?.username} required className="focus-visible:ring-primary/50" />
-                    </div>
-                     {error && <p className="text-sm text-destructive bg-destructive/10 p-2 rounded-md">{error}</p>}
-                     {success && <p className="text-sm text-green-600 bg-green-500/10 p-2 rounded-md">{success}</p>}
-                    <div className="flex justify-end pt-2">
-                        <Button type="submit" disabled={updateLoading} className="min-w-[140px]">
-                            {updateLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Save Changes
-                        </Button>
-                    </div>
-                </form>
-            </CardContent>
-          </Card>
+          {/* Account settings */}
+          <Panel icon={Settings} title="Account Settings" sub="Update your personal details">
+            <form onSubmit={handleUpdate} className="space-y-5">
+              
+              {/* Email */}
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-semibold text-foreground">
+                  Email Address
+                </Label>
+                <Input
+                  id="email"
+                  value={profile?.email || ""}
+                  disabled
+                  readOnly
+                  className="h-11 text-sm bg-muted/50 text-muted-foreground border-border/50 cursor-not-allowed opacity-70"
+                />
+                <p className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mt-1.5">
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+                  Secured. Email cannot be changed directly.
+                </p>
+              </div>
+
+              {/* Username */}
+              <div className="space-y-2">
+                <Label htmlFor="username" className="text-sm font-semibold text-foreground">
+                  Username
+                </Label>
+                <Input
+                  id="username"
+                  name="username"
+                  defaultValue={profile?.username}
+                  required
+                  className="h-11 text-sm border-border/60 focus-visible:ring-primary/40 bg-background"
+                />
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <Button
+                  type="submit"
+                  disabled={updateLoading}
+                  className="h-10 px-6 text-sm font-medium gap-2 min-w-[140px] shadow-sm"
+                >
+                  {updateLoading
+                    ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</>
+                    : "Save Changes"
+                  }
+                </Button>
+              </div>
+            </form>
+          </Panel>
+
+          {/* Danger zone */}
+          <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 shadow-sm">
+            <div className="flex items-center gap-3.5 mb-5 border-b border-destructive/20 pb-4">
+              <div className="h-10 w-10 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0 border border-destructive/20">
+                <AlertTriangle className="h-5 w-5 text-destructive" />
+              </div>
+              <div>
+                <p className="text-base font-bold tracking-tight text-foreground leading-tight">Danger Zone</p>
+                <p className="text-sm text-muted-foreground mt-0.5">Permanent and irreversible actions</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 mt-2">
+              <div>
+                <p className="text-sm font-bold text-foreground">Delete Account</p>
+                <p className="text-sm text-muted-foreground mt-1 max-w-md">
+                  Permanently deletes your account, purges all uploaded documents, and cancels active subscriptions immediately.
+                </p>
+              </div>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    disabled={deleteLoading}
+                    className="h-10 px-5 text-sm font-semibold shrink-0 shadow-sm"
+                  >
+                    {deleteLoading
+                      ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Deleting...</>
+                      : "Delete Account"
+                    }
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Account?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently delete your account, purge all uploaded documents, and cancel active subscriptions immediately. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={handleDelete}
+                      variant="destructive"
+                    >
+                      Delete Permanently
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </div>
+
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────
+   Reusable Sub-components
+───────────────────────────────────────── */
+function Panel({
+  children, title, sub, icon: Icon,
+}: {
+  children: React.ReactNode;
+  title: string;
+  sub: string;
+  icon: any;
+}) {
+  return (
+    <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm">
+      <div className="flex items-center gap-3.5 mb-6 border-b border-border/50 pb-4">
+        <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center shrink-0 border border-border/50">
+          <Icon className="h-5 w-5 text-muted-foreground" />
+        </div>
+        <div>
+          <p className="text-base font-bold tracking-tight text-foreground leading-tight">{title}</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{sub}</p>
+        </div>
+      </div>
+      {children}
     </div>
   );
 }

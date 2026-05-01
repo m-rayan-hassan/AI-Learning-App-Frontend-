@@ -25,6 +25,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import {
@@ -155,8 +166,6 @@ export default function DocumentsPage() {
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.preventDefault();
     e.stopPropagation();
-
-    if (!confirm("Are you sure you want to delete this document?")) return;
 
     const toastId = toast.loading("Deleting document...");
     try {
@@ -459,14 +468,35 @@ export default function DocumentsPage() {
                       <FileText className="h-5 w-5 text-primary" />
                     )}
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors z-10 relative"
-                    onClick={(e) => handleDelete(e, doc._id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors z-10 relative"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Document?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete "{doc.title}" along with its associated notes, summary, flashcards, quizzes, voice podcast, and video overview. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction 
+                          onClick={(e) => handleDelete(e, doc._id)}
+                          variant="destructive"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
                 <CardTitle className="truncate text-base" title={doc.title}>
                   {doc.title}
@@ -523,14 +553,34 @@ export default function DocumentsPage() {
                       <span className="w-2 h-2 rounded-full bg-destructive"></span>
                       Failed to process
                     </div>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      className="w-auto h-8 z-10"
-                      onClick={(e) => handleDelete(e, doc._id)}
-                    >
-                      Delete Document
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="w-auto h-8 z-10"
+                        >
+                          Delete Document
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Failed Document?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently remove this failed document from your workspace.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={(e) => handleDelete(e, doc._id)}
+                            variant="destructive"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 ) : (
                   <div className="flex w-full items-center justify-between">

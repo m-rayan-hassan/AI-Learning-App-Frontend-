@@ -54,7 +54,8 @@ export function QuizTab({ documentId }: { documentId: string }) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [quizResults, setQuizResults] = useState<QuizData | null>(null);
-  const [count, setCount] = useState(5);
+  const [countMode, setCountMode] = useState<"quick" | "standard" | "comprehensive" | "custom">("standard");
+  const [count, setCount] = useState(20);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [generationFailed, setGenerationFailed] = useState(false);
 
@@ -597,54 +598,75 @@ export function QuizTab({ documentId }: { documentId: string }) {
       <div className="flex flex-col gap-4 border-b pb-5">
         <h3 className="text-xl font-bold">Quizzes</h3>
         {/* Generate Section */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-4 rounded-xl bg-muted/40 border border-border/60">
-          <div className="flex items-center gap-4 flex-1">
-            <div className="flex flex-col gap-0.5 flex-1">
-              <span className="text-sm font-semibold">Number of Questions</span>
-              <span className="text-xs text-muted-foreground">
-                Choose between 1 and 20
-              </span>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8 rounded-lg"
-                onClick={() => setCount((c) => Math.max(1, c - 1))}
-                type="button"
-              >
-                <span className="text-base font-bold leading-none">−</span>
-              </Button>
-              <span className="w-8 text-center font-bold text-base tabular-nums select-none">
-                {count}
-              </span>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8 rounded-lg"
-                onClick={() => setCount((c) => Math.min(20, c + 1))}
-                type="button"
-              >
-                <span className="text-base font-bold leading-none">+</span>
-              </Button>
-            </div>
+        <div className="flex flex-col gap-3 p-4 rounded-xl bg-muted/30 border border-border/50">
+          <div>
+            <p className="text-sm text-muted-foreground">
+              Select how many questions to generate.
+            </p>
           </div>
-          <Button
-            onClick={handleGenerate}
-            disabled={loading || quizzes.some((q) => q.generationStatus === "pending")}
-            className="w-full sm:w-auto shrink-0"
-          >
-            {loading || quizzes.some((q) => q.generationStatus === "pending") ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCw className="mr-2 h-4 w-4" />
-            )}
-            {quizzes.some((q) => q.generationStatus === "pending")
-              ? "Generating..."
-              : generationFailed
-                ? "Retry"
-                : "Generate Quiz"}
-          </Button>
+
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            {/* Scope buttons */}
+            <div className="flex flex-wrap items-center gap-1.5 flex-1">
+              {([
+                { key: "quick" as const, label: "Quick", val: 10 },
+                { key: "standard" as const, label: "Standard", val: 20 },
+                { key: "comprehensive" as const, label: "Comprehensive", val: 30 },
+                { key: "custom" as const, label: "Custom", val: null },
+              ] as const).map((opt) => (
+                <button
+                  key={opt.key}
+                  type="button"
+                  onClick={() => { setCountMode(opt.key); if (opt.val) setCount(opt.val); }}
+                  className={cn(
+                    "h-8 px-3 rounded-lg text-xs font-medium border transition-all whitespace-nowrap",
+                    countMode === opt.key
+                      ? "border-primary text-primary bg-primary/5"
+                      : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 bg-background"
+                  )}
+                >
+                  {opt.label}{opt.val ? ` · ${opt.val}` : ""}
+                </button>
+              ))}
+
+              {/* Custom stepper — appears inline */}
+              {countMode === "custom" && (
+                <div className="inline-flex items-center gap-1 h-8 px-1.5 rounded-lg border border-primary bg-primary/5">
+                  <button
+                    type="button"
+                    onClick={() => setCount((c) => Math.max(5, c - 1))}
+                    className="h-6 w-6 flex items-center justify-center rounded-md text-primary hover:bg-primary/10 transition-colors"
+                  >
+                    <span className="text-sm font-bold">−</span>
+                  </button>
+                  <span className="w-6 text-center text-xs font-bold tabular-nums text-primary">{count}</span>
+                  <button
+                    type="button"
+                    onClick={() => setCount((c) => Math.min(30, c + 1))}
+                    className="h-6 w-6 flex items-center justify-center rounded-md text-primary hover:bg-primary/10 transition-colors"
+                  >
+                    <span className="text-sm font-bold">+</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Generate button */}
+            <Button
+              onClick={handleGenerate}
+              disabled={loading || quizzes.some((q) => q.generationStatus === "pending")}
+              className="w-full sm:w-auto shrink-0"
+            >
+              {loading || quizzes.some((q) => q.generationStatus === "pending") ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="mr-2 h-4 w-4" />
+              )}
+              {quizzes.some((q) => q.generationStatus === "pending")
+                ? "Generating..."
+                : generationFailed ? "Retry" : "Generate"}
+            </Button>
+          </div>
         </div>
       </div>
 
