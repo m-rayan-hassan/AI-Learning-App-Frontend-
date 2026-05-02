@@ -178,32 +178,36 @@ function StatItem({ value, suffix, label, icon }: { value: number; suffix: strin
 // ==========================================
 
 const DashboardSidebar = () => (
-  <div className="w-56 border-r border-border hidden md:flex flex-col bg-background p-4 gap-2">
-    <div className="flex items-center gap-2 mb-6 px-2">
-      <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center overflow-hidden border border-primary/10">
+  <div className="w-56 border-r border-border/70 hidden md:flex flex-col bg-muted/20 p-4 gap-2 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10">
+    <div className="flex items-center gap-3.5 mb-6 px-2 mt-1">
+      <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 dark:bg-gradient-to-b dark:from-primary/10 dark:to-primary/5 dark:border dark:border-primary/20 dark:shadow-[0_2px_8px_rgba(0,0,0,0.2),0_1px_0_rgba(255,255,255,0.05)_inset] shrink-0">
         <Image
           src="/app_logo.png"
           alt="Logo"
-          width={35}
-          height={35}
-          className="object-contain"
+          width={32}
+          height={32}
+          className="object-contain z-10"
         />
       </div>
-      <span className="font-bold text-foreground tracking-tight text-sm">
+      <span className="font-bold text-[22px] tracking-tight text-foreground drop-shadow-sm whitespace-nowrap">
         Cognivio<span className="text-primary">AI</span>
       </span>
     </div>
 
-    <div className="space-y-0.5">
-      <SidebarItem icon={<LayoutDashboard size={16} />} label="Dashboard" />
-      <SidebarItem active icon={<FileText size={16} />} label="Documents" />
-      <SidebarItem icon={<Layers size={16} />} label="Flashcards" />
-      <SidebarItem icon={<User size={16} />} label="Profile" />
+    <div className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-muted-foreground/60 mb-1 mt-2 px-3 whitespace-nowrap">
+      Main Menu
     </div>
 
-    <div className="mt-auto space-y-0.5 pt-3 border-t border-border">
-      <SidebarItem icon={<Moon size={16} />} label="Dark Mode" />
-      <SidebarItem icon={<LogOut size={16} />} label="Logout" />
+    <div className="space-y-2">
+      <SidebarItem icon={<LayoutDashboard size={18} strokeWidth={2.2} />} label="Dashboard" />
+      <SidebarItem active icon={<FileText size={18} strokeWidth={2.2} />} label="Documents" />
+      <SidebarItem icon={<Layers size={18} strokeWidth={2.2} />} label="Flashcards" />
+      <SidebarItem icon={<User size={18} strokeWidth={2.2} />} label="Profile" />
+    </div>
+
+    <div className="mt-auto space-y-2 pt-5 border-t border-border/60">
+      <SidebarItem icon={<Moon size={18} strokeWidth={2.2} />} label="Dark Mode" />
+      <SidebarItem icon={<LogOut size={18} strokeWidth={2.2} />} label="Logout" />
     </div>
   </div>
 );
@@ -218,10 +222,17 @@ const SidebarItem = ({
   icon: React.ReactNode;
 }) => (
   <div
-    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm cursor-pointer transition-all font-medium ${active ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
+    className={`flex items-center gap-3.5 px-3.5 h-11 rounded-xl transition-all duration-200 group relative font-medium ${
+      active
+        ? "bg-primary/10 text-primary dark:bg-gradient-to-b dark:from-card dark:to-card/95 dark:border dark:border-border/80 dark:shadow-[0_2px_10px_rgba(0,0,0,0.2),0_1px_0_rgba(255,255,255,0.06)_inset]"
+        : "text-muted-foreground hover:bg-black/5 dark:hover:bg-card/60 hover:text-foreground border border-transparent"
+    }`}
   >
-    {icon}
-    <span>{label}</span>
+    {active && (
+      <div className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 bg-primary rounded-r-full shadow-[0_0_8px_hsl(var(--primary)/0.6)]" />
+    )}
+    <div className={active ? "text-primary scale-100" : "text-muted-foreground group-hover:scale-110 transition-transform duration-200"}>{icon}</div>
+    <span className="text-[14px] leading-none mt-0.5">{label}</span>
   </div>
 );
 
@@ -487,31 +498,54 @@ const VoiceOverviewView = () => (
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
-    className="h-full flex flex-col p-6"
+    className="h-full w-full flex flex-col gap-4 sm:gap-6 p-6"
   >
-    <h3 className="text-foreground font-medium flex items-center gap-2 mb-2 text-sm">
-      <Mic className="text-primary w-4 h-4" /> Voice Overview
-    </h3>
-    <p className="text-muted-foreground text-xs mb-8">
-      AI-generated audio summary of your document.
-    </p>
-    <div className="bg-muted/50 border border-border rounded-xl p-4 mt-4">
-      <div className="flex justify-between items-center text-xs text-primary mb-2 font-medium">
-        <span>NOW PLAYING</span>
-        <span>Audio Summary</span>
+    <div className="flex p-1 bg-muted rounded-xl w-full border border-border">
+      <button className="flex-1 flex items-center justify-center gap-2 px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-200 bg-background text-foreground shadow-sm scale-[1.01]">
+        <Mic className="h-4 w-4" />
+        <span>Overview</span>
+      </button>
+      <button className="flex-1 flex items-center justify-center gap-2 px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-200 text-muted-foreground hover:text-foreground">
+        <Headphones className="h-4 w-4" />
+        <span>Podcast</span>
+      </button>
+    </div>
+
+    <div className="flex-1 flex flex-col border-none shadow-none bg-transparent">
+      <div className="px-1 pt-0 pb-4">
+        <h3 className="text-lg font-bold flex items-center gap-2">
+          <Mic className="w-5 h-5 text-primary" />
+          Voice Overview
+        </h3>
+        <p className="text-sm text-muted-foreground mt-1">
+          Generate a quick audio summary of this document.
+        </p>
       </div>
-      <div className="bg-card rounded-lg p-3 flex items-center gap-4 border border-border">
-        <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-colors">
-          <Play size={14} />
+
+      <div className="flex-1 px-1 overflow-y-auto">
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-semibold text-primary uppercase tracking-wider">
+              Now Playing
+            </span>
+            <span className="text-xs text-muted-foreground">
+              Audio Summary
+            </span>
+          </div>
+          <div className="w-full focus:outline-none focus:ring-2 focus:ring-primary/50 rounded-lg bg-muted/30 p-3 flex items-center gap-4 border border-border">
+             <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-colors">
+               <Play size={14} />
+             </div>
+             <span className="text-xs text-muted-foreground font-mono">
+               0:00 / 2:02
+             </span>
+             <div className="flex-1 h-1.5 bg-muted rounded-full relative">
+               <div className="absolute left-0 top-0 bottom-0 w-1/3 bg-primary/40 rounded-full" />
+               <div className="absolute left-1/3 top-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-sm" />
+             </div>
+             <Volume2 size={16} className="text-muted-foreground" />
+          </div>
         </div>
-        <span className="text-xs text-muted-foreground font-mono">
-          0:00 / 2:02
-        </span>
-        <div className="flex-1 h-1.5 bg-muted rounded-full relative">
-          <div className="absolute left-0 top-0 bottom-0 w-1/3 bg-primary/40 rounded-full" />
-          <div className="absolute left-1/3 top-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-sm" />
-        </div>
-        <Volume2 size={16} className="text-muted-foreground" />
       </div>
     </div>
   </motion.div>
@@ -594,44 +628,37 @@ const VideoOverviewView = () => (
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
-    className="h-full flex flex-col p-6"
+    className="h-full w-full flex flex-col gap-6 p-6"
   >
-    <div className="w-full aspect-video bg-foreground/5 rounded-xl border border-border flex items-center justify-center relative group cursor-pointer overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex items-end p-6 z-10">
-        <div>
-          <h3 className="text-foreground font-bold text-xl mb-1">
-            Navigating Project Risk
-          </h3>
-          <p className="text-muted-foreground text-sm">
-            Chapter 22 — Deep Dive
-          </p>
+    <div className="flex-1 flex flex-col border-none shadow-none bg-transparent">
+      <div className="px-0 pt-0 pb-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <h3 className="text-xl font-bold flex items-center gap-2">
+              <Video className="w-6 h-6 text-primary" />
+              Video Overview
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Experience a dynamic AI-generated visual walkthrough of your document.
+            </p>
+          </div>
         </div>
       </div>
-      <PlayCircle className="w-16 h-16 text-foreground/60 group-hover:scale-110 transition-transform z-20" />
-    </div>
-    <div className="mt-6 flex gap-6">
-      <div className="w-56 hidden lg:block space-y-2">
-        <h4 className="text-foreground font-medium mb-3 text-sm">Timestamps</h4>
-        <div className="text-sm p-2 rounded bg-primary/10 text-primary border border-primary/20 cursor-pointer">
-          0:00 Intro to Risk
+      
+      <div className="flex-1 px-0 overflow-visible space-y-6">
+        <div className="relative group aspect-video rounded-2xl overflow-hidden shadow-2xl bg-black border border-border/50 flex items-center justify-center cursor-pointer">
+          <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex items-end p-6 z-10">
+            <div>
+              <h3 className="text-white font-bold text-xl mb-1">
+                Navigating Project Risk
+              </h3>
+              <p className="text-white/70 text-sm">
+                Chapter 22 — Deep Dive
+              </p>
+            </div>
+          </div>
+          <PlayCircle className="w-16 h-16 text-white/60 group-hover:scale-110 transition-transform z-20" />
         </div>
-        <div className="text-sm p-2 rounded hover:bg-muted text-muted-foreground cursor-pointer transition-colors">
-          2:15 Risk Identification
-        </div>
-        <div className="text-sm p-2 rounded hover:bg-muted text-muted-foreground cursor-pointer transition-colors">
-          5:40 Mitigation Strategies
-        </div>
-      </div>
-      <div className="flex-1">
-        <h4 className="text-foreground font-medium mb-3 text-sm">Transcript</h4>
-        <p className="text-muted-foreground text-sm leading-relaxed">
-          &ldquo;...so when we talk about{" "}
-          <span className="text-foreground bg-primary/10 px-1 rounded">
-            project risk
-          </span>
-          , we are really discussing the uncertainties that threaten the
-          schedule. Now, contrast that with product risk...&rdquo;
-        </p>
       </div>
     </div>
   </motion.div>
@@ -1038,18 +1065,18 @@ export default function Home() {
                     </div>
 
                     {/* Tab pills */}
-                    <div className="flex items-center gap-1 overflow-x-auto no-scrollbar p-2 w-full">
+                    <div className="flex flex-nowrap items-center gap-0.5 overflow-x-auto no-scrollbar p-2 flex-1 min-w-0 scroll-smooth">
                       {TABS.map(({ label, icon: Icon }) => (
                         <button
                           key={label}
                           onClick={() => setActiveTab(label)}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap ${
+                          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] lg:text-xs font-medium transition-all whitespace-nowrap shrink-0 ${
                             activeTab === label
                               ? "bg-primary text-primary-foreground shadow-sm"
                               : "text-muted-foreground hover:text-foreground hover:bg-muted"
                           }`}
                         >
-                          <Icon className="w-3.5 h-3.5" />
+                          <Icon className="w-3.5 h-3.5 shrink-0" />
                           {label}
                         </button>
                       ))}

@@ -342,7 +342,7 @@ export function VoiceChat({ documentId }: { documentId: string }) {
 
             <div className="text-center">
               <h3 className="text-lg sm:text-2xl font-bold text-foreground">
-                Genius AI
+                Cognivio AI
               </h3>
               <div
                 className={`
