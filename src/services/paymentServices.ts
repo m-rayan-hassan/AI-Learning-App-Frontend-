@@ -2,6 +2,15 @@ import axiosInstance from '../utils/axiosInstance';
 import { API_PATHS } from '../utils/apiPaths';
 
 // Subscribe to a plan — returns action: 'checkout' (new sub) or 'preview_upgrade' (existing sub)
+
+const checkout = async (variantId: string) => {
+  try {
+    const response = await axiosInstance.post(API_PATHS.PAYMENTS.CHECKOUT, {variantId});
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || { message: "Failed to chekcout" };
+  }
+}
 const subscribe = async (targetPlan: string) => {
   try {
     const response = await axiosInstance.post(API_PATHS.PAYMENTS.SUBSCRIBE, { targetPlan });
@@ -52,6 +61,7 @@ const cancelSubscription = async () => {
 };
 
 const paymentServices = {
+  checkout,
   subscribe,
   previewUpgrade,
   confirmUpgrade,

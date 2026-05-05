@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { initializePaddle, Paddle } from "@paddle/paddle-js";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -11,7 +10,6 @@ import {
   ShieldCheck,
   Star,
   XCircle,
-  ArrowUp,
   X,
   AlertTriangle,
 } from "lucide-react";
@@ -22,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import paymentServices from "@/services/paymentServices";
 import authServices from "@/services/authServices";
+import { PLAN_MAPPING } from "@/lib/ls";
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -32,29 +31,8 @@ interface UserProfile {
   profileImage: string;
   planType: "free" | "plus" | "pro" | "premium";
   subscriptionStatus?: string;
-  subscriptionEndDate?: string;
-  paddleScheduledChange?: {
-    action: string;
-    effectiveAt?: string;
-  };
-}
-
-interface UpgradePreviewData {
-  targetPlan: string;
-  currentPlan: string;
-  currencyCode: string;
-  updateSummary: {
-    credit: string;
-    charge: string;
-  } | null;
-  immediateTransaction: {
-    subtotal: string;
-    tax: string;
-    total: string;
-    credit: string;
-    grandTotal: string;
-    currencyCode: string;
-  } | null;
+  renewsAt?: string;
+  customerPortalUrl?: string;
 }
 
 // ─── Constants ──────────────────────────────────────────────────────
@@ -114,148 +92,6 @@ const PLAN_FEATURES: Record<string, string[]> = {
   ],
 };
 
-// Format Paddle amount (in smallest currency unit, e.g. cents) to display string
-const formatAmount = (amount?: string, currencyCode?: string) => {
-  if (!amount) return "$0.00";
-  const num = parseInt(amount, 10);
-  if (isNaN(num)) return amount;
-  const symbol =
-    currencyCode === "EUR" ? "€" : currencyCode === "GBP" ? "£" : "$";
-  return `${symbol}${(num / 100).toFixed(2)}`;
-};
-
-// ─── Upgrade Confirmation Modal ─────────────────────────────────────
-
-function UpgradeModal({
-  preview,
-  onConfirm,
-  onClose,
-  isConfirming,
-}: {
-  preview: UpgradePreviewData;
-  onConfirm: () => void;
-  onClose: () => void;
-  isConfirming: boolean;
-}) {
-  const currency = preview.currencyCode || "USD";
-  const summary = preview.updateSummary;
-  const txn = preview.immediateTransaction;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
-      onClick={() => !isConfirming && onClose()}
-    >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className="relative w-full max-w-md bg-card border border-border rounded-3xl p-8 shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={() => !isConfirming && onClose()}
-          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-6">
-          <ArrowUp className="w-6 h-6 text-blue-400" />
-        </div>
-
-        <h2 className="text-xl font-bold mb-2">
-          Upgrade to{" "}
-          <span className="capitalize text-blue-400">{preview.targetPlan}</span>
-        </h2>
-        <p className="text-sm text-muted-foreground mb-6">
-          Switching from{" "}
-          <span className="font-semibold capitalize">
-            {preview.currentPlan}
-          </span>{" "}
-          to{" "}
-          <span className="font-semibold capitalize">{preview.targetPlan}</span>
-          . The difference will be charged immediately.
-        </p>
-
-        {/* Charge Breakdown */}
-        <div className="bg-background/50 border border-border/50 rounded-2xl p-5 mb-6 space-y-3 text-sm">
-          {summary && summary.credit !== "0" && (
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">
-                Credit from current plan
-              </span>
-              <span className="text-green-400 font-medium">
-                -{formatAmount(summary.credit, currency)}
-              </span>
-            </div>
-          )}
-          {summary && (
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">New plan charge</span>
-              <span className="text-foreground font-medium">
-                {formatAmount(summary.charge, currency)}
-              </span>
-            </div>
-          )}
-          {txn && (
-            <>
-              <div className="border-t border-border/30 pt-3 flex justify-between">
-                <span className="text-muted-foreground">Tax</span>
-                <span className="text-foreground">
-                  {formatAmount(txn.tax, txn.currencyCode)}
-                </span>
-              </div>
-              <div className="flex justify-between text-base">
-                <span className="text-foreground font-semibold">
-                  Total due today
-                </span>
-                <span className="text-foreground font-bold">
-                  {formatAmount(txn.grandTotal, txn.currencyCode)}
-                </span>
-              </div>
-            </>
-          )}
-          {!summary && !txn && (
-            <p className="text-muted-foreground text-center py-2">
-              Prorated charge applied automatically
-            </p>
-          )}
-        </div>
-
-        <div className="flex gap-3">
-          <Button
-            onClick={onClose}
-            variant="ghost"
-            disabled={isConfirming}
-            className="flex-1 h-11 rounded-xl border border-border/50"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={onConfirm}
-            disabled={isConfirming}
-            className="flex-1 h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-          >
-            {isConfirming ? (
-              <span className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Upgrading...
-              </span>
-            ) : (
-              "Confirm Upgrade"
-            )}
-          </Button>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
 // ─── Pricing Card ───────────────────────────────────────────────────
 
 function PricingCard({
@@ -268,7 +104,7 @@ function PricingCard({
   isDowngrade,
   isCanceled,
   expirationDate,
-  onUpgrade,
+  handleCheckout,
   onCancel,
   showCancel = false,
   highlight = false,
@@ -282,7 +118,7 @@ function PricingCard({
   isDowngrade: boolean;
   isCanceled?: boolean;
   expirationDate?: string;
-  onUpgrade: () => void;
+  handleCheckout: () => void;
   onCancel?: () => void;
   showCancel?: boolean;
   highlight?: boolean;
@@ -348,7 +184,7 @@ function PricingCard({
 
       <div className="space-y-2">
         <Button
-          onClick={onUpgrade}
+          onClick={handleCheckout}
           disabled={isCurrent || isProcessing || isDowngrade || plan === "free"}
           className={`w-full h-12 rounded-xl font-semibold transition-all duration-300 ${
             isCurrent || isDowngrade
@@ -374,18 +210,18 @@ function PricingCard({
           )}
         </Button>
 
+        {isCurrent && plan !== "free" && expirationDate && (
+          <div className="w-full text-center py-2 text-sm text-muted-foreground bg-secondary/50 rounded-lg mt-2 font-medium">
+            {isCanceled ? "Expires on" : "Renews on"}{" "}
+            {new Date(expirationDate).toLocaleDateString()}
+          </div>
+        )}
+
         {showCancel &&
           isCurrent &&
           plan !== "free" &&
           onCancel &&
-          (isCanceled ? (
-            <div className="w-full text-center py-2 text-sm text-muted-foreground bg-secondary/50 rounded-lg mt-2 font-medium">
-              Expires on{" "}
-              {expirationDate
-                ? new Date(expirationDate).toLocaleDateString()
-                : "soon"}
-            </div>
-          ) : (
+          !isCanceled && (
             <Button
               onClick={onCancel}
               variant="ghost"
@@ -394,7 +230,7 @@ function PricingCard({
               <XCircle className="w-4 h-4 mr-2" />
               Cancel Subscription
             </Button>
-          ))}
+          )}
       </div>
     </motion.div>
   );
@@ -407,15 +243,9 @@ export default function PricingPage() {
   const { isAuthenticated } = useAuth();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
-  const [paddle, setPaddle] = useState<Paddle | null>(null);
   const [processingPlan, setProcessingPlan] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
-
-  // Upgrade modal state
-  const [upgradePreview, setUpgradePreview] =
-    useState<UpgradePreviewData | null>(null);
-  const [isConfirming, setIsConfirming] = useState(false);
 
   // ── Init ──
   useEffect(() => {
@@ -430,26 +260,6 @@ export default function PricingPage() {
             console.error("Profile load error:", err);
             // Not authorized — continue as public visitor
           }
-        }
-
-        const env =
-          (process.env.NEXT_PUBLIC_PADDLE_ENV as "sandbox" | "production") ||
-          "sandbox";
-        const paddleToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
-        if (paddleToken) {
-          const inst = await initializePaddle({
-            environment: env,
-            token: paddleToken,
-            eventCallback: (event) => {
-              if (event.name === "checkout.completed") {
-                setTimeout(() => router.push("/success"), 1500);
-              }
-              if (event.name === "checkout.closed") {
-                setProcessingPlan(null);
-              }
-            },
-          });
-          if (inst) setPaddle(inst);
         }
       } catch (err: any) {
         console.error("Init error:", err);
@@ -470,77 +280,6 @@ export default function PricingPage() {
     }
   }, [error, successMsg]);
 
-  // ── Subscribe / Upgrade click ──
-  const handleSubscription = async (targetPlan: string) => {
-    if (!user) return;
-    setProcessingPlan(targetPlan);
-    setError(null);
-    setSuccessMsg(null);
-
-    try {
-      const data = await paymentServices.subscribe(targetPlan);
-
-      if (data.action === "checkout" && data.priceId && paddle) {
-        // Free user → open Paddle Checkout overlay
-        paddle.Checkout.open({
-          items: [{ priceId: data.priceId, quantity: 1 }],
-          customer: { email: user.email },
-          customData: { userId: user._id },
-          settings: {
-            displayMode: "overlay",
-            successUrl: `${window.location.origin}/success`,
-          },
-        });
-      } else if (data.action === "preview_upgrade") {
-        // Paid user → fetch preview and show modal
-        try {
-          const preview = await paymentServices.previewUpgrade(targetPlan);
-          setUpgradePreview(preview);
-        } catch (previewErr: any) {
-          setError(previewErr?.message || "Could not load upgrade preview");
-        }
-        setProcessingPlan(null);
-      } else {
-        setProcessingPlan(null);
-      }
-    } catch (err: any) {
-      console.error("Subscribe error:", err);
-      setError(err?.message || "Something went wrong");
-      setProcessingPlan(null);
-    }
-  };
-
-  // ── Confirm upgrade ──
-  const handleConfirmUpgrade = async () => {
-    if (!upgradePreview) return;
-    setIsConfirming(true);
-    setError(null);
-
-    try {
-      const result = await paymentServices.confirmUpgrade(
-        upgradePreview.targetPlan,
-      );
-      setUser((prev) =>
-        prev
-          ? {
-              ...prev,
-              planType: upgradePreview.targetPlan as UserProfile["planType"],
-            }
-          : prev,
-      );
-      setUpgradePreview(null);
-      setSuccessMsg(
-        result.message ||
-          `Successfully upgraded to ${upgradePreview.targetPlan}!`,
-      );
-    } catch (err: any) {
-      console.error("Confirm error:", err);
-      setError(err?.message || "Upgrade failed");
-    } finally {
-      setIsConfirming(false);
-    }
-  };
-
   // ── Cancel ──
   const handleCancel = async () => {
     if (!user) return;
@@ -554,21 +293,20 @@ export default function PricingPage() {
     setError(null);
     setSuccessMsg(null);
 
+    window.location.href = user.customerPortalUrl!;
+  };
+
+  type PlanType = "plus" | "pro" | "premium";
+
+  const handleCheckout = async (targetPlan: PlanType) => {
     try {
-      const result = await paymentServices.cancelSubscription();
-      setSuccessMsg(result.message || "Subscription canceled");
-      setUser((prev) =>
-        prev
-          ? {
-              ...prev,
-              subscriptionStatus: "canceled",
-              paddleScheduledChange: { action: "cancel" },
-            }
-          : prev,
-      );
-    } catch (err: any) {
-      console.error("Cancel error:", err);
-      setError(err?.message || "Failed to cancel");
+      const variantId = PLAN_MAPPING[targetPlan];
+
+      const response = await paymentServices.checkout(variantId);
+      window.location.href = response.checkoutUrl;
+    } catch (error: any) {
+      console.error("Cancel error:", error);
+      setError(error?.message || "Failed to checkout");
     }
   };
 
@@ -602,18 +340,6 @@ export default function PricingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
       <Navbar />
-
-      {/* Upgrade Modal */}
-      <AnimatePresence>
-        {upgradePreview && (
-          <UpgradeModal
-            preview={upgradePreview}
-            onConfirm={handleConfirmUpgrade}
-            onClose={() => !isConfirming && setUpgradePreview(null)}
-            isConfirming={isConfirming}
-          />
-        )}
-      </AnimatePresence>
 
       <main className="flex-1 relative pb-24">
         <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
@@ -692,8 +418,9 @@ export default function PricingPage() {
               const currentRank = planRanks[user?.planType ?? ""] ?? -1;
               const isCanceled =
                 user?.subscriptionStatus === "canceled" ||
-                user?.paddleScheduledChange?.action === "cancel";
-              const expirationDate = user?.subscriptionEndDate;
+                user?.subscriptionStatus === "cancelled";
+
+              const expirationDate = user?.renewsAt;
 
               return (
                 <>
@@ -705,7 +432,7 @@ export default function PricingPage() {
                     isCurrent={user?.planType === "free"}
                     isProcessing={false}
                     isDowngrade={planRanks["free"] < currentRank}
-                    onUpgrade={() =>
+                    handleCheckout={() =>
                       !user ? router.push("/login") : undefined
                     }
                   />
@@ -720,8 +447,8 @@ export default function PricingPage() {
                     isDowngrade={planRanks["plus"] < currentRank}
                     isCanceled={isCanceled}
                     expirationDate={expirationDate}
-                    onUpgrade={() =>
-                      user ? handleSubscription("plus") : router.push("/login")
+                    handleCheckout={() =>
+                      user ? handleCheckout("plus") : router.push("/login")
                     }
                     onCancel={handleCancel}
                     showCancel={true}
@@ -737,8 +464,8 @@ export default function PricingPage() {
                     isDowngrade={planRanks["pro"] < currentRank}
                     isCanceled={isCanceled}
                     expirationDate={expirationDate}
-                    onUpgrade={() =>
-                      user ? handleSubscription("pro") : router.push("/login")
+                    handleCheckout={() =>
+                      user ? handleCheckout("pro") : router.push("/login")
                     }
                     onCancel={handleCancel}
                     showCancel={true}
@@ -755,10 +482,8 @@ export default function PricingPage() {
                     isDowngrade={planRanks["premium"] < currentRank}
                     isCanceled={isCanceled}
                     expirationDate={expirationDate}
-                    onUpgrade={() =>
-                      user
-                        ? handleSubscription("premium")
-                        : router.push("/login")
+                    handleCheckout={() =>
+                      user ? handleCheckout("premium") : router.push("/login")
                     }
                     onCancel={handleCancel}
                     showCancel={true}

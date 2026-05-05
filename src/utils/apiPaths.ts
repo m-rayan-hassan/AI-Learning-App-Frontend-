@@ -70,6 +70,7 @@ export const API_PATHS = {
   },
 
   PAYMENTS: {
+    CHECKOUT: "/api/payments/ls/checkout",
     SUBSCRIBE: "/api/payments/subscribe",
     GET_SUBSCRIPTION: "/api/payments/subscription",
     PREVIEW_UPGRADE: "/api/payments/preview-upgrade",
