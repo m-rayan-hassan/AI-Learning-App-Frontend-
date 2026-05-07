@@ -10,8 +10,8 @@ import {
   ShieldCheck,
   Star,
   XCircle,
-  X,
   AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import Image from "next/image";
 import { Navbar } from "@/components/Navbar";
@@ -127,76 +127,83 @@ function PricingCard({
     <motion.div
       variants={fadeInUp}
       whileHover={{ y: -5, transition: { duration: 0.2 } }}
-      className={`relative flex flex-col p-8 rounded-3xl border transition-all duration-300 ${
+      className={`relative flex flex-col p-8 rounded-2xl border transition-all duration-300 bg-card ${
         highlight
-          ? "bg-blue-600/10 border-blue-500 shadow-[0_0_40px_-15px_rgba(59,130,246,0.3)] ring-1 ring-blue-500/50"
-          : "bg-card/40 border-border/50 hover:border-primary/30"
+          ? "border-primary/50 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_30px_-12px_rgba(255,255,255,0.05)] ring-1 ring-primary/20"
+          : "border-border/60 hover:border-primary/30 hover:shadow-sm"
       }`}
     >
       {highlight && (
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-[10px] font-bold uppercase tracking-wider rounded-full shadow-lg">
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-widest rounded-full shadow-sm">
           Most Popular
         </div>
       )}
 
-      <div className="mb-8">
-        <h3 className="text-xl font-bold text-foreground capitalize flex items-center gap-2">
+      <div className="mb-6">
+        <h3 className="text-xl font-bold text-foreground capitalize flex items-center gap-2 tracking-tight">
           {plan === "free" ? (
-            <ShieldCheck className="w-5 h-5 text-slate-400" />
+            <ShieldCheck className="w-5 h-5 text-muted-foreground" />
           ) : plan === "plus" ? (
-            <Star className="w-5 h-5 text-blue-400" />
+            <Star className="w-5 h-5 text-primary/70" />
           ) : plan === "pro" ? (
-            <Zap className="w-5 h-5 text-cyan-400" />
+            <Zap className="w-5 h-5 text-primary" />
           ) : (
-            <Sparkles className="w-5 h-5 text-purple-400" />
+            <Sparkles className="w-5 h-5 text-primary" />
           )}
           {plan}
         </h3>
-        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+        <p className="text-[13px] text-muted-foreground mt-2 leading-relaxed h-10">
           {description}
         </p>
       </div>
 
-      <div className="mb-8">
-        <div className="flex items-baseline gap-1">
-          <span className="text-4xl font-bold tracking-tight text-foreground">
+      <div className="mb-8 pb-8 border-b border-border/50">
+        <div className="flex items-end gap-1">
+          <span className="text-4xl font-extrabold tracking-tight text-foreground leading-none">
             ${price}
           </span>
-          <span className="text-sm text-muted-foreground">/mo</span>
+          <span className="text-sm font-medium text-muted-foreground mb-1">
+            /mo
+          </span>
         </div>
       </div>
 
       <div className="flex-1 mb-8">
-        <ul className="space-y-4">
+        <ul className="space-y-3.5">
           {features.map((f, i) => (
             <li
               key={i}
-              className="flex items-start gap-3 text-sm text-muted-foreground"
+              className="flex items-start gap-3 text-sm font-medium text-muted-foreground"
             >
-              <Check
-                className={`w-4 h-4 mt-0.5 shrink-0 ${highlight ? "text-blue-500" : "text-primary/60"}`}
-              />
-              <span>{f}</span>
+              <div
+                className={`p-0.5 rounded-full mt-0.5 shrink-0 ${
+                  highlight ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground/70"
+                }`}
+              >
+                <Check className="w-3 h-3" strokeWidth={3} />
+              </div>
+              <span className="text-foreground/80 leading-snug">{f}</span>
             </li>
           ))}
         </ul>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3 mt-auto">
         <Button
           onClick={handleCheckout}
           disabled={isCurrent || isProcessing || isDowngrade || plan === "free"}
-          className={`w-full h-12 rounded-xl font-semibold transition-all duration-300 ${
+          variant={highlight ? "default" : "outline"}
+          className={`w-full h-11 font-semibold text-sm transition-all shadow-none ${
+            highlight && !isCurrent && !isDowngrade ? "shadow-sm" : ""
+          } ${
             isCurrent || isDowngrade
-              ? "bg-muted text-muted-foreground border border-border cursor-not-allowed hover:bg-muted opacity-80"
-              : highlight
-                ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20"
-                : "bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20"
+              ? "bg-muted border-transparent text-muted-foreground opacity-100 hover:bg-muted cursor-not-allowed"
+              : ""
           }`}
         >
           {isProcessing ? (
             <span className="flex items-center gap-2">
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <Loader2 className="w-4 h-4 animate-spin" />
               Processing...
             </span>
           ) : isCurrent ? (
@@ -211,9 +218,15 @@ function PricingCard({
         </Button>
 
         {isCurrent && plan !== "free" && expirationDate && (
-          <div className="w-full text-center py-2 text-sm text-muted-foreground bg-secondary/50 rounded-lg mt-2 font-medium">
+          <div className="w-full text-center py-2 text-xs text-muted-foreground bg-muted/50 rounded-lg font-medium border border-border/50">
             {isCanceled ? "Expires on" : "Renews on"}{" "}
-            {new Date(expirationDate).toLocaleDateString()}
+            <span className="text-foreground">
+              {new Date(expirationDate).toLocaleDateString(undefined, {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </span>
           </div>
         )}
 
@@ -225,9 +238,9 @@ function PricingCard({
             <Button
               onClick={onCancel}
               variant="ghost"
-              className="w-full h-10 rounded-xl text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10"
+              className="w-full h-10 text-xs font-medium text-destructive hover:bg-destructive/10 hover:text-destructive"
             >
-              <XCircle className="w-4 h-4 mr-2" />
+              <XCircle className="w-3.5 h-3.5 mr-1.5" />
               Cancel Subscription
             </Button>
           )}
@@ -251,14 +264,12 @@ export default function PricingPage() {
   useEffect(() => {
     (async () => {
       try {
-        // Load profile only if authenticated
         if (isAuthenticated) {
           try {
             const profileData = await authServices.getProfile();
             setUser(profileData);
           } catch (err: any) {
             console.error("Profile load error:", err);
-            // Not authorized — continue as public visitor
           }
         }
       } catch (err: any) {
@@ -299,14 +310,15 @@ export default function PricingPage() {
   type PlanType = "plus" | "pro" | "premium";
 
   const handleCheckout = async (targetPlan: PlanType) => {
+    setProcessingPlan(targetPlan);
     try {
       const variantId = PLAN_MAPPING[targetPlan];
-
       const response = await paymentServices.checkout(variantId);
       window.location.href = response.checkoutUrl;
     } catch (error: any) {
-      console.error("Cancel error:", error);
+      console.error("Checkout error:", error);
       setError(error?.message || "Failed to checkout");
+      setProcessingPlan(null);
     }
   };
 
@@ -319,7 +331,7 @@ export default function PricingPage() {
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           className="flex flex-col items-center gap-4"
         >
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center border border-primary/20 overflow-hidden shadow-xl shadow-primary/5">
+          <div className="w-16 h-16 rounded-2xl bg-primary/5 flex items-center justify-center border border-primary/20">
             <Image
               src="/app_logo.png"
               alt="Logo"
@@ -335,15 +347,15 @@ export default function PricingPage() {
       </div>
     );
   }
-  // If not logged in, still show the page (public pricing)
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
       <Navbar />
 
       <main className="flex-1 relative pb-24">
+        {/* Subtle, Professional Background Pattern */}
         <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90%] h-[600px] bg-blue-500/5 blur-[120px] rounded-full mix-blend-screen opacity-50" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90%] h-[600px] bg-primary/5 blur-[120px] rounded-full mix-blend-screen opacity-50" />
           <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.2)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.2)_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
         </div>
 
@@ -351,29 +363,31 @@ export default function PricingPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center max-w-3xl mx-auto mb-20"
+            className="text-center max-w-3xl mx-auto mb-16"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-400 text-xs font-bold uppercase tracking-wider mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest mb-6 shadow-sm">
               <Sparkles className="w-3 h-3" />
               <span>Investment in Knowledge</span>
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tighter mb-6">
-              Upgrade your <br className="hidden md:block" />
+
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-5 text-foreground">
+              Upgrade your learning{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
-                learning speed.
+                velocity.
               </span>
             </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+
+            <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">
               {user ? (
                 <>
-                  Hello, {user.username}. You are on the{" "}
-                  <span className="font-bold text-foreground uppercase">
+                  Hello, <span className="font-semibold text-foreground">{user.username}</span>. You are currently on the{" "}
+                  <span className="font-bold text-foreground uppercase tracking-tight">
                     {user.planType}
                   </span>{" "}
                   plan.
                 </>
               ) : (
-                <>Choose the plan that fits your learning goals.</>
+                <>Choose the intelligence plan that scales with your academic and professional goals.</>
               )}
             </p>
 
@@ -384,7 +398,7 @@ export default function PricingPage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="mt-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center justify-center gap-2"
+                  className="mt-6 mx-auto max-w-md p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium flex items-center justify-center gap-2"
                 >
                   <AlertTriangle className="w-4 h-4" /> {error}
                 </motion.div>
@@ -394,7 +408,7 @@ export default function PricingPage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="mt-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm flex items-center justify-center gap-2"
+                  className="mt-6 mx-auto max-w-md p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm font-medium flex items-center justify-center gap-2"
                 >
                   <Check className="w-4 h-4" /> {successMsg}
                 </motion.div>
@@ -504,7 +518,7 @@ export default function PricingPage() {
                 <ShieldCheck className="w-5 h-5" /> Secure Checkout
               </div>
               <div className="flex items-center gap-2 text-sm font-semibold">
-                <Star className="w-5 h-5 fill-current" /> 4.9/5 Rating
+                <Star className="w-5 h-5 fill-current" /> Premium Infrastructure
               </div>
             </div>
           </motion.div>

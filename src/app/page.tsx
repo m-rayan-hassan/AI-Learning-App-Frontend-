@@ -157,17 +157,33 @@ function useCountUp(end: number, duration: number = 2000) {
   return { count, ref };
 }
 
-function StatItem({ value, suffix, label, icon }: { value: number; suffix: string; label: string; icon: React.ReactNode }) {
+function StatItem({
+  value,
+  suffix,
+  label,
+  icon,
+}: {
+  value: number;
+  suffix: string;
+  label: string;
+  icon: React.ReactNode;
+}) {
   const { count, ref } = useCountUp(value);
   return (
     <div className="flex flex-col items-center text-center px-4 py-3 group">
       <div className="mb-2 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
         {icon}
       </div>
-      <span ref={ref} className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
-        {count.toLocaleString()}{suffix}
+      <span
+        ref={ref}
+        className="text-2xl md:text-3xl font-bold text-foreground tracking-tight"
+      >
+        {count.toLocaleString()}
+        {suffix}
       </span>
-      <span className="text-xs text-muted-foreground mt-1 font-medium">{label}</span>
+      <span className="text-xs text-muted-foreground mt-1 font-medium">
+        {label}
+      </span>
     </div>
   );
 }
@@ -199,15 +215,34 @@ const DashboardSidebar = () => (
     </div>
 
     <div className="space-y-2">
-      <SidebarItem icon={<LayoutDashboard size={18} strokeWidth={2.2} />} label="Dashboard" />
-      <SidebarItem active icon={<FileText size={18} strokeWidth={2.2} />} label="Documents" />
-      <SidebarItem icon={<Layers size={18} strokeWidth={2.2} />} label="Flashcards" />
-      <SidebarItem icon={<User size={18} strokeWidth={2.2} />} label="Profile" />
+      <SidebarItem
+        icon={<LayoutDashboard size={18} strokeWidth={2.2} />}
+        label="Dashboard"
+      />
+      <SidebarItem
+        active
+        icon={<FileText size={18} strokeWidth={2.2} />}
+        label="Documents"
+      />
+      <SidebarItem
+        icon={<Layers size={18} strokeWidth={2.2} />}
+        label="Flashcards"
+      />
+      <SidebarItem
+        icon={<User size={18} strokeWidth={2.2} />}
+        label="Profile"
+      />
     </div>
 
     <div className="mt-auto space-y-2 pt-5 border-t border-border/60">
-      <SidebarItem icon={<Moon size={18} strokeWidth={2.2} />} label="Dark Mode" />
-      <SidebarItem icon={<LogOut size={18} strokeWidth={2.2} />} label="Logout" />
+      <SidebarItem
+        icon={<Moon size={18} strokeWidth={2.2} />}
+        label="Dark Mode"
+      />
+      <SidebarItem
+        icon={<LogOut size={18} strokeWidth={2.2} />}
+        label="Logout"
+      />
     </div>
   </div>
 );
@@ -231,7 +266,15 @@ const SidebarItem = ({
     {active && (
       <div className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 bg-primary rounded-r-full shadow-[0_0_8px_hsl(var(--primary)/0.6)]" />
     )}
-    <div className={active ? "text-primary scale-100" : "text-muted-foreground group-hover:scale-110 transition-transform duration-200"}>{icon}</div>
+    <div
+      className={
+        active
+          ? "text-primary scale-100"
+          : "text-muted-foreground group-hover:scale-110 transition-transform duration-200"
+      }
+    >
+      {icon}
+    </div>
     <span className="text-[14px] leading-none mt-0.5">{label}</span>
   </div>
 );
@@ -387,13 +430,12 @@ const ChatView = () => (
           </p>
           <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
             <li>
-              <strong >Project Risks:</strong> Affect
-              the project schedule or resources (e.g., loss of experienced
-              staff).
+              <strong>Project Risks:</strong> Affect the project schedule or
+              resources (e.g., loss of experienced staff).
             </li>
             <li>
-              <strong >Business Risks:</strong>{" "}
-              Affect the organization causing the software to be developed.
+              <strong>Business Risks:</strong> Affect the organization causing
+              the software to be developed.
             </li>
           </ul>
         </div>
@@ -528,22 +570,20 @@ const VoiceOverviewView = () => (
             <span className="text-xs font-semibold text-primary uppercase tracking-wider">
               Now Playing
             </span>
-            <span className="text-xs text-muted-foreground">
-              Audio Summary
-            </span>
+            <span className="text-xs text-muted-foreground">Audio Summary</span>
           </div>
           <div className="w-full focus:outline-none focus:ring-2 focus:ring-primary/50 rounded-lg bg-muted/30 p-3 flex items-center gap-4 border border-border">
-             <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-colors">
-               <Play size={14} />
-             </div>
-             <span className="text-xs text-muted-foreground font-mono">
-               0:00 / 2:02
-             </span>
-             <div className="flex-1 h-1.5 bg-muted rounded-full relative">
-               <div className="absolute left-0 top-0 bottom-0 w-1/3 bg-primary/40 rounded-full" />
-               <div className="absolute left-1/3 top-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-sm" />
-             </div>
-             <Volume2 size={16} className="text-muted-foreground" />
+            <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-colors">
+              <Play size={14} />
+            </div>
+            <span className="text-xs text-muted-foreground font-mono">
+              0:00 / 2:02
+            </span>
+            <div className="flex-1 h-1.5 bg-muted rounded-full relative">
+              <div className="absolute left-0 top-0 bottom-0 w-1/3 bg-primary/40 rounded-full" />
+              <div className="absolute left-1/3 top-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-sm" />
+            </div>
+            <Volume2 size={16} className="text-muted-foreground" />
           </div>
         </div>
       </div>
@@ -639,12 +679,13 @@ const VideoOverviewView = () => (
               Video Overview
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Experience a dynamic AI-generated visual walkthrough of your document.
+              Experience a dynamic AI-generated visual walkthrough of your
+              document.
             </p>
           </div>
         </div>
       </div>
-      
+
       <div className="flex-1 px-0 overflow-visible space-y-6">
         <div className="relative group aspect-video rounded-2xl overflow-hidden shadow-2xl bg-black border border-border/50 flex items-center justify-center cursor-pointer">
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex items-end p-6 z-10">
@@ -652,9 +693,7 @@ const VideoOverviewView = () => (
               <h3 className="text-white font-bold text-xl mb-1">
                 Navigating Project Risk
               </h3>
-              <p className="text-white/70 text-sm">
-                Chapter 22 — Deep Dive
-              </p>
+              <p className="text-white/70 text-sm">Chapter 22 — Deep Dive</p>
             </div>
           </div>
           <PlayCircle className="w-16 h-16 text-white/60 group-hover:scale-110 transition-transform z-20" />
@@ -808,7 +847,9 @@ export default function Home() {
           className="relative pt-32 pb-8 md:pt-40 md:pb-12 overflow-hidden"
         >
           {/* Professional animated grid background — uses dangerouslySetInnerHTML because Tailwind v4 strips custom class properties and styled-jsx is not supported in Turbopack */}
-          <style dangerouslySetInnerHTML={{ __html: `
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `
             .hero-grid-bg {
               position: absolute;
               inset: 0;
@@ -827,8 +868,13 @@ export default function Home() {
                 linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px);
             }
-          `}} />
-          <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
+          `,
+            }}
+          />
+          <div
+            className="absolute inset-0 overflow-hidden pointer-events-none"
+            style={{ zIndex: 0 }}
+          >
             <div className="hero-grid-bg" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background" />
           </div>
@@ -938,11 +984,7 @@ export default function Home() {
                     <motion.div
                       key={i}
                       animate={{
-                        height: [
-                          `${h}%`,
-                          `${(h + 30) % 100}%`,
-                          `${h}%`,
-                        ],
+                        height: [`${h}%`, `${(h + 30) % 100}%`, `${h}%`],
                       }}
                       transition={{
                         duration: 1.2,
@@ -961,7 +1003,7 @@ export default function Home() {
               transition={{ delay: 1.6, duration: 0.7 }}
               className="animate-float-reverse mt-2"
             >
-               <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-lg px-3 py-2 shadow-lg flex items-center gap-2">
+              <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-lg px-3 py-2 shadow-lg flex items-center gap-2">
                 <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center">
                   <Mic size={10} className="text-primary" />
                 </div>
@@ -969,7 +1011,9 @@ export default function Home() {
                   <div className="text-[10px] font-medium text-foreground">
                     Voice Chat
                   </div>
-                  <div className="text-[10px] text-primary font-bold animate-pulse">Active</div>
+                  <div className="text-[10px] text-primary font-bold animate-pulse">
+                    Active
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -996,9 +1040,7 @@ export default function Home() {
                 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-5 leading-[1.15] text-foreground"
               >
                 Transform Your Study Materials Into{" "}
-                <span className="text-primary">
-                  Interactive Mastery.
-                </span>
+                <span className="text-primary">Interactive Mastery.</span>
               </motion.h1>
 
               {/* Subtitle */}
@@ -1008,7 +1050,9 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="text-base text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed"
               >
-                Upload any PDF or document to instantly generate AI summaries, smart flashcards, interactive quizzes, and voice overviews. The ultimate AI study app to learn faster and score higher.
+                Supercharge your learning. Convert any document into interactive
+                study materials using Video and Podcast Overviews, AI Notes,
+                Voice Chat, flashcards, quizzes, and contextual chat.
               </motion.p>
 
               {/* CTAs */}
@@ -1089,9 +1133,7 @@ export default function Home() {
                     {/* Render Active View */}
                     <div className="flex-1 bg-card/30 relative overflow-hidden w-full">
                       <AnimatePresence mode="wait">
-                        {activeTab === "Notes" && (
-                          <NotesView key="notes" />
-                        )}
+                        {activeTab === "Notes" && <NotesView key="notes" />}
                         {activeTab === "Preview" && (
                           <PreviewView key="preview" />
                         )}
@@ -1124,12 +1166,8 @@ export default function Home() {
           </div>
         </section>
 
-
         {/* ================= FEATURES SECTION ================= */}
-        <section
-          id="features"
-          className="py-24 md:py-32 relative"
-        >
+        <section id="features" className="py-24 md:py-32 relative">
           <div className="section-divider" />
           <div className="container px-4 mx-auto">
             <motion.div
@@ -1159,20 +1197,19 @@ export default function Home() {
               </motion.p>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.1 }}
               variants={featureStagger}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[minmax(180px,auto)]"
             >
-
               <BentoCard
                 colSpan="md:col-span-2 lg:col-span-2"
                 rowSpan="row-span-2"
                 title="Chat with Your Documents"
                 description="Ask complex questions and get precise answers cited directly from your lecture notes and study materials."
-                icon={<MessageSquare  />}
+                icon={<MessageSquare />}
                 className="bg-card"
               >
                 <div className="absolute bottom-6 right-6 left-6 space-y-3 opacity-90">
@@ -1192,7 +1229,7 @@ export default function Home() {
                 colSpan="md:col-span-2 lg:col-span-2"
                 title="Voice Chat & Viva Mode"
                 description="Real-time voice interaction with an AI tutor. Switch to Viva Mode for oral exam simulation."
-                icon={<Mic  />}
+                icon={<Mic />}
                 className="overflow-hidden flex flex-col justify-between"
               >
                 <div className="absolute top-4 right-4 flex gap-1">
@@ -1229,21 +1266,21 @@ export default function Home() {
                 colSpan="md:col-span-1 lg:col-span-1"
                 title="AI Summaries"
                 description="Condense lengthy documents into structured, actionable insights."
-                icon={<FileText  />}
+                icon={<FileText />}
               />
 
               <BentoCard
                 colSpan="md:col-span-1 lg:col-span-1"
                 title="Instant Quizzes"
                 description="Test your knowledge with AI-generated multiple choice questions."
-                icon={<Zap  />}
+                icon={<Zap />}
               />
 
               <BentoCard
                 colSpan="md:col-span-1 lg:col-span-1"
                 title="Voice & Concept Tools"
                 description="Audio summaries, podcast generation, and concept explanations."
-                icon={<Podcast  />}
+                icon={<Podcast />}
               >
                 <div className="flex flex-wrap gap-2 mt-3">
                   <span className="text-[10px] px-2 py-1 rounded bg-muted border border-border text-muted-foreground">
@@ -1263,7 +1300,7 @@ export default function Home() {
                 rowSpan="md:row-span-2"
                 title="Video Overview"
                 description="AI-generated video explanations with dynamic visuals and natural narration."
-                icon={<Video  />}
+                icon={<Video />}
               >
                 <div className="relative mt-6 h-32 bg-muted rounded-lg border border-border overflow-hidden group-hover:border-primary/30 transition-colors">
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -1279,7 +1316,7 @@ export default function Home() {
                 colSpan="md:col-span-2 lg:col-span-2"
                 title="Podcast Generation"
                 description="Convert your study materials into engaging audio podcasts for learning on the go."
-                icon={<Podcast  />}
+                icon={<Podcast />}
               >
                 <div className="flex items-center gap-3 mt-4 p-3 bg-muted/40 rounded-xl border border-border/50">
                   <div className="w-8 h-8 rounded-full bg-background flex items-center justify-center border border-border/60 text-foreground">
@@ -1301,7 +1338,7 @@ export default function Home() {
                 colSpan="md:col-span-1 lg:col-span-1"
                 title="Flashcards"
                 description="Auto-generated flashcards for effective revision."
-                icon={<Layers  />}
+                icon={<Layers />}
               >
                 <div className="mt-4 flex gap-1 justify-center opacity-40">
                   <div className="w-8 h-10 border border-border rounded bg-background" />
@@ -1379,12 +1416,8 @@ export default function Home() {
           </div>
         </section>
 
-
         {/* ================= FAQ SECTION ================= */}
-        <section
-          id="faq"
-          className="py-24 md:py-32 relative"
-        >
+        <section id="faq" className="py-24 md:py-32 relative">
           <div className="section-divider" />
           <div className="container px-4 mx-auto">
             <motion.div
@@ -1447,7 +1480,8 @@ export default function Home() {
               variants={fadeInUp}
               className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto"
             >
-              Join leading professionals and organizations using our platform to master complex concepts faster.
+              Join leading professionals and organizations using our platform to
+              master complex concepts faster.
             </motion.p>
             <motion.div
               variants={fadeInUp}

@@ -62,7 +62,9 @@ export function VoiceOverviewTab({ documentId }: { documentId: string }) {
                 toast.error("Podcast generation failed. Please try again.");
                 setPodcastFailed(true);
               } else {
-                toast.error("Voice overview generation failed. Please try again.");
+                toast.error(
+                  "Voice overview generation failed. Please try again.",
+                );
                 setVoiceFailed(true);
               }
             }
@@ -96,7 +98,9 @@ export function VoiceOverviewTab({ documentId }: { documentId: string }) {
               toast.error("Podcast generation failed. Please try again.");
               setPodcastFailed(true);
             } else {
-              toast.error("Voice overview generation failed. Please try again.");
+              toast.error(
+                "Voice overview generation failed. Please try again.",
+              );
               setVoiceFailed(true);
             }
           }
@@ -220,7 +224,11 @@ export function VoiceOverviewTab({ documentId }: { documentId: string }) {
             (tab.id === "podcast" && hasVoice && !hasPodcast) ||
             (tab.id === "voice" && hasPodcast && !hasVoice);
 
-          const isLoading = voiceState.loading || podcastState.loading;
+          const isLoading =
+            voiceState.loading ||
+            podcastState.loading ||
+            voiceState.isGenerating ||
+            podcastState.isGenerating;
           const isDisabled = isLoading || isTabDisabled;
 
           return (
@@ -285,7 +293,12 @@ export function VoiceOverviewTab({ documentId }: { documentId: string }) {
                 ) : (
                   <Button
                     onClick={() => handleVoice(false)}
-                    disabled={voiceState.loading || voiceState.isGenerating}
+                    disabled={
+                      voiceState.loading ||
+                      voiceState.isGenerating ||
+                      podcastState.isGenerating ||
+                      podcastState.loading
+                    }
                     className="w-full sm:w-auto min-w-[140px]"
                   >
                     {voiceState.loading || voiceState.isGenerating ? (
@@ -293,7 +306,11 @@ export function VoiceOverviewTab({ documentId }: { documentId: string }) {
                     ) : (
                       <PlayCircle className="mr-2 h-4 w-4" />
                     )}
-                    {voiceState.isGenerating ? "Generating..." : voiceFailed ? "Retry" : "Generate"}
+                    {voiceState.isGenerating
+                      ? "Generating..."
+                      : voiceFailed
+                        ? "Retry"
+                        : "Generate"}
                   </Button>
                 )}
               </div>
@@ -361,7 +378,12 @@ export function VoiceOverviewTab({ documentId }: { documentId: string }) {
                 ) : (
                   <Button
                     onClick={() => handlePodcast(false)}
-                    disabled={podcastState.loading || podcastState.isGenerating}
+                    disabled={
+                      podcastState.loading ||
+                      podcastState.isGenerating ||
+                      voiceState.isGenerating ||
+                      voiceState.loading
+                    }
                     className="w-full sm:w-auto min-w-[140px]"
                   >
                     {podcastState.loading || podcastState.isGenerating ? (
@@ -369,7 +391,11 @@ export function VoiceOverviewTab({ documentId }: { documentId: string }) {
                     ) : (
                       <PlayCircle className="mr-2 h-4 w-4" />
                     )}
-                    {podcastState.isGenerating ? "Generating..." : podcastFailed ? "Retry" : "Generate"}
+                    {podcastState.isGenerating
+                      ? "Generating..."
+                      : podcastFailed
+                        ? "Retry"
+                        : "Generate"}
                   </Button>
                 )}
               </div>

@@ -17,7 +17,7 @@ This application provides the user-facing experience for document upload, AI sum
 - Contextual document chat
 - `Voice Chat` integration with Vapi
 - `Voice Overview`, `Podcast Overview`, and `Video Overview` user flows
-- Pricing and Paddle-powered subscription screens
+- Pricing and Lemon Squeezy-powered subscription screens
 - Dashboard and user profile experience
 
 ---
@@ -80,8 +80,6 @@ NEXT_PUBLIC_API_URL=http://localhost:8080
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
 NEXT_PUBLIC_VAPI_PUBLIC_KEY=your_vapi_public_key
 NEXT_PUBLIC_VAPI_WORKFLOW_ID=your_vapi_workflow_id
-NEXT_PUBLIC_PADDLE_ENV=sandbox
-NEXT_PUBLIC_PADDLE_CLIENT_TOKEN=your_paddle_client_token
 ```
 
 ### Run in Development
