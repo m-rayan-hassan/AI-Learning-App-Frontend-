@@ -35,6 +35,7 @@ interface AuthContextType {
     email: string,
     password: string,
   ) => Promise<void>;
+  verifyOtp: (email: string, otp: string) => Promise<void>;
   logout: () => void;
   deleteAccount: () => Promise<void>;
   updateUser: (newData: Partial<User>) => void;
@@ -153,12 +154,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     email: string,
     password: string,
   ) => {
+    // Calls sendOtp only — does NOT set user state.
+    // The register page will handle the OTP step and call verifyOtp.
+    await authServices.sendOtp(username, email, password);
+  };
+
+  const verifyOtp = async (email: string, otp: string) => {
     try {
       setLoading(true);
-      const data = await authServices.register(username, email, password);
+      const data = await authServices.verifyOtp(email, otp);
       if (data.accessToken) {
         setAccessToken(data.accessToken);
-        // Fetch full profile to ensure all fields are present
         const profile = await authServices.getProfile();
         setUser(profile);
       }
@@ -179,6 +185,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         login,
         googleLogin,
         register,
+        verifyOtp,
         logout,
         deleteAccount,
         updateUser,

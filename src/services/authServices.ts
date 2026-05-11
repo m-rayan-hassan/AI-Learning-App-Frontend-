@@ -38,6 +38,31 @@ const register = async (username: string, email: string, password: string) => {
   }
 };
 
+const sendOtp = async (username: string, email: string, password: string) => {
+  try {
+    const response = await axiosInstance.post(API_PATHS.AUTH.SEND_OTP, {
+      username,
+      email,
+      password,
+    });
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || { message: "An unknown error occurred" };
+  }
+};
+
+const verifyOtp = async (email: string, otp: string) => {
+  try {
+    const response = await axiosInstance.post(API_PATHS.AUTH.VERIFY_OTP, {
+      email,
+      otp,
+    });
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || { message: "An unknown error occurred" };
+  }
+};
+
 const forgotPassword = async (email: string) => {
   try {
     const response = await axiosInstance.post(API_PATHS.AUTH.FORGOT_PASSWORD, {
@@ -141,6 +166,8 @@ const authServices = {
   login,
   googleLogin,
   register,
+  sendOtp,
+  verifyOtp,
   forgotPassword,
   resetPassword,
   getProfile,
@@ -155,6 +182,8 @@ export {
   login,
   googleLogin,
   register,
+  sendOtp,
+  verifyOtp,
   forgotPassword,
   resetPassword,
   getProfile,

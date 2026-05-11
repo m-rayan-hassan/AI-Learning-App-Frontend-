@@ -9,6 +9,8 @@ export const API_PATHS = {
     GOOGLE_LOGIN: "/api/auth/google",
     REFRESH: "/api/auth/refresh",
     LOGOUT: "/api/auth/logout",
+    SEND_OTP: "/api/auth/send-otp",
+    VERIFY_OTP: "/api/auth/verify-otp",
     FORGOT_PASSWORD: "/api/auth/forgotpassword",
     RESET_PASSWORD: (token: string) => `/api/auth/resetpassword/${token}`,
     GET_PROFILE: "/api/auth/profile",
