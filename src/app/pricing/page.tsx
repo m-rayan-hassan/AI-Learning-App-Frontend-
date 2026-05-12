@@ -162,9 +162,14 @@ function PricingCard({
           <span className="text-4xl font-extrabold tracking-tight text-foreground leading-none">
             ${price}
           </span>
-          <span className="text-sm font-medium text-muted-foreground mb-1">
-            /mo
-          </span>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-muted-foreground">
+              /mo
+            </span>
+            <span className="text-[10px] text-muted-foreground/60 leading-none">
+              + taxes
+            </span>
+          </div>
         </div>
       </div>
 

@@ -117,18 +117,25 @@ export default function TermsOfServicePage() {
               </div>
               <p className="mt-4">
                 All paid subscriptions are processed through{" "}
-                <Strong>Paddle</Strong>, our Merchant of Record. By
+                <Strong>Lemon Squeezy</Strong>, our Merchant of Record. By
                 subscribing, you also agree to{" "}
                 <a
-                  href="https://www.paddle.com/legal/terms"
+                  href="https://www.lemonsqueezy.com/terms"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline"
                 >
-                  Paddle&apos;s Terms of Service
+                  Lemon Squeezy&apos;s Terms of Service
                 </a>
-                . Paddle handles all payment processing, tax collection,
+                . Lemon Squeezy handles all payment processing, tax collection,
                 invoicing, and compliance as the seller of record.
+              </p>
+              <p className="mt-3">
+                <Strong>Taxes:</Strong> Subscription prices displayed are
+                exclusive of applicable taxes (such as VAT or sales tax). The
+                final price, including any relevant taxes based on your
+                location, will be calculated and displayed by Lemon Squeezy at
+                the time of checkout.
               </p>
               <p className="mt-3">
                 Subscriptions renew automatically at the end of each billing

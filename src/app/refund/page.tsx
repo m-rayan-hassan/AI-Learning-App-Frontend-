@@ -40,9 +40,15 @@ export default function RefundPolicyPage() {
                 <Strong>Cognivio AI</Strong>.
               </p>
               <p className="mt-3">
-                All payments are processed by <Strong>Paddle</Strong>, our
-                Merchant of Record. Refunds are issued through Paddle to the
+                All payments are processed by <Strong>Lemon Squeezy</Strong>, our
+                Merchant of Record. Refunds are issued through Lemon Squeezy to the
                 original payment method.
+              </p>
+              <p className="mt-3 text-xs italic">
+                Note: As the Merchant of Record, Lemon Squeezy reserves the right
+                to issue refunds at their sole discretion within 60 days of a
+                purchase to address technical issues, fraud, or to prevent
+                chargebacks.
               </p>
             </Section>
 
@@ -134,7 +140,7 @@ export default function RefundPolicyPage() {
               </ul>
               <p className="mt-3">
                 These features consume significant third-party resources
-                (ElevenLabs, Gamma, Vapi, Cloudinary) upon use, and the costs
+                (ElevenLabs, Vapi, Cloudinary) upon use, and the costs
                 incurred cannot be reversed. By using these features, you
                 acknowledge that your subscription payment for that billing
                 cycle is non-refundable.
@@ -144,9 +150,9 @@ export default function RefundPolicyPage() {
             <Section title="5. Prorated Credits for Upgrades">
               <p>
                 When you upgrade from one paid plan to a higher-tier plan
-                mid-cycle, the remaining value of your current plan is applied
+                mid-cycle, the remaining value of your current plan may be applied
                 as a prorated credit toward the new plan. This credit is
-                calculated and applied automatically by Paddle at the time of
+                calculated and applied automatically by Lemon Squeezy at the time of
                 the upgrade.
               </p>
               <p className="mt-3">
@@ -205,7 +211,7 @@ export default function RefundPolicyPage() {
 
             <Section title="8. Processing Timeline">
               <p>
-                Once a refund is approved, it will be processed by Paddle.
+                Once a refund is approved, it will be processed by Lemon Squeezy.
                 Depending on your payment method and financial institution,
                 refunds typically appear within:
               </p>

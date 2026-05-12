@@ -109,9 +109,9 @@ export default function PrivacyPolicyPage() {
               </p>
               <div className="mt-4 space-y-3">
                 <ThirdParty
-                  name="Paddle"
+                  name="Lemon Squeezy"
                   purpose="Payment processing, tax collection, and invoicing as our Merchant of Record"
-                  url="https://www.paddle.com/legal/privacy"
+                  url="https://www.lemonsqueezy.com/privacy"
                 />
                 <ThirdParty
                   name="Google OAuth"
@@ -132,11 +132,6 @@ export default function PrivacyPolicyPage() {
                   name="ElevenLabs"
                   purpose="AI text-to-speech for voice overviews, podcast narration, and video explanations"
                   url="https://elevenlabs.io/privacy-policy"
-                />
-                <ThirdParty
-                  name="Gamma"
-                  purpose="Slide rendering and visual presentation generation for AI video overviews"
-                  url="https://gamma.app/privacy"
                 />
                 <ThirdParty
                   name="Vapi"
@@ -202,7 +197,7 @@ export default function PrivacyPolicyPage() {
                 <li>HTTPS encryption for all data in transit.</li>
                 <li>Encrypted storage for sensitive data at rest.</li>
                 <li>Secure password hashing (bcrypt).</li>
-                <li>JWT-based authentication with no cookie storage.</li>
+                <li>JWT-based authentication with a short-lived access token and a secure, httpOnly refresh-token cookie.</li>
                 <li>Rate limiting and HTTP parameter pollution prevention.</li>
               </ul>
               <p className="mt-3">
@@ -253,10 +248,19 @@ export default function PrivacyPolicyPage() {
 
             <Section title="9. Cookies">
               <p>
-                Cognivio AI does <Strong>not</Strong> use cookies. We use
-                token-based authentication (JWT) stored in your browser&apos;s
-                local storage to maintain your session. No tracking cookies or
-                third-party advertising cookies are placed on your device.
+                Cognivio AI uses a minimal, security-focused cookie to maintain
+                your session. Specifically, we store your{" "}
+                <Strong>refresh token</Strong> in an{" "}
+                <Strong>httpOnly, Secure, SameSite=Strict</Strong> cookie that
+                cannot be read or modified by JavaScript, protecting you against
+                cross-site scripting (XSS) attacks. A short-lived JWT access
+                token is held in memory and never written to local storage or
+                other persistent browser storage.
+              </p>
+              <p className="mt-3">
+                We do <Strong>not</Strong> use tracking cookies, advertising
+                cookies, or any third-party analytics cookies. The session cookie
+                described above is the only cookie placed on your device.
               </p>
             </Section>
 
