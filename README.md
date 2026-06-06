@@ -1,121 +1,90 @@
-# Cognivio AI Frontend
+# Cognivio AI — Frontend
 
-The frontend for **Cognivio AI**, an AI-powered learning platform that transforms documents into interactive study experiences.
-
-This application provides the user-facing experience for document upload, AI summaries, flashcards, quizzes, contextual chat, `Voice Chat`, `Voice Overview`, `Podcast Overview`, `Video Overview`, authentication, and subscription management.
+The client application for **Cognivio AI**, an AI-powered SaaS learning platform that transforms documents into interactive study experiences.
 
 ---
 
-## Features
+## Overview
 
-- Modern App Router experience built with Next.js
-- Authentication flows: login, register, forgot password, reset password
-- Google OAuth integration
-- Document upload and document library UI
-- AI summaries and concept explanations
-- Flashcards and quiz interfaces
-- Contextual document chat
-- `Voice Chat` integration with Vapi
-- `Voice Overview`, `Podcast Overview`, and `Video Overview` user flows
-- Pricing and Lemon Squeezy-powered subscription screens
-- Dashboard and user profile experience
+This frontend delivers the entire user-facing experience — from onboarding and authentication to document management, AI-powered learning tools, and subscription billing. Built with a modern React stack, it emphasizes performance, accessibility, and a premium visual experience.
 
 ---
 
-## Tech Stack
+## ✨ User Experience
 
-- Next.js 16
-- React 19
-- TypeScript
-- Tailwind CSS 4
-- Radix UI
-- Axios
-- Framer Motion
-- React Hook Form
-- KaTeX / Markdown rendering utilities
+- **Document Workspace** — Upload, browse, and manage study materials in a clean, organized library
+- **AI Learning Suite** — Summaries, flashcards, quizzes, concept explanations — all generated from uploaded documents
+- **Contextual AI Chat** — Ask follow-up questions with full document context awareness
+- **Voice Chat** — Real-time voice conversations with an AI tutor via Vapi integration
+- **Audio & Video Overviews** — Voice summaries, podcast-style deep dives, and AI-generated video recaps
+- **Learning Dashboard** — Track progress, study streaks, and performance analytics
+- **Subscription Management** — Tiered pricing with seamless LemonSqueezy checkout flows
+- **Profile & Account** — User settings, profile image upload, and account management
 
 ---
 
-## Project Structure
+## 🏗️ Technical Architecture
 
-```text
+### Stack
+
+| Technology | Purpose |
+|---|---|
+| **Next.js 16** | App Router framework with server/client components |
+| **React 19** | Latest React with concurrent features |
+| **TypeScript** | Full type safety across the application |
+| **Tailwind CSS 4** | Utility-first styling with design token system |
+| **Radix UI** | Accessible, unstyled component primitives |
+| **Framer Motion** | Smooth page transitions and micro-animations |
+| **React Hook Form** | Performant form handling with validation |
+| **Axios** | HTTP client with interceptors for API communication |
+| **KaTeX** | Mathematical formula rendering in AI responses |
+
+### Architecture Patterns
+
+- **App Router** — File-system routing with route groups for authenticated and public sections
+- **Service Layer** — Dedicated API service wrappers abstracting all backend communication
+- **Context Providers** — Global auth state and shared application context
+- **Component Library** — Reusable, composable UI components built on Radix primitives
+- **Responsive Design** — Mobile-first layouts with adaptive breakpoints
+
+### Key Design Decisions
+
+- **Route Groups**: `(auth)` for login/register flows, `(dashboard)` for the authenticated learning experience — clean URL structure with distinct layouts
+- **Service Abstraction**: All API calls go through a typed service layer, keeping components free of HTTP logic
+- **Optimistic UI**: Interactive elements like flashcard starring and quiz submissions use optimistic updates for instant feedback
+- **Dynamic Imports**: Heavy components (voice chat, video player) are lazily loaded to minimize initial bundle size
+
+---
+
+## 🎨 UI / UX Highlights
+
+- Premium dark-mode interface with a polished, modern aesthetic
+- Smooth scroll animations and page transitions via Framer Motion
+- Accessible component patterns using Radix UI primitives
+- Responsive across desktop, tablet, and mobile breakpoints
+- Rich text and markdown rendering for AI-generated content
+- Interactive flashcard review flow with progress tracking
+
+---
+
+## 📂 Codebase Organization
+
+```
 frontend/
-├─ public/                   # Static assets
-├─ src/
-│  ├─ app/                   # App Router pages, route groups, layouts
-│  ├─ components/            # Shared components and feature-specific UI
-│  ├─ context/               # Global React context providers
-│  ├─ lib/                   # Library integrations (e.g. Vapi)
-│  ├─ services/              # API service wrappers
-│  ├─ utils/                 # Helpers, API config, shared utilities
-│  └─ types.d.ts             # Shared type declarations
-├─ components.json           # UI component config
-├─ next.config.ts            # Next.js configuration
-├─ package.json              # Scripts and dependencies
-└─ tsconfig.json             # TypeScript configuration
+├── src/
+│   ├── app/              # Next.js App Router — pages, layouts, route groups
+│   ├── components/       # Reusable UI and feature-specific components
+│   ├── context/          # React context providers (auth, global state)
+│   ├── services/         # API service wrappers (typed, centralized)
+│   ├── lib/              # Library integrations (Vapi, utilities)
+│   ├── utils/            # Shared helpers, API config, constants
+│   └── types.d.ts        # Global type declarations
+├── public/               # Static assets and branding
+└── package.json
 ```
 
 ---
 
-## Getting Started
+## License
 
-### Prerequisites
-
-- Node.js 20+
-- npm 10+
-- Running Cognivio AI backend server
-
-### Installation
-
-```bash
-npm install
-```
-
-### Environment Variables
-
-Create a `.env.local` file in the `frontend` directory:
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8080
-NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
-NEXT_PUBLIC_VAPI_PUBLIC_KEY=your_vapi_public_key
-NEXT_PUBLIC_VAPI_WORKFLOW_ID=your_vapi_workflow_id
-```
-
-### Run in Development
-
-```bash
-npm run dev
-```
-
-Open `http://localhost:3000` in your browser.
-
----
-
-## Available Scripts
-
-- `npm run dev` — Start the development server
-- `npm run build` — Build the app for production
-- `npm run start` — Start the production server
-- `npm run lint` — Run ESLint
-
----
-
-## Frontend Responsibilities
-
-This repository is responsible for:
-
-- Rendering all user-facing pages and flows
-- Managing authenticated client sessions
-- Calling backend APIs for AI and document operations
-- Handling subscription and pricing flows
-- Displaying generated learning assets and interactive study tools
-
----
-
-## Related Repositories
-
-- Root project repository: parent monorepo/submodule container
-- Backend API: Cognivio AI server repository
-
----
+Proprietary software. See the [root README](../README.md#license) for details.
