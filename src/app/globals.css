@@ -2,7 +2,8 @@
 @import "katex/dist/katex.min.css";
 
 @theme {
-  --font-sans: var(--font-inter);
+  --font-weight-semibold: 500;
+  --font-weight-bold: 500;
   
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -107,7 +108,11 @@
   body {
     @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
   }
-  
+
+  b, strong {
+    font-weight: 500;
+  }
+
   /* Global Cursor Pointer Rule */
   button, a, [role="button"] {
     cursor: pointer !important;
